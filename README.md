@@ -8,10 +8,10 @@ Applicant tracker for Vista Markets: paste or enter applications, move people th
 
 ## Setup (one time)
 
-1. **Create the Supabase project** at supabase.com → New project (name it `vista-hiring`). Save the database password somewhere safe.
+1. **Create the Supabase project** at supabase.com → New project (name it `vista-hiring`). Done: project `uplaxcwnhicggztytppt`.
 2. **Run the setup script:** SQL Editor → New query → paste `schema.sql` → Run. It makes `miguel@vistasupermarkets.com` the first admin; change that line first if you sign in with another email.
 3. **Import existing applicants (optional):** run the separate import file in the SQL Editor the same way. Don't add it to this repo; it contains applicant personal information.
-4. **Connect the site:** Project Settings → API. Copy the **Project URL** and the **anon public** key into the two lines at the top of the script in `index.html` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`). The anon key is meant to be public; the database rules are what protect the data. Never put the `service_role` key here.
+4. **Connect the site:** Supabase → Project Settings → API Keys → Legacy API Keys. Copy the **anon public** key into `config.js` in this repo. The anon key is meant to be public; the database rules are what protect the data. Never put the `service_role` key here. (The project address is already set in `index.html`.)
 5. **Sign-in links:** Authentication → URL Configuration → set **Site URL** to the GitHub Pages address (for example `https://miguelpinatx.github.io/vista-hiring/`).
 6. **Turn on Pages:** repo Settings → Pages → Deploy from branch → `main` / root.
 
