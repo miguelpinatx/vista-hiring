@@ -475,6 +475,7 @@ img{max-width:100%}
 <div id="toastHost"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 <script>
 const DEFAULT_STORES=["Montana","Doniphan","Central","Horizon","Piedras","Urban","Alameda","Commissary"];
 let STORES=DEFAULT_STORES.slice(), confirmStoreDel=null;
@@ -1306,8 +1307,8 @@ $("#drawerHost").addEventListener("input",e=>{
 });
 
 /* ---------- Supabase connection ---------- */
-const SUPABASE_URL="__SUPABASE_URL__";
-const SUPABASE_ANON_KEY="__SUPABASE_ANON_KEY__";
+const SUPABASE_URL="https://uplaxcwnhicggztytppt.supabase.co";
+const SUPABASE_ANON_KEY=(window.VISTA_SUPABASE_KEY||"").trim();
 let sb=null, me=null, staffRow=null, team=[];
 function dbError(error){ return {code:error?.code==="42501"||/row-level security/i.test(error?.message||"")?"invalid_argument":"unavailable",message:error?.message||"Error"}; }
 function makeDb(){
@@ -1470,8 +1471,8 @@ $("#v-team").addEventListener("click",async e=>{
 /* ---------- boot ---------- */
 setTab(["#applicants","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
 (async()=>{
-  if(SUPABASE_URL.startsWith("__")||!window.supabase){
-    showAuth("setup","This site isn’t connected to its database yet. Add the Supabase project URL and anon key at the top of the script in index.html.",true); return;
+  if(!SUPABASE_ANON_KEY.startsWith("eyJ")&&!SUPABASE_ANON_KEY.startsWith("sb_publishable_")||!window.supabase){
+    showAuth("setup","This site isn’t connected to its database yet. Paste the Supabase anon key into config.js in the GitHub repo.",true); return;
   }
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   sb.auth.onAuthStateChange((event,session)=>{
