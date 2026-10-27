@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vista Hiring Tracker</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#834B9E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tab bar (Dashboard / Applicants / Email templates); applicant drawer slides in from the right. */
+:root{
+  --bg:#F6F5F9; --surface:#FFFFFF; --sunk:#EFEDF3; --fg:#221B2B; --muted:#6B6377; --line:#E2DEE9;
+  --purple:#834B9E; --purple-soft:#F1E8F6; --yellow:#FEC938; --blue:#007BC4;
+  --s-new:#007BC4; --s-screen:#834B9E; --s-int:#B7791F; --s-offer:#0F8A7E; --s-hired:#2F8A3B; --s-out:#8A8293;
+  --danger:#B42318; --grid:#ECE9F1;
+  --display:"Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15121A; --surface:#1F1A26; --sunk:#191520; --fg:#EEEAF3; --muted:#A79EB3; --line:#342C3E;
+  --purple:#BC8ED6; --purple-soft:#2E2338; --yellow:#FEC938; --blue:#56ADE6;
+  --s-new:#56ADE6; --s-screen:#BC8ED6; --s-int:#E3A84A; --s-offer:#3EC2B3; --s-hired:#5CC26A; --s-out:#8F879A;
+  --danger:#F07D72; --grid:#2A2333; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15121A; --surface:#1F1A26; --sunk:#191520; --fg:#EEEAF3; --muted:#A79EB3; --line:#342C3E;
+  --purple:#BC8ED6; --purple-soft:#2E2338; --yellow:#FEC938; --blue:#56ADE6;
+  --s-new:#56ADE6; --s-screen:#BC8ED6; --s-int:#E3A84A; --s-offer:#3EC2B3; --s-hired:#5CC26A; --s-out:#8F879A;
+  --danger:#F07D72; --grid:#2A2333; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:700;font-size:1.75rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 .dot{display:inline-block;width:.5em;height:.5em;border-radius:50%;background:var(--yellow);margin-left:.15em;vertical-align:.1em}
+.sub{color:var(--muted);margin:2px 0 0;font-size:.9rem}
+.status{font-size:.8rem;color:var(--muted);font-family:var(--mono)}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:.9rem}
+.btn:hover{border-color:var(--purple)}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:#fff}
+:root:not([data-theme="light"]) .btn.primary{color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--danger)}
+.btn.sm{padding:5px 10px;font-size:.8rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:none;background:none;padding:10px 14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--yellow)}
+.tabs .count{font-family:var(--mono);font-weight:500;font-size:.75rem;margin-left:4px}
+.view{display:flex;flex-direction:column;gap:18px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.panel h2,.section-h{font-family:var(--display);font-size:1.05rem;margin:0 0 10px;font-weight:600}
+.panel h2 .small{font-family:var(--body);font-weight:400}
+
+/* dashboard */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.ph h2{margin:0}
+.ostore{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.ostore:first-child{border-top:none;padding-top:0}
+.ostore .sn{font-family:var(--display);font-weight:600;font-size:1rem;background:none;border:none;padding:0;text-align:left;cursor:pointer;color:var(--fg)}
+.ostore .sn:hover{color:var(--purple)}
+.ostore .sn small{display:block;font-family:var(--body);font-weight:400;font-size:.75rem;color:var(--muted)}
+.olist{display:flex;flex-direction:column;gap:8px;min-width:0}
+.op{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--sunk);border-radius:8px;padding:8px 10px}
+.op .t{font-weight:600}
+.op .meta{font-size:.78rem;color:var(--muted)}
+.seats{display:flex;gap:3px;flex-wrap:wrap}
+.seat{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--s-new);background:transparent}
+.seat.hired{background:var(--s-hired);border-color:var(--s-hired)}
+.seat.offer{background:var(--s-offer);border-color:var(--s-offer);opacity:.55}
+.op .cnt{font-size:.78rem;color:var(--muted);margin-top:3px}
+.op .acts{display:flex;gap:4px}
+.op.done{opacity:.6}
+.openform{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;align-items:end;background:var(--purple-soft);border-radius:10px;padding:12px;margin-bottom:12px}
+.openform .field input,.openform .field select{background:var(--surface)}
+.openform .wide{grid-column:span 2}
+.openform .row-actions{grid-column:1/-1}
+.nostaff{font-size:.82rem;color:var(--muted);padding-top:10px;border-top:1px solid var(--line);margin-top:4px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;cursor:pointer;text-align:left}
+.kpi:hover{border-color:var(--purple)}
+.kpi b{font-family:var(--display);font-size:2rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi em{font-style:normal;font-size:.8rem;color:var(--muted)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px}
+.funnel{display:flex;flex-direction:column;gap:8px}
+.frow{display:grid;grid-template-columns:130px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:.85rem;cursor:pointer}
+.ftrack{height:18px;background:var(--sunk);border-radius:4px;overflow:hidden}
+.fbar{height:100%;border-radius:4px}
+.frow .num{font-family:var(--mono);text-align:right}
+.chartbox svg{width:100%;height:auto;display:block}
+.stbl{width:100%;border-collapse:collapse;font-size:.82rem}
+.stbl th,.stbl td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:right}
+.stbl th:first-child,.stbl td:first-child{text-align:left}
+.stbl th{font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stbl td{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.stbl td:first-child{font-family:var(--body);font-weight:600}
+.stbl td.z{color:var(--line)}
+.stbl tr:last-child td{border-bottom:none}
+.list{display:flex;flex-direction:column}
+.li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:.88rem}
+.li:last-child{border-bottom:none}
+.li .r{text-align:right;flex-shrink:0}
+.none{color:var(--muted);font-size:.88rem;padding:8px 0}
+
+/* paste panel */
+.paste{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:16px}
+.man-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.man-grid .wide2{grid-column:span 2}
+.man-grid .wide-all{grid-column:1/-1}
+.man-grid .field input,.man-grid .field select,.man-grid .field textarea{width:100%;min-width:0}
+.daypick{display:flex;gap:6px;flex-wrap:wrap}
+.daypick label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:.82rem;font-weight:600;color:var(--fg);cursor:pointer;background:var(--bg)}
+.daypick label:has(input:checked){background:var(--purple);border-color:var(--purple);color:#fff}
+.daypick input{position:absolute;opacity:0;pointer-events:none}
+.daypick label:focus-within{outline:2px solid var(--blue);outline-offset:2px}
+@media (max-width:760px){ .man-grid{grid-template-columns:1fr 1fr} }
+@media (max-width:460px){ .man-grid{grid-template-columns:1fr} .man-grid .wide2{grid-column:1/-1} }
+.paste p.hint{margin:0 0 10px;color:var(--muted);font-size:.85rem}
+textarea#pasteBox{width:100%;min-height:200px;resize:vertical;border:1px dashed var(--line);border-radius:8px;background:var(--sunk);padding:10px;font-family:var(--mono);font-size:.8rem}
+textarea#pasteBox:focus{border-style:solid;border-color:var(--purple);outline:none}
+.paste-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.preview{min-width:0;border-left:1px solid var(--line);padding-left:16px}
+.preview .empty{color:var(--muted);font-size:.9rem;padding:24px 0}
+.pv-card{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.pv-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.pv-name{font-family:var(--display);font-weight:600;font-size:1.1rem}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 14px;font-size:.85rem}
+.kv div{min-width:0}
+.kv b{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.kv span{overflow-wrap:anywhere}
+.warn{font-size:.8rem;color:var(--s-int);font-weight:600}
+
+/* pipeline + filters */
+.pipe{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.85rem;font-weight:600}
+.chip .n{font-family:var(--mono);font-weight:500;color:var(--muted)}
+.chip .sw{width:8px;height:8px;border-radius:50%}
+.chip[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;font-size:.9rem}
+.filters input{flex:1 1 220px;min-width:0}
+
+/* table */
+.tablewrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+table.main{width:100%;border-collapse:collapse;font-size:.88rem}
+table.main th{text-align:left;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.main td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--sunk)}
+table.main tr:last-child td{border-bottom:none}
+.nm{font-weight:600}
+.small{color:var(--muted);font-size:.8rem}
+.mono{font-family:var(--mono);font-size:.8rem;font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;border:1px solid currentColor}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.store{font-weight:600}
+.lang{font-size:.7rem;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--purple-soft);color:var(--purple);margin-left:6px}
+.days{display:flex;gap:2px}
+.days i{font-style:normal;font-family:var(--mono);font-size:.7rem;width:18px;height:18px;display:grid;place-items:center;border-radius:4px;background:var(--sunk);color:var(--muted)}
+.days i.on{background:var(--purple);color:#fff}
+.emptystate{padding:40px 16px;text-align:center;color:var(--muted)}
+
+/* templates */
+.tpl-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px}
+.tpl-nav{display:flex;flex-direction:column;gap:4px}
+.tpl-nav button{text-align:left;border:1px solid transparent;background:none;border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:600;font-size:.88rem;display:flex;gap:8px;align-items:center}
+.tpl-nav button[aria-pressed="true"]{background:var(--surface);border-color:var(--line)}
+.tpl-nav .sw{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tpl-edit{display:flex;flex-direction:column;gap:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:none;background:var(--surface);padding:6px 12px;font-weight:600;font-size:.82rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--purple);color:#fff}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.75rem;color:var(--muted);font-weight:600}
+.field input,.field textarea,.field select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);font-size:.9rem;color:var(--fg);font-weight:400}
+.field textarea{min-height:240px;resize:vertical;font-family:var(--body);line-height:1.5}
+.tokens{display:flex;flex-wrap:wrap;gap:6px}
+.tokens button{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:2px 6px;cursor:pointer}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,6,14,.35);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:21;overflow-y:auto;
+  padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));padding-left:20px;padding-right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.d-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.d-name{font-family:var(--display);font-size:1.5rem;font-weight:700;margin:0;text-wrap:balance}
+.d-sec{display:flex;flex-direction:column;gap:8px}
+.d-sec h3{margin:0;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-grid label{display:flex;flex-direction:column;gap:4px;font-size:.75rem;color:var(--muted);font-weight:600;min-width:0}
+.d-grid select,.d-grid input,.d-sec textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);font-size:.9rem;color:var(--fg);font-weight:400;min-width:0;width:100%}
+.d-sec textarea{min-height:90px;resize:vertical}
+.offerbox{border:1px solid var(--s-offer);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.offerbox .big{font-family:var(--display);font-size:1.3rem;font-weight:700}
+.money{position:relative}
+.contact{display:flex;flex-direction:column;gap:4px}
+.contact div{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.copy{border:none;background:none;color:var(--blue);cursor:pointer;font-size:.75rem;font-weight:600;padding:0}
+.pre{white-space:pre-wrap;font-size:.88rem;background:var(--sunk);border-radius:8px;padding:10px;overflow-wrap:anywhere}
+.certs{display:flex;flex-direction:column;gap:8px}
+.cert{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.cert.need{border-left-color:var(--s-int)}
+.cert.ok{border-left-color:var(--s-hired)}
+.cert.na{opacity:.7}
+.ctop{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.ccheck{display:flex;gap:8px;align-items:center;cursor:pointer;font-size:.9rem}
+.ccheck input{width:18px;height:18px;accent-color:var(--s-hired)}
+.crow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.crow label{display:flex;gap:6px;align-items:center}
+.crow input{border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--bg);color:var(--fg)}
+.cbadge{display:inline-block;font-size:.68rem;font-weight:600;padding:1px 6px;border-radius:4px;margin:4px 4px 0 0;white-space:nowrap}
+.cbadge.ok{background:color-mix(in srgb,var(--s-hired) 16%,transparent);color:var(--s-hired)}
+.cbadge.need{background:color-mix(in srgb,var(--s-int) 18%,transparent);color:var(--s-int)}
+.mail{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mail .mh{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 10px;background:var(--sunk);flex-wrap:wrap}
+.mail .subj{font-weight:600;font-size:.88rem;padding:10px 10px 0}
+.mail .bdy{white-space:pre-wrap;font-size:.86rem;padding:8px 10px 12px;overflow-wrap:anywhere}
+.mail .missing{color:var(--danger);font-weight:600}
+.stagebar{display:flex;flex-wrap:wrap;gap:6px}
+.stagebar button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;cursor:pointer}
+.stagebar button[aria-pressed="true"]{color:#fff;border-color:transparent}
+.hist{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:.88rem;z-index:30}
+
+@media (max-width:900px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} .dgrid{grid-template-columns:1fr} .openform{grid-template-columns:repeat(2,minmax(0,1fr))} .openform .wide{grid-column:1/-1} }
+@media (max-width:600px){ .ostore{grid-template-columns:1fr;gap:6px} .op{grid-template-columns:minmax(0,1fr) auto} .op .seatcol{grid-column:1/-1;grid-row:2} }
+@media (max-width:760px){
+  .paste{grid-template-columns:1fr}
+  .preview{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:12px}
+  .hide-sm{display:none}
+  .d-grid{grid-template-columns:1fr}
+  .tpl-layout{grid-template-columns:1fr}
+  .tpl-nav{flex-direction:row;flex-wrap:wrap}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .frow{grid-template-columns:100px minmax(0,1fr) 30px}
+}
+/* phone layout */
+@media (max-width:640px){
+  body{font-size:15px}
+  .wrap{padding-block:12px 40px;gap:14px}
+  h1{font-size:1.4rem}
+  .sub{display:none}
+  header{align-items:center}
+  input,select,textarea{font-size:16px!important}
+  .tabs{gap:0;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{padding:10px 11px;font-size:.92rem}
+  .pipe{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin-inline:-4px;padding-inline:4px;scrollbar-width:none}
+  .pipe::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;padding:8px 12px}
+  .filters input{flex-basis:100%}
+  .filters select{flex:1 1 calc(50% - 4px);min-width:0}
+  .btn{min-height:40px}
+  .btn.sm{min-height:36px}
+  .panel{padding:14px;border-radius:10px}
+  .kpi{padding:12px}
+  .kpi b{font-size:1.6rem}
+  .frow{grid-template-columns:96px minmax(0,1fr) 28px;font-size:.8rem}
+  textarea#pasteBox{min-height:150px}
+  /* applicant table becomes cards */
+  .tablewrap{background:transparent;border:none;overflow:visible}
+  table.main,table.main tbody{display:block}
+  table.main thead{display:none}
+  table.main tr.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  table.main tr.row td{display:block;padding:0;border:none;min-width:0}
+  table.main tr.row:hover td{background:transparent}
+  table.main tr.row td:nth-child(1){grid-column:1;grid-row:1}
+  table.main tr.row td:nth-child(7){grid-column:2;grid-row:1;text-align:right}
+  table.main tr.row td:nth-child(2){grid-column:1;grid-row:2}
+  table.main tr.row td:nth-child(6){grid-column:2;grid-row:2;text-align:right}
+  table.main tr.row td:nth-child(6)::before{content:"Start ";color:var(--muted);font-family:var(--body)}
+  table.main tr.row td:nth-child(3){grid-column:1/-1;grid-row:3}
+  table.main tr.row td:nth-child(4){display:none}
+  table.main tr.row td:nth-child(5){grid-column:1/-1;grid-row:4}
+  table.main tr:not(.row) td{display:block;border:none}
+  /* drawer full-screen */
+  .drawer{width:100%;border-left:none;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:16px}
+  .d-name{font-size:1.3rem}
+  .d-head{position:sticky;top:calc(-18px - env(safe-area-inset-top,0px));background:var(--surface);z-index:2;padding-block:4px 8px;margin-top:-4px}
+  .stagebar{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .stagebar button{flex:0 0 auto;padding:8px 12px}
+  .mail .mh{flex-direction:column;align-items:stretch}
+  .mail .mh .row-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .mail .mh .row-actions .primary{grid-column:1/-1;text-align:center;justify-content:center;display:flex;align-items:center}
+  .mail .mh .row-actions a{text-align:center;display:flex;align-items:center;justify-content:center}
+  /* openings */
+  .op .acts{flex-direction:column}
+  .openform{padding:10px}
+  .seg button{padding:8px 12px}
+  .toast{max-width:calc(100% - 32px);text-align:center}
+}
+@media (prefers-reduced-motion:no-preference){.drawer{animation:slide .18s ease-out}@keyframes slide{from{transform:translateX(24px);opacity:.6}}}
+
+/* site shell */
+body{margin:0;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.auth{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.auth-card{width:min(400px,100%);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.auth-card h1{font-size:1.5rem}
+.auth-card h2{font-family:var(--display);font-size:1.1rem;margin:0;font-weight:600}
+.auth-card .field input{width:100%}
+.auth-card .btn.primary{width:100%;min-height:44px}
+.auth-links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.auth-err{color:var(--danger);font-weight:600}
+.who{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="auth" id="authGate">
+  <form class="auth-card" id="authForm" novalidate>
+    <h1>Hiring Tracker<span class="dot" aria-hidden="true"></span></h1>
+    <h2 id="authTitle">Sign in</h2>
+    <label class="field" id="aEmailWrap">Email<input id="aEmail" type="email" autocomplete="email" required></label>
+    <label class="field" id="aPassWrap">Password<input id="aPass" type="password" autocomplete="current-password" minlength="8"></label>
+    <div id="authMsg" class="small" role="status" aria-live="polite"></div>
+    <button class="btn primary" id="aSubmit" type="submit">Sign in</button>
+    <button class="btn" id="aSignOut" type="button" hidden>Sign out</button>
+    <div class="auth-links" id="aLinks"></div>
+  </form>
+</main>
+<div id="app" hidden>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Hiring Tracker<span class="dot" aria-hidden="true"></span></h1>
+      <p class="sub">Vista Markets applicants, from application to first shift.</p>
+    </div>
+    <div class="filters">
+      <span class="status" id="status">Connecting…</span>
+      <button class="btn" id="exportBtn" hidden>Export CSV</button>
+      <span class="who"><span id="whoami"></span><button class="btn sm ghost" id="signOutBtn">Sign out</button></span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="dashboard" aria-selected="true">Dashboard</button>
+    <button role="tab" data-tab="applicants" aria-selected="false">Applicants<span class="count" id="tabCount"></span></button>
+    <button role="tab" data-tab="templates" aria-selected="false">Email templates</button>
+    <button role="tab" data-tab="stores" aria-selected="false">Stores</button>
+    <button role="tab" data-tab="team" aria-selected="false">Team</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="v-dashboard">
+    <div class="kpis" id="kpis"></div>
+    <div class="panel" id="openPanel">
+      <div class="ph"><h2>Open positions <span class="small">what each store needs filled</span></h2><button class="btn sm primary" id="addOpening">Add opening</button></div>
+      <div id="openForm"></div>
+      <div id="openings"></div>
+    </div>
+    <div class="dgrid">
+      <div class="panel"><h2>Pipeline</h2><div class="funnel" id="funnel"></div></div>
+      <div class="panel chartbox"><h2>Applications per week <span class="small">last 8 weeks</span></h2><div id="weekly"></div></div>
+    </div>
+    <div class="panel" style="overflow-x:auto"><h2>By store</h2><div id="byStore"></div></div>
+    <div class="dgrid">
+      <div class="panel"><h2>Upcoming screens &amp; interviews</h2><div class="list" id="upcoming"></div></div>
+      <div class="panel"><h2>Offers out</h2><div class="list" id="offersOut"></div></div>
+    </div>
+    <div class="panel"><h2>Certifications to collect <span class="small">offers and new hires missing a required card</span></h2><div class="list" id="certsDue"></div></div>
+    <div class="dgrid">
+      <div class="panel"><h2>Waiting on a first call <span class="small">New for 2+ days</span></h2><div class="list" id="stale"></div></div>
+      <div class="panel"><h2>Where applicants hear about us</h2><div class="funnel" id="sources"></div></div>
+    </div>
+  </section>
+
+  <!-- APPLICANTS -->
+  <section class="view" id="v-applicants" hidden>
+    <div class="row-actions">
+      <div class="seg" role="group" aria-label="How to add"><button data-addmode="paste" aria-pressed="true">Paste email</button><button data-addmode="manual" aria-pressed="false">Enter manually</button></div>
+    </div>
+    <section class="panel" id="manualPanel" aria-label="Enter applicant manually" hidden>
+      <h2>Enter an applicant</h2>
+      <p class="small" style="margin:0 0 12px">For walk-ins, phone calls and referrals. Only the name and a phone or email are required.</p>
+      <form id="manForm" class="man-grid">
+        <label class="field wide2">Full name<input id="mName" required autocomplete="off"></label>
+        <label class="field">Phone<input id="mPhone" inputmode="tel" placeholder="915-555-1234"></label>
+        <label class="field">Email<input id="mEmail" type="email" placeholder="optional"></label>
+        <label class="field">Store<select id="mStore"></select></label>
+        <label class="field">Position wanted<input id="mPos" list="mPosList" placeholder="e.g. Cashier / Front End"></label>
+        <label class="field">Full / part-time<select id="mType"><option value="">—</option><option>Full-time</option><option>Part-time</option></select></label>
+        <label class="field">Shift<select id="mShift"><option value="">—</option><option>Mornings</option><option>Afternoons</option><option>Evenings</option><option>Any shift</option></select></label>
+        <label class="field">Can start<input id="mStart" type="date"></label>
+        <label class="field">Language<select id="mLang"><option>English</option><option>Español</option></select></label>
+        <label class="field">How they heard about us<select id="mRef"><option value="">—</option><option>Walk-in</option><option>Referral from employee</option><option>Sign or flyer in the store</option><option>Facebook or social media</option><option>Indeed or job site</option><option>Phone call</option><option>Other</option></select></label>
+        <label class="field">Referred by / detail<input id="mRefD" placeholder="optional"></label>
+        <fieldset class="field wide-all" style="border:none;padding:0;margin:0"><legend style="padding:0;margin-bottom:4px">Days available</legend>
+          <div class="daypick"></div></fieldset>
+        <label class="field wide-all">Last job<input id="mJob" placeholder="Title and employer, optional"></label>
+        <label class="field wide-all">Notes<textarea id="mNotes" style="min-height:70px" placeholder="optional"></textarea></label>
+        <div class="row-actions wide-all"><button class="btn primary" type="submit">Add applicant</button><button class="btn ghost" type="reset">Clear</button><span class="small" id="manMsg"></span></div>
+      </form>
+      <datalist id="mPosList"><option value="Cashier / Front End"><option value="Stocker / Grocery"><option value="Deli"><option value="Kitchen / Food Service"><option value="Meat / Butcher"><option value="Bakery / Tortilleria"><option value="Produce"><option value="Receiving / Warehouse"><option value="Maintenance / Janitorial"><option value="Open to anything"></datalist>
+    </section>
+    <section class="panel paste" id="pastePanel" aria-label="Add applicants">
+      <div>
+        <h2>Paste an application email</h2>
+        <p class="hint">Copy the whole email body and paste it here. Several applications in one paste work too.</p>
+        <textarea id="pasteBox" placeholder="name&#10;Jane Doe&#10;email&#10;jane@example.com&#10;phone&#10;9155551234&#10;store-location&#10;Montana&#10;…"></textarea>
+        <div class="paste-actions">
+          <button class="btn primary" id="addBtn" disabled>Add to tracker</button>
+          <button class="btn ghost" id="clearBtn">Clear</button>
+        </div>
+      </div>
+      <div class="preview" id="preview" aria-live="polite"></div>
+    </section>
+
+    <div class="pipe" id="pipe" role="group" aria-label="Filter by stage"></div>
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search name, phone, past employer, skills…" aria-label="Search">
+      <select id="fStore" aria-label="Store"></select>
+      <select id="fType" aria-label="Employment type">
+        <option value="">Full &amp; part-time</option><option>Full-time</option><option>Part-time</option>
+      </select>
+      <select id="fSort" aria-label="Sort">
+        <option value="new">Newest first</option><option value="start">Soonest start date</option><option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div class="tablewrap">
+      <table class="main">
+        <thead><tr>
+          <th>Applicant</th><th>Store</th><th>Wants</th><th class="hide-sm">Last job</th><th class="hide-sm">Available</th><th>Start</th><th>Stage</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TEMPLATES -->
+  <section class="view" id="v-team" hidden>
+    <div class="panel" style="max-width:640px">
+      <h2>Team</h2>
+      <p class="small" style="margin:0 0 12px" id="teamNote"></p>
+      <div class="list" id="teamList"></div>
+      <form class="row-actions" id="teamForm" style="margin-top:14px" hidden>
+        <input id="tName" placeholder="Name" aria-label="Name" style="flex:1 1 140px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)">
+        <input id="tEmail" type="email" placeholder="Email" aria-label="Email" style="flex:2 1 200px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)">
+        <button class="btn primary" type="submit">Add to team</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="view" id="v-stores" hidden>
+    <div class="panel" style="max-width:640px">
+      <h2>Stores</h2>
+      <p class="small" style="margin:0 0 12px">These are the locations you can assign applicants and openings to. Changes apply for everyone using the tracker.</p>
+      <div class="list" id="storeList"></div>
+      <form class="row-actions" id="storeForm" style="margin-top:14px">
+        <input id="newStore" placeholder="New location, e.g. Zaragoza" aria-label="New store name" style="flex:1 1 220px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)">
+        <button class="btn primary" type="submit">Add store</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="view" id="v-templates" hidden>
+    <div class="tpl-layout">
+      <div class="tpl-nav" id="tplNav"></div>
+      <div class="panel tpl-edit" id="tplEdit"></div>
+    </div>
+  </section>
+</div>
+
+</div>
+<div id="drawerHost"></div>
+<div id="toastHost"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const DEFAULT_STORES=["Montana","Doniphan","Central","Horizon","Piedras","Urban","Alameda","Commissary"];
+let STORES=DEFAULT_STORES.slice(), confirmStoreDel=null;
+const STAGES=[
+  {id:"new",label:"New",c:"--s-new"},
+  {id:"screen",label:"Phone screen",c:"--s-screen"},
+  {id:"interview",label:"Interview",c:"--s-int"},
+  {id:"offer",label:"Offer",c:"--s-offer"},
+  {id:"hired",label:"Hired",c:"--s-hired"},
+  {id:"declined",label:"Not moving forward",c:"--s-out"},
+  {id:"noshow",label:"No show / no reply",c:"--s-out"}
+];
+const STAGE=Object.fromEntries(STAGES.map(s=>[s.id,s]));
+const ACTIVE=["new","screen","interview","offer"];
+const KEYMAP={"name":"name","email":"email","phone":"phone","address":"address","store-location":"storeRaw","store":"storeRaw","position":"position",
+ "employment-type":"employmentType","start-date":"startDate","shift":"shift","job-title":"jobTitle","employer":"employer","job-start":"jobStart",
+ "job-end":"jobEnd","job-description":"jobDescription","degree":"degree","school":"school","referral-source":"referralSource",
+ "referral-detail":"referralDetail","skills":"skills","references":"references","availability":"availability","form-language":"formLanguage"};
+const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const SENDERS={Miguel:{name:"Miguel Piña",phone:"915-538-8942",email:"Miguel@vistasupermarkets.com"}};
+const HANDLERS=["Miguel","Store manager"];
+const DEPTS=["Cashier","Head Cashier","Stocker","Pricing","Office","Hot Deli","Cold Deli","Meat Market","Bakery","Cakes","Produce","Tortilleria","Maintenance","Department Supervisor","Store Manager"];
+
+/* ---------- default email templates ---------- */
+const DEFAULT_TPL={
+ new:{en:{s:"We received your application – Vista Markets",b:`Hi {first_name},
+
+Thank you for applying to Vista Markets! We received your application for {position} at our {store} store.
+
+Our team is reviewing it now. If your experience is a good fit, we'll call you at {phone} within the next few days to set up a quick phone screen.
+
+Thank you,
+{sender_name}
+Vista Markets
+{sender_phone}`},
+  es:{s:"Recibimos su solicitud – Vista Markets",b:`Hola {first_name},
+
+¡Gracias por aplicar a Vista Markets! Recibimos su solicitud para {position} en nuestra tienda {store}.
+
+Nuestro equipo la está revisando. Si su experiencia es una buena opción, le llamaremos al {phone} en los próximos días para una breve entrevista por teléfono.
+
+Gracias,
+{sender_name}
+Vista Markets
+{sender_phone}`}},
+ screen:{en:{s:"Quick phone call about your Vista Markets application",b:`Hi {first_name},
+
+Thanks again for applying to Vista Markets. I'd like to set up a short phone call (about 10 minutes) to learn more about you and talk about openings at our {store} store.
+
+I have you down for {interview_time}. If that time doesn't work, just reply to this email or call me at {sender_phone} and we'll find another time.
+
+Talk soon,
+{sender_name}
+Vista Markets`},
+  es:{s:"Llamada breve sobre su solicitud en Vista Markets",b:`Hola {first_name},
+
+Gracias otra vez por aplicar a Vista Markets. Me gustaría hacerle una llamada corta (unos 10 minutos) para conocerle mejor y hablar de las vacantes en nuestra tienda {store}.
+
+Le tengo programado(a) para el {interview_time}. Si ese horario no le funciona, responda a este correo o llámeme al {sender_phone} y buscamos otro horario.
+
+Saludos,
+{sender_name}
+Vista Markets`}},
+ interview:{en:{s:"Interview invitation – Vista Markets {store}",b:`Hi {first_name},
+
+We'd like to invite you to an in-person interview for the {position} position at our {store} store.
+
+When: {interview_time}
+Where: Vista Markets {store} – please ask for the store manager at the front office.
+
+Please bring a photo ID and your food handler card if you have one. Plan for about 20–30 minutes.
+
+If you need to reschedule, call me at {sender_phone}.
+
+See you then,
+{sender_name}
+Vista Markets`},
+  es:{s:"Invitación a entrevista – Vista Markets {store}",b:`Hola {first_name},
+
+Le invitamos a una entrevista en persona para el puesto de {position} en nuestra tienda {store}.
+
+Cuándo: {interview_time}
+Dónde: Vista Markets {store} – pregunte por el gerente de tienda en la oficina de enfrente.
+
+Por favor traiga una identificación con foto y su tarjeta de manejo de alimentos si la tiene. La entrevista dura unos 20–30 minutos.
+
+Si necesita cambiar la cita, llámeme al {sender_phone}.
+
+Nos vemos,
+{sender_name}
+Vista Markets`}},
+ offer:{en:{s:"Job offer – {position} at Vista Markets {store}",b:`Hi {first_name},
+
+Congratulations! We're happy to offer you the position of {position} at our {store} store.
+
+Here are the details:
+• Pay: {pay}
+• Schedule: {employment_type}, about {hours} hours per week
+• Start date: {offer_start}
+
+Please reply to this email or call me at {sender_phone} by {respond_by} to accept. Once you accept, we'll send your first-day details and new-hire paperwork.
+
+We're excited to have you on the team!
+
+{sender_name}
+Vista Markets`},
+  es:{s:"Oferta de trabajo – {position} en Vista Markets {store}",b:`Hola {first_name},
+
+¡Felicidades! Nos da gusto ofrecerle el puesto de {position} en nuestra tienda {store}.
+
+Estos son los detalles:
+• Pago: {pay}
+• Horario: {employment_type}, aproximadamente {hours} horas por semana
+• Fecha de inicio: {offer_start}
+
+Por favor responda a este correo o llámeme al {sender_phone} antes del {respond_by} para aceptar. Cuando acepte, le enviaremos los detalles de su primer día y los documentos de nuevo empleado.
+
+¡Nos emociona tenerle en el equipo!
+
+{sender_name}
+Vista Markets`}},
+ hired:{en:{s:"Welcome to Vista Markets! Your first day",b:`Hi {first_name},
+
+Welcome to the Vista Markets team! Here's what you need for your first day:
+
+• Date: {offer_start}
+• Store: Vista Markets {store}
+• Position: {position}
+• Pay: {pay}
+
+Please arrive 10 minutes early and check in with the store manager. Bring a photo ID, your Social Security card or other work authorization documents, and your food handler card if you have one. Wear closed-toe, non-slip shoes.
+
+Questions before then? Call me at {sender_phone}.
+
+Glad to have you,
+{sender_name}
+Vista Markets`},
+  es:{s:"¡Bienvenido(a) a Vista Markets! Su primer día",b:`Hola {first_name},
+
+¡Bienvenido(a) al equipo de Vista Markets! Esto es lo que necesita para su primer día:
+
+• Fecha: {offer_start}
+• Tienda: Vista Markets {store}
+• Puesto: {position}
+• Pago: {pay}
+
+Por favor llegue 10 minutos antes y preséntese con el gerente de tienda. Traiga una identificación con foto, su tarjeta de Seguro Social u otros documentos de autorización de trabajo, y su tarjeta de manejo de alimentos si la tiene. Use zapatos cerrados y antiderrapantes.
+
+¿Preguntas antes de ese día? Llámeme al {sender_phone}.
+
+Con gusto,
+{sender_name}
+Vista Markets`}},
+ declined:{en:{s:"Your application with Vista Markets",b:`Hi {first_name},
+
+Thank you for your interest in Vista Markets and for the time you spent applying. After reviewing our current openings, we won't be moving forward with your application at this time.
+
+We'll keep your information on file, and you're welcome to apply again in the future at vistasupermarkets.net/application.
+
+We wish you the best,
+{sender_name}
+Vista Markets`},
+  es:{s:"Su solicitud en Vista Markets",b:`Hola {first_name},
+
+Gracias por su interés en Vista Markets y por el tiempo que dedicó a su solicitud. Después de revisar nuestras vacantes actuales, no continuaremos con su solicitud en este momento.
+
+Guardaremos su información, y puede volver a aplicar en el futuro en vistasupermarkets.net/application.
+
+Le deseamos lo mejor,
+{sender_name}
+Vista Markets`}},
+ noshow:{en:{s:"Following up on your Vista Markets application",b:`Hi {first_name},
+
+We tried to reach you about your application for {position} at our {store} store but weren't able to connect.
+
+If you're still interested, please call me at {sender_phone} or reply to this email this week and we'll get you scheduled.
+
+Thank you,
+{sender_name}
+Vista Markets`},
+  es:{s:"Seguimiento a su solicitud en Vista Markets",b:`Hola {first_name},
+
+Intentamos comunicarnos con usted sobre su solicitud para {position} en nuestra tienda {store}, pero no logramos contactarle.
+
+Si todavía le interesa, por favor llámeme al {sender_phone} o responda a este correo esta semana y le programamos una cita.
+
+Gracias,
+{sender_name}
+Vista Markets`}}
+};
+const DEFAULT_SMS={
+ new:{en:"Hi {first_name}, this is {sender_name} with Vista Markets. We got your application for our {store} store. We'll call you in the next few days to set up a quick phone screen.",
+      es:"Hola {first_name}, le habla {sender_name} de Vista Markets. Recibimos su solicitud para nuestra tienda {store}. Le llamaremos en los próximos días para una breve entrevista por teléfono."},
+ screen:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. Can we do a quick 10-minute phone call on {interview_time}? Reply YES or let me know a better time.",
+      es:"Hola {first_name}, soy {sender_name} de Vista Markets. ¿Podemos hacer una llamada de 10 minutos el {interview_time}? Responda SÍ o dígame qué horario le funciona mejor."},
+ interview:{en:"Hi {first_name}, you're invited to interview at Vista Markets {store} on {interview_time}. Ask for the store manager at the front office and bring a photo ID. Reply to confirm. – {sender_name}",
+      es:"Hola {first_name}, le invitamos a una entrevista en Vista Markets {store} el {interview_time}. Pregunte por el gerente en la oficina y traiga identificación con foto. Responda para confirmar. – {sender_name}"},
+ offer:{en:"Congrats {first_name}! Vista Markets would like to offer you the {position} position at {store}: {pay}, {employment_type}, starting {offer_start}. Reply YES to accept or call me at {sender_phone}. – {sender_name}",
+      es:"¡Felicidades {first_name}! Vista Markets le ofrece el puesto de {position} en {store}: {pay}, {employment_type}, empezando el {offer_start}. Responda SÍ para aceptar o llámeme al {sender_phone}. – {sender_name}"},
+ hired:{en:"Welcome to Vista Markets, {first_name}! Your first day is {offer_start} at our {store} store. Arrive 10 min early, check in with the manager, and bring your photo ID, work documents and food handler card. – {sender_name}",
+      es:"¡Bienvenido(a) a Vista Markets, {first_name}! Su primer día es el {offer_start} en la tienda {store}. Llegue 10 min antes, preséntese con el gerente y traiga identificación, documentos de trabajo y tarjeta de manejo de alimentos. – {sender_name}"},
+ declined:{en:"Hi {first_name}, thank you for applying to Vista Markets. We won't be moving forward right now, but you're welcome to apply again in the future. – {sender_name}",
+      es:"Hola {first_name}, gracias por aplicar a Vista Markets. Por ahora no continuaremos con su solicitud, pero puede volver a aplicar en el futuro. – {sender_name}"},
+ noshow:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. We tried to reach you about your application for {store}. Still interested? Reply here or call {sender_phone}.",
+      es:"Hola {first_name}, soy {sender_name} de Vista Markets. Intentamos comunicarnos sobre su solicitud para {store}. ¿Todavía le interesa? Responda aquí o llame al {sender_phone}."}
+};
+const TOKENS=["first_name","name","store","position","phone","employment_type","interview_time","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
+
+let db=null, downloads=null, candidates=[], parsed=[], filterStage="", openId=null;
+let tplOverrides={}, tplSel={stage:"new",lang:"en",ch:"email"}, tab="dashboard";
+let openings=[], editingOpening=null, confirmOpenDel=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- parsing ---------- */
+function clean(v){ return v.replace(/\[([^\]]+)\]\((?:mailto:|tel:)?[^)]*\)/g,"$1").replace(/[ \t]+\n/g,"\n").trim(); }
+function digits(p){return (p||"").replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"")}
+function fmtPhone(p){const d=digits(p);return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:(p||"")}
+function matchStore(raw){ const r=(raw||"").toLowerCase();
+  const hit=STORES.find(s=>r.includes(s.toLowerCase())); if(hit) return hit;
+  if(/prep foods|commissary|comisar/.test(r)) return STORES.find(s=>/commissary/i.test(s))||"";
+  return ""; }
+function parseApplications(text){
+  const lines=text.replace(/\r/g,"").split("\n");
+  const apps=[]; let cur={}, key=null, buf=[];
+  const flush=()=>{ if(key){ const v=clean(buf.join("\n")); if(v) cur[key]=v; } key=null; buf=[]; };
+  for(const raw of lines){
+    const t=raw.trim(), m=t.toLowerCase().match(/^([a-z_][a-z-]*)(\s*:?\s*)(.*)$/);
+    let k=null, rest="";
+    if(m && (KEYMAP[m[1]]!==undefined || m[1].startsWith("_")) && (m[3]==="" || m[2].includes(":"))){ k=m[1]; rest=t.slice(m[1].length+m[2].length); }
+    if(k){
+      flush();
+      if(k.startsWith("_")) continue;
+      const field=KEYMAP[k];
+      if(field==="name" && cur.name){ apps.push(cur); cur={}; }
+      key=field; if(rest) buf.push(rest);
+    } else if(key){ buf.push(raw); }
+  }
+  flush(); if(Object.keys(cur).length) apps.push(cur);
+  return apps.filter(a=>a.name||a.email||a.phone).map(finish);
+}
+function finish(a){
+  a.phone=fmtPhone(a.phone);
+  a.store=matchStore(a.storeRaw);
+  a.availDays=DAYS.filter((d,i)=>{ const v=(a.availability||"").toLowerCase(); return v.includes(d.toLowerCase())||v.includes(DIAS[i]); });
+  a.interviewer="Miguel";
+  return a;
+}
+function isSpanish(a){ return /span|espa/i.test(a.formLanguage||""); }
+function dupOf(a){
+  const d=digits(a.phone), e=(a.email||"").toLowerCase();
+  return candidates.find(c=>(e && (c.email||"").toLowerCase()===e)||(d.length===10 && digits(c.phone)===d));
+}
+
+/* ---------- formatting ---------- */
+function parseISO(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(iso||""); return m?new Date(+m[1],m[2]-1,+m[3]):null; }
+function fmtDate(iso,long){ const d=parseISO(iso); if(!d) return iso||""; return d.toLocaleDateString(undefined,long?{weekday:"long",month:"long",day:"numeric"}:{month:"short",day:"numeric"}); }
+function fmtDateTime(v,long){ if(!v) return ""; const d=new Date(v); return isNaN(d)?v:d.toLocaleString(undefined,long?{weekday:"long",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"}:{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}); }
+function fmtDateES(iso){ const d=parseISO(iso); return d?d.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"}):(iso||""); }
+function fmtDateTimeES(v){ const d=new Date(v); return isNaN(d)?v:d.toLocaleString("es-MX",{weekday:"long",day:"numeric",month:"long",hour:"numeric",minute:"2-digit"}); }
+function ago(ts){ if(!ts) return ""; const s=(Date.now()-ts)/1000; if(s<3600) return Math.max(1,Math.round(s/60))+"m ago";
+  if(s<86400) return Math.round(s/3600)+"h ago"; const d=Math.round(s/86400); return d<30? d+"d ago" : new Date(ts).toLocaleDateString(); }
+function money(v){ const n=parseFloat(v); return isNaN(n)?"":"$"+n.toFixed(2); }
+function payText(c,lang){ const r=money(c.offerRate); if(!r) return ""; const per=c.offerPer==="year"?(lang==="es"?" al año":" per year"):(lang==="es"?" por hora":"/hour"); return r+per; }
+function daysHtml(a){ const on=new Set(a.availDays||[]); return `<span class="days" title="${esc(a.availability||"")}">${DAYS.map(d=>`<i class="${on.has(d)?"on":""}">${d[0]}</i>`).join("")}</span>`; }
+function pill(stage){ const s=STAGE[stage]||STAGE.new; return `<span class="pill" style="color:var(${s.c})">${esc(s.label)}</span>`; }
+function wants(a){ return `${esc(a.position||"—")}<div class="small">${esc([a.employmentType,a.shift].filter(Boolean).join(" · "))}</div>`; }
+function firstName(n){ return (n||"").trim().split(/\s+/)[0]||""; }
+function stageEnteredAt(c){ const h=(c.history||[]).filter(x=>x.stage===c.stage); return h.length?h[h.length-1].at:c.createdAt; }
+
+/* ---------- email fill ---------- */
+function tplFor(stage,lang,ch){ if(ch==="sms"){ const o=tplOverrides[stage]?.[lang+"_sms"]; return o||{s:"",b:DEFAULT_SMS[stage][lang]}; }
+  const o=tplOverrides[stage]?.[lang]; return o||DEFAULT_TPL[stage][lang]; }
+function textFor(c,stage,lang){ const t=tplFor(stage,lang,"sms"), v=tokenValues(c,lang); return {b:fill(t.b,v), bHtml:fill(esc(t.b),v,true), missing:/\[[a-z ]+\]/.test(fill(t.b,v))}; }
+function smsUrl(phone,body){ const d=digits(phone); return d.length===10?`sms:+1${d}&body=${encodeURIComponent(body)}`:""; }
+function tokenValues(c,lang){
+  const snd=SENDERS[c.interviewer]||SENDERS.Miguel, es=lang==="es";
+  const respond=new Date(Date.now()+2*864e5);
+  return {
+    first_name:firstName(c.name), name:c.name||"", store:c.store||"", position:c.hireFor||(/open to anything/i.test(c.position||"")?"":c.position)||"",
+    phone:c.phone||"", employment_type:es?((c.offerType||c.employmentType||"").replace(/Full-time/i,"tiempo completo").replace(/Part-time/i,"medio tiempo")):(c.offerType||c.employmentType||""),
+    interview_time:c.interviewDate?(es?fmtDateTimeES(c.interviewDate):fmtDateTime(c.interviewDate,true)):"",
+    pay:payText(c,lang), hours:c.offerHours||"", offer_start:c.offerStart?(es?fmtDateES(c.offerStart):fmtDate(c.offerStart,true)):"",
+    respond_by:es?respond.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"}):respond.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}),
+    sender_name:snd.name, sender_phone:snd.phone, sender_email:snd.email
+  };
+}
+function fill(str,vals,mark){
+  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; });
+}
+function emailFor(c,stage,lang){ const t=tplFor(stage,lang), v=tokenValues(c,lang); return {s:fill(t.s,v), b:fill(t.b,v), sHtml:fill(esc(t.s),v,true), bHtml:fill(esc(t.b),v,true), missing:/\{|\[[a-z ]+\]/.test(fill(t.s+t.b,v))}; }
+
+/* ---------- email compose links ---------- */
+const MAILERS={
+  outlook:{label:"Outlook (work)",url:(to,s,b)=>`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`},
+  outlookcom:{label:"Outlook.com",url:(to,s,b)=>`https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`},
+  gmail:{label:"Gmail",url:(to,s,b)=>`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`}
+};
+function getMailer(){ try{ const v=localStorage.getItem("vista-hiring-mailer"); return MAILERS[v]?v:"outlook"; }catch{ return "outlook"; } }
+function composeUrl(k,to,s,b){ return MAILERS[k].url(to,s,b); }
+
+/* ---------- certifications ---------- */
+const CERTS={
+  fh:{label:"Food Handler card",short:"Food Handler",always:true},
+  tabc:{label:"TABC seller-server",short:"TABC",match:/cashier|front ?end|office|pricing|manager|supervisor|grocery/i}
+};
+function certReq(c,k){ const r=c[k+"Req"]; if(r==="yes") return true; if(r==="no") return false; if(CERTS[k].always) return true; return CERTS[k].match.test(c.hireFor||(/open to anything/i.test(c.position||"")?"":c.position)||""); }
+function certDone(c,k){ return !!c[k+"Have"]; }
+function certFiled(c,k){ return !!c[k+"Filed"]; }
+function certComplete(c,k){ return certDone(c,k)&&certFiled(c,k); }
+function certMissing(c){ return Object.keys(CERTS).filter(k=>certReq(c,k)&&!certComplete(c,k)); }
+function appMentions(c,k){ const t=[c.skills,c.jobDescription].join(" "); return k==="fh"?/food handler/i.test(t):/tabc/i.test(t); }
+function certBadges(c){
+  return Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>{ const ok=certComplete(c,k), half=certDone(c,k)&&!ok;
+    return `<span class="cbadge ${ok?"ok":"need"}" title="${esc(CERTS[k].label)}: ${ok?"received and filed":half?"received, not in shared folder yet":"needed"}">${ok?"✓":"!"} ${CERTS[k].short}</span>`; }).join("");
+}
+function certSection(c){
+  return `<div class="d-sec"><h3>Certifications</h3><div class="certs">${Object.entries(CERTS).map(([k,v])=>{
+    const req=certReq(c,k), mode=c[k+"Req"]||"auto", have=certDone(c,k), filed=certFiled(c,k);
+    return `<div class="cert ${req?(have&&filed?"ok":"need"):"na"}">
+      <div class="ctop"><b>${v.label}</b>
+        <select id="${k}Req" class="btn sm" aria-label="Is ${v.label} required">
+          <option value="auto" ${mode==="auto"?"selected":""}>${v.always?"Required (default)":mode==="auto"?(req?"Required (by position)":"Not needed (by position)"):"Decide by position"}</option>
+          <option value="yes" ${mode==="yes"?"selected":""}>Required</option>
+          <option value="no" ${mode==="no"?"selected":""}>Not needed</option></select></div>
+      ${req?`<label class="ccheck"><input type="checkbox" id="${k}Have" ${have?"checked":""}> Copy received</label>
+        <label class="ccheck"><input type="checkbox" id="${k}Filed" ${filed?"checked":""}> Saved to the shared folder</label>
+        <div class="small">${have&&filed?"Done.":have?"Add a copy of the card to the shared folder, then tick the box above.":appMentions(c,k)?"Application says they have one. Get a copy and add it to the shared folder.":"Needed before their first shift. Once you have a copy, add it to the shared folder."}</div>`:""}
+    </div>`; }).join("")}</div></div>`;
+}
+
+/* ---------- open positions ---------- */
+const norm=s=>(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function matchesOpening(c,o){
+  if((c.store||"")!==o.store) return false;
+  const p=norm(o.position), h=norm(c.hireFor||c.position);
+  return !!p && !!h && (h.includes(p)||p.includes(h));
+}
+function openingStats(o){
+  const hired=candidates.filter(c=>c.stage==="hired"&&matchesOpening(c,o)&&stageEnteredAt(c)>=(o.createdAt||0)).length;
+  const offer=candidates.filter(c=>c.stage==="offer"&&matchesOpening(c,o)).length;
+  const pipe=candidates.filter(c=>["new","screen","interview"].includes(c.stage)&&matchesOpening(c,o)).length;
+  const needed=Math.max(1,parseInt(o.needed)||1);
+  return {needed,hired:Math.min(hired,needed),offer,pipe,left:Math.max(0,needed-hired)};
+}
+function totalToFill(){ return openings.reduce((n,o)=>n+openingStats(o).left,0); }
+function renderOpenForm(){
+  const box=$("#openForm"); if(!box) return;
+  if(box.contains(document.activeElement) && editingOpening) return;
+  if(!editingOpening){ box.innerHTML=""; return; }
+  const o=editingOpening==="new"?{store:$("#fStore")?.value&&STORES.includes($("#fStore").value)?$("#fStore").value:"",needed:1,type:"",shift:"",position:"",notes:""}:openings.find(x=>x.id===editingOpening)||{};
+  box.innerHTML=`<form class="openform" id="oForm">
+    <label class="field">Store<select id="oStore" required>${[""].concat(STORES).map(s=>`<option value="${esc(s)}" ${o.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("")}</select></label>
+    <label class="field wide">Position<input id="oPos" list="deptList" required value="${esc(o.position||"")}" placeholder="e.g. Cashier"></label>
+    <label class="field">How many<input id="oNeed" type="number" min="1" max="50" value="${esc(o.needed||1)}"></label>
+    <label class="field">Full / part-time<select id="oType">${["","Full-time","Part-time","Either"].map(v=>`<option value="${v}" ${o.type===v?"selected":""}>${v||"—"}</option>`).join("")}</select></label>
+    <label class="field">Shift<select id="oShift">${["","AM","Mid","PM","Closing","Any shift"].map(v=>`<option value="${v}" ${o.shift===v?"selected":""}>${v||"—"}</option>`).join("")}</select></label>
+    <label class="field wide" style="grid-column:1/-1">Notes<input id="oNotes" value="${esc(o.notes||"")}" placeholder="e.g. needs weekend availability, bilingual preferred"></label>
+    <div class="row-actions"><button class="btn primary sm" type="submit">${editingOpening==="new"?"Add opening":"Save changes"}</button><button class="btn ghost sm" type="button" id="oCancel">Cancel</button></div>
+  </form><datalist id="deptList">${DEPTS.map(d=>`<option value="${d}">`).join("")}</datalist>`;
+  $("#oStore").focus();
+}
+function renderOpenings(){
+  renderOpenForm();
+  const box=$("#openings"); if(!box) return;
+  if(!openings.length){ box.innerHTML=`<div class="none">No openings listed yet. Use Add opening to list what each store needs, like “Urban · Cashier · 2 · Part-time”. Applicants whose “Hiring for” matches count toward the opening.</div>`; return; }
+  const byStore=STORES.map(s=>({s,list:openings.filter(o=>o.store===s).sort((a,b)=>openingStats(b).left-openingStats(a).left||(a.position||"").localeCompare(b.position||""))})).filter(g=>g.list.length);
+  const staffed=STORES.filter(s=>!openings.some(o=>o.store===s));
+  box.innerHTML=byStore.map(({s,list})=>{
+    const left=list.reduce((n,o)=>n+openingStats(o).left,0);
+    const flex=candidates.filter(c=>c.store===s&&ACTIVE.includes(c.stage)&&!c.hireFor&&/open to anything/i.test(c.position||"")).length;
+    return `<div class="ostore"><div><button class="sn" data-storego="${s}">${s}<small>${left?`${left} to fill`:"All filled"}${flex?` · ${flex} open to anything`:""}</small></button></div>
+      <div class="olist">${list.map(o=>{ const st=openingStats(o);
+        const seats=Array.from({length:st.needed},(_,i)=>`<span class="seat ${i<st.hired?"hired":i<st.hired+st.offer?"offer":""}"></span>`).join("");
+        return `<div class="op ${st.left?"":"done"}">
+          <div><div class="t">${esc(o.position)}</div><div class="meta">${esc([o.type,o.shift].filter(Boolean).join(" · ")||"")}${o.notes?`${o.type||o.shift?" · ":""}${esc(o.notes)}`:""}</div></div>
+          <div class="seatcol"><div class="seats" title="${st.hired} hired of ${st.needed}">${seats}</div>
+            <div class="cnt">${st.left?`${st.left} of ${st.needed} open`:"Filled"}${st.offer?` · ${st.offer} offer out`:""}${st.pipe?` · ${st.pipe} in pipeline`:st.left&&!st.offer?" · no applicants yet":""}</div></div>
+          <div class="acts">${confirmOpenDel===o.id?`<button class="btn sm danger" data-odelyes="${o.id}">Remove</button><button class="btn sm ghost" data-odelno>Keep</button>`:`<button class="btn sm ghost" data-oedit="${o.id}">Edit</button><button class="btn sm ghost" data-odel="${o.id}" aria-label="Remove opening">${st.left?"Close":"Remove"}</button>`}</div>
+        </div>`; }).join("")}</div></div>`; }).join("")+
+    (staffed.length?`<div class="nostaff">No openings listed: ${staffed.join(", ")}</div>`:"");
+}
+async function saveOpening(o){
+  const {id,...body}=o;
+  if(db){ try{ await db.collection("openings").doc(id).set(body); }catch(e){ toast("Couldn’t save the opening."); throw e; } }
+  else { const i=openings.findIndex(x=>x.id===id); if(i>=0) openings[i]=o; else openings.push(o); try{ localStorage.setItem("vista-hiring-open",JSON.stringify(openings)); }catch{} renderAll(); }
+}
+async function deleteOpening(id){
+  if(db) await db.collection("openings").doc(id).delete();
+  else { openings=openings.filter(o=>o.id!==id); try{ localStorage.setItem("vista-hiring-open",JSON.stringify(openings)); }catch{} renderAll(); }
+}
+
+/* ---------- dashboard ---------- */
+function weekStart(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate()-x.getDay()); return x; }
+function renderDashboard(){
+  const now=Date.now(), wk=weekStart(now).getTime(), mo=new Date(); mo.setDate(1); mo.setHours(0,0,0,0);
+  const count=f=>candidates.filter(f).length;
+  const active=count(c=>ACTIVE.includes(c.stage));
+  const thisWeek=count(c=>(c.createdAt||0)>=wk);
+  const upcomingList=candidates.filter(c=>["screen","interview"].includes(c.stage)&&c.interviewDate&&new Date(c.interviewDate).getTime()>=now-3600e3).sort((a,b)=>new Date(a.interviewDate)-new Date(b.interviewDate));
+  const offers=candidates.filter(c=>c.stage==="offer");
+  const hiredMo=count(c=>c.stage==="hired"&&stageEnteredAt(c)>=mo.getTime());
+  const k=[["To fill","open positions",totalToFill(),"dashboard",""],["Active","in the pipeline",active,"applicants",""],["New this week","since Sunday",thisWeek,"applicants",""],["Scheduled","screens & interviews",upcomingList.length,"applicants","interview"],["Offers out","waiting on an answer",offers.length,"applicants","offer"],["Hired","this month",hiredMo,"applicants","hired"]];
+  $("#kpis").innerHTML=k.map(([l,e,n,t,s])=>`<button class="kpi" data-go="${t}" data-stage="${s}"><span>${l}</span><b>${n}</b><em>${e}</em></button>`).join("");
+  renderOpenings();
+
+  const max=Math.max(1,...STAGES.map(s=>count(c=>c.stage===s.id)));
+  $("#funnel").innerHTML=STAGES.map(s=>{ const n=count(c=>c.stage===s.id); return `<div class="frow" data-go="applicants" data-stage="${s.id}"><span>${s.label}</span><span class="ftrack"><span class="fbar" style="display:block;width:${n/max*100}%;background:var(${s.c})"></span></span><span class="num">${n}</span></div>`; }).join("");
+
+  // weekly chart
+  const weeks=[]; for(let i=7;i>=0;i--){ const s=weekStart(now); s.setDate(s.getDate()-7*i); weeks.push(s); }
+  const wc=weeks.map((w,i)=>{ const end=i<7?weeks[i+1].getTime():Infinity; return candidates.filter(c=>(c.createdAt||0)>=w.getTime()&&(c.createdAt||0)<end).length; });
+  const W=480,H=180,pl=28,pb=26,pt=12,pr=8, ymax=Math.max(4,Math.ceil(Math.max(...wc)/4)*4), bw=(W-pl-pr)/8;
+  const y=v=>H-pb-(v/ymax)*(H-pb-pt);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Applications per week">`;
+  for(let i=0;i<=4;i++){ const v=ymax*i/4; svg+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="var(--mono)">${v}</text>`; }
+  wc.forEach((n,i)=>{ const x=pl+i*bw+bw*.18, w=bw*.64, last=i===7;
+    svg+=`<rect x="${x}" y="${y(n)}" width="${w}" height="${Math.max(0,H-pb-y(n))}" rx="3" fill="${last?"var(--purple)":"var(--purple-soft)"}" stroke="var(--purple)" stroke-width="${last?0:1}"/>`;
+    if(n) svg+=`<text x="${x+w/2}" y="${y(n)-4}" text-anchor="middle" font-size="10" fill="var(--fg)" font-family="var(--mono)">${n}</text>`;
+    svg+=`<text x="${x+w/2}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--muted)">${weeks[i].toLocaleDateString(undefined,{month:"numeric",day:"numeric"})}</text>`; });
+  $("#weekly").innerHTML=svg+"</svg>";
+
+  // by store
+  const rows=STORES.concat([""]);
+  const tbl=rows.map(st=>{ const list=candidates.filter(c=>(c.store||"")===st); if(st===""&&!list.length) return "";
+    return `<tr><td>${st||"No store set"}</td>${STAGES.slice(0,5).map(s=>{const n=list.filter(c=>c.stage===s.id).length; return `<td class="${n?"":"z"}">${n||"·"}</td>`;}).join("")}<td>${list.length}</td></tr>`; }).join("");
+  $("#byStore").innerHTML=`<table class="stbl"><thead><tr><th>Store</th>${STAGES.slice(0,5).map(s=>`<th>${s.label}</th>`).join("")}<th>Total</th></tr></thead><tbody>${tbl}</tbody></table>`;
+
+  const li=(c,right)=>`<div class="li" data-open="${esc(c.id)}"><div><b>${esc(c.name)}</b><div class="small">${esc([c.store,c.hireFor||c.position].filter(Boolean).join(" · "))}</div></div><div class="r">${right}</div></div>`;
+  $("#upcoming").innerHTML=upcomingList.length?upcomingList.slice(0,8).map(c=>li(c,`<div class="mono">${esc(fmtDateTime(c.interviewDate))}</div><div class="small">${esc(STAGE[c.stage].label)} · ${esc(c.interviewer||"")}</div>`)).join(""):`<div class="none">Nothing scheduled. Set a time in an applicant’s card to see it here.</div>`;
+  $("#offersOut").innerHTML=offers.length?offers.map(c=>li(c,`<div class="mono">${esc(payText(c,"en")||"No pay set")}</div><div class="small">${c.offerStart?"Start "+esc(fmtDate(c.offerStart)):""} ${c.offerResponse?"· "+esc(c.offerResponse):""}</div>`)).join(""):`<div class="none">No open offers.</div>`;
+  const due=candidates.filter(c=>["offer","hired"].includes(c.stage)&&certMissing(c).length).sort((a,b)=>(a.offerStart||"9999").localeCompare(b.offerStart||"9999"));
+  $("#certsDue").innerHTML=due.length?due.map(c=>li(c,`<div>${certMissing(c).map(k=>`<span class="cbadge need">${certDone(c,k)?"File ":"Get "}${CERTS[k].short}</span>`).join("")}</div><div class="small">${c.offerStart?"Starts "+esc(fmtDate(c.offerStart)):STAGE[c.stage].label}</div>`)).join(""):`<div class="none">Everyone with an offer or hire has their required cards on file.</div>`;
+  const stale=candidates.filter(c=>c.stage==="new"&&now-stageEnteredAt(c)>2*864e5).sort((a,b)=>stageEnteredAt(a)-stageEnteredAt(b));
+  $("#stale").innerHTML=stale.length?stale.slice(0,8).map(c=>li(c,`<div class="mono">${esc(c.phone)}</div><div class="small">Applied ${esc(ago(c.createdAt))}</div>`)).join(""):`<div class="none">Everyone new has been contacted within 2 days.</div>`;
+
+  const src={}; candidates.forEach(c=>{ const k=(c.referralDetail||c.referralSource||"Unknown").trim(); src[k]=(src[k]||0)+1; });
+  const se=Object.entries(src).sort((a,b)=>b[1]-a[1]).slice(0,6), smax=Math.max(1,...se.map(e=>e[1]));
+  $("#sources").innerHTML=se.length?se.map(([k,n])=>`<div class="frow"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(k)}</span><span class="ftrack"><span class="fbar" style="display:block;width:${n/smax*100}%;background:var(--blue)"></span></span><span class="num">${n}</span></div>`).join(""):`<div class="none">No applicants yet.</div>`;
+}
+
+/* ---------- preview ---------- */
+function renderPreview(){
+  const box=$("#preview");
+  if(!parsed.length){ box.innerHTML=`<div class="empty">${$("#pasteBox").value.trim()?"Couldn’t find a name, email or phone in that text. Check that the field labels (name, email, phone…) are on their own lines.":"The parsed applicant shows up here before you add it."}</div>`; $("#addBtn").disabled=true; $("#addBtn").textContent="Add to tracker"; return; }
+  $("#addBtn").disabled=false;
+  $("#addBtn").textContent=parsed.length>1?`Add ${parsed.length} applicants`:"Add to tracker";
+  box.innerHTML=parsed.map(a=>{ const dup=dupOf(a);
+    return `<div class="pv-card">
+      <div class="pv-top"><span class="pv-name">${esc(a.name||"(no name)")}</span><span class="small">${esc(a.store||a.storeRaw||"No store picked")}</span></div>
+      ${dup?`<div class="warn">Already in the tracker as ${esc(dup.name)} (${esc(STAGE[dup.stage]?.label||"New")}). Adding updates that record and keeps its stage.</div>`:""}
+      ${a.storeRaw && !a.store?`<div class="warn">Store “${esc(a.storeRaw)}” didn’t match a Vista store. You can set it after adding.</div>`:""}
+      <div class="kv">
+        <div><b>Phone</b><span class="mono">${esc(a.phone||"—")}</span></div>
+        <div><b>Email</b><span>${esc(a.email||"—")}</span></div>
+        <div><b>Position</b><span>${esc(a.position||"—")}</span></div>
+        <div><b>Type · Shift</b><span>${esc([a.employmentType,a.shift].filter(Boolean).join(" · ")||"—")}</span></div>
+        <div><b>Can start</b><span>${esc(fmtDate(a.startDate)||"—")}</span></div>
+        <div><b>Last job</b><span>${esc([a.jobTitle,a.employer].filter(Boolean).join(", ")||"—")}</span></div>
+        <div><b>Days</b>${daysHtml(a)}</div>
+        <div><b>Form language</b><span>${esc(a.formLanguage||"—")}</span></div>
+      </div></div>`; }).join("");
+}
+
+/* ---------- applicants table ---------- */
+function visible(){
+  const q=$("#q").value.trim().toLowerCase(), st=$("#fStore").value, ty=$("#fType").value, sort=$("#fSort").value;
+  let list=candidates.filter(c=>(!filterStage||c.stage===filterStage)&&(!st||(st==="none"?!c.store:c.store===st))&&(!ty||(c.employmentType||"").toLowerCase()===ty.toLowerCase()));
+  if(q){ const qd=q.replace(/\D/g,""); list=list.filter(c=>[c.name,c.email,c.employer,c.jobTitle,c.skills,c.position,c.hireFor,c.address,c.notes].join(" ").toLowerCase().includes(q)||(qd.length>=3&&digits(c.phone).includes(qd))); }
+  if(sort==="name") list.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  else if(sort==="start") list.sort((a,b)=>(a.startDate||"9999").localeCompare(b.startDate||"9999"));
+  else list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  return list;
+}
+function renderPipe(){
+  const counts={}; candidates.forEach(c=>counts[c.stage||"new"]=(counts[c.stage||"new"]||0)+1);
+  $("#pipe").innerHTML=`<button class="chip" aria-pressed="${!filterStage}" data-stage=""><span>All</span><span class="n">${candidates.length}</span></button>`+
+    STAGES.map(s=>`<button class="chip" aria-pressed="${filterStage===s.id}" data-stage="${s.id}"><span class="sw" style="background:var(${s.c})"></span><span>${s.label}</span><span class="n">${counts[s.id]||0}</span></button>`).join("");
+  $("#tabCount").textContent=candidates.length||"";
+}
+function renderRows(){
+  const list=visible(), tb=$("#rows");
+  if(!candidates.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">No applicants yet. Paste an application email above to add the first one.</div></td></tr>`; return; }
+  if(!list.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">Nobody matches these filters.</div></td></tr>`; return; }
+  tb.innerHTML=list.map(c=>`<tr class="row" data-id="${esc(c.id)}" tabindex="0">
+    <td><div class="nm">${esc(c.name||"(no name)")}${isSpanish(c)?`<span class="lang">ES</span>`:""}</div><div class="small mono">${esc(c.phone||"")}</div><div class="small">Applied ${esc(ago(c.createdAt))}</div></td>
+    <td><span class="store">${esc(c.store||"—")}</span></td>
+    <td>${wants(c)}</td>
+    <td class="hide-sm">${esc(c.jobTitle||"—")}<div class="small">${esc(c.employer||"")}</div></td>
+    <td class="hide-sm">${daysHtml(c)}</td>
+    <td class="mono">${esc(fmtDate(c.startDate)||"—")}</td>
+    <td>${pill(c.stage)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
+  </tr>`).join("");
+}
+
+/* ---------- templates editor ---------- */
+function renderTemplates(){
+  const sms=tplSel.ch==="sms", key=tplSel.lang+(sms?"_sms":"");
+  $("#tplNav").innerHTML=STAGES.map(s=>`<button data-tpl="${s.id}" aria-pressed="${tplSel.stage===s.id}"><span class="sw" style="background:var(${s.c})"></span>${s.label}${tplOverrides[s.id]?.[key]?` <span class="small">· edited</span>`:""}</button>`).join("");
+  const t=tplFor(tplSel.stage,tplSel.lang,tplSel.ch), edited=!!tplOverrides[tplSel.stage]?.[key];
+  const ed=$("#tplEdit"); const keep=document.activeElement?.id;
+  if(keep==="tplS"||keep==="tplB") return; // don't clobber typing
+  ed.innerHTML=`<div class="row-actions" style="justify-content:space-between">
+      <h2 style="margin:0">${STAGE[tplSel.stage].label} ${sms?"text":"email"}</h2>
+      <div class="row-actions">
+        <div class="seg" role="group" aria-label="Email or text"><button data-ch="email" aria-pressed="${!sms}">Email</button><button data-ch="sms" aria-pressed="${sms}">Text</button></div>
+        <div class="seg" role="group" aria-label="Language"><button data-lang="en" aria-pressed="${tplSel.lang==="en"}">English</button><button data-lang="es" aria-pressed="${tplSel.lang==="es"}">Español</button></div>
+      </div>
+    </div>
+    <p class="small" style="margin:0">Used when an applicant is in this stage. Words in {braces} fill in from the applicant’s card. Applicants who filled out the Spanish form get the Español version by default.${sms?" Keep texts short; one text is about 160 characters, so longer ones may arrive as two or three.":""}</p>
+    ${sms?"":`<label class="field">Subject<input id="tplS" value="${esc(t.s)}"></label>`}
+    <label class="field">Message<textarea id="tplB" ${sms?'style="min-height:120px"':""}>${esc(t.b)}</textarea></label>
+    <div><div class="small" style="margin-bottom:4px">Click to insert at the cursor:</div><div class="tokens">${TOKENS.map(k=>`<button data-token="${k}">{${k}}</button>`).join("")}</div></div>
+    <div class="row-actions"><button class="btn primary" id="tplSave">Save template</button>${edited?`<button class="btn ghost" id="tplReset">Restore original</button>`:""}<span class="small">${db?"Saved templates are shared with everyone using this tracker.":"Saved on this device only."}</span></div>`;
+}
+let lastTplField="tplB";
+async function saveTemplates(){
+  if(db){ try{ await db.doc("settings/templates").set({t:tplOverrides}); }catch(e){ toast("Couldn’t save the template."); throw e; } }
+  else { try{ localStorage.setItem("vista-hiring-tpl",JSON.stringify(tplOverrides)); }catch{} }
+}
+
+/* ---------- drawer ---------- */
+let confirmDelete=false, mailStage=null, mailLang=null;
+function renderDrawer(){
+  const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
+  if(!c){ host.innerHTML=""; openId=null; return; }
+  const active=document.activeElement, keepId=active&&active.id;
+  const typing=["dNotes","dRate","dHours","dHireFor"].includes(keepId);
+  if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
+  const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
+  const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
+  const people=HANDLERS.slice();
+  const ms=mailStage||c.stage, ml=mailLang||(isSpanish(c)?"es":"en");
+  host.innerHTML=`<div class="scrim" data-close></div>
+  <aside class="drawer" role="dialog" aria-label="${esc(c.name)}">
+    <div class="d-head">
+      <div><h2 class="d-name">${esc(c.name||"(no name)")}</h2><div class="small">Applied ${esc(new Date(c.createdAt||Date.now()).toLocaleDateString())} · ${esc(c.referralDetail||c.referralSource||"source unknown")}</div></div>
+      <button class="btn ghost" data-close aria-label="Close">Close</button>
+    </div>
+    <div class="d-sec"><h3>Stage</h3><div class="stagebar">${STAGES.map(s=>`<button data-setstage="${s.id}" aria-pressed="${c.stage===s.id}" style="${c.stage===s.id?`background:var(${s.c})`:""}">${s.label}</button>`).join("")}</div></div>
+    <div class="d-grid">
+      <label>Store<select id="dStore">${storeOpts}</select></label>
+      <datalist id="hireList">${[...new Set(openings.filter(o=>o.store===c.store&&openingStats(o).left).map(o=>o.position).concat(DEPTS))].map(p=>`<option value="${esc(p)}">`).join("")}</datalist>
+      <label>Hiring for (position)<input id="dHireFor" list="hireList" value="${esc(c.hireFor||"")}" placeholder="${esc(/open to anything/i.test(c.position||"")?"e.g. Cashier":c.position||"e.g. Cashier")}"></label>
+      <label>Screen / interview time<input id="dWhen" type="datetime-local" value="${esc(c.interviewDate||"")}"></label>
+      <label>Handled by<select id="dWho">${people.map(s=>`<option ${c.interviewer===s?"selected":""}>${esc(s)}</option>`).join("")}</select></label>
+    </div>
+
+    ${["offer","hired"].includes(c.stage)||c.offerRate?`
+    <div class="d-sec offerbox"><h3 style="color:var(--s-offer)">Job offer</h3>
+      ${c.offerRate?`<div class="big mono">${esc(payText(c,"en"))}${c.offerHours?` <span class="small">· ~${esc(c.offerHours)} hrs/wk</span>`:""}</div>`:""}
+      <div class="d-grid">
+        <label>Pay rate ($)<input id="dRate" inputmode="decimal" value="${esc(c.offerRate||"")}" placeholder="e.g. 12.50"></label>
+        <label>Per<select id="dPer"><option value="hour" ${c.offerPer!=="year"?"selected":""}>Hour</option><option value="year" ${c.offerPer==="year"?"selected":""}>Year (salary)</option></select></label>
+        <label>Full / part-time<select id="dOType">${["","Full-time","Part-time"].map(v=>`<option value="${v}" ${(c.offerType||c.employmentType||"")===v?"selected":""}>${v||"—"}</option>`).join("")}</select></label>
+        <label>Hours per week<input id="dHours" inputmode="numeric" value="${esc(c.offerHours||"")}" placeholder="${(c.offerType||c.employmentType)==="Part-time"?"up to 29":"30+"}"></label>
+        <label>Start date<input id="dOStart" type="date" value="${esc(c.offerStart||"")}"></label>
+        <label>Their answer<select id="dResp">${["","Waiting","Accepted","Declined","Countered"].map(v=>`<option value="${v}" ${(c.offerResponse||"")===v?"selected":""}>${v||"—"}</option>`).join("")}</select></label>
+      </div>
+      ${hoursFlag(c)}
+    </div>`:`<div class="d-sec"><button class="btn sm" id="addOffer" style="align-self:flex-start">Add offer details</button></div>`}
+
+    ${certSection(c)}
+
+    <div class="d-sec"><h3>Email &amp; text</h3>
+      <div class="row-actions">
+        <select id="mStage" class="btn sm" aria-label="Template">${STAGES.map(s=>`<option value="${s.id}" ${ms===s.id?"selected":""}>${s.label}${s.id===c.stage?" (current)":""}</option>`).join("")}</select>
+        <div class="seg" role="group" aria-label="Language"><button data-mlang="en" aria-pressed="${ml==="en"}">EN</button><button data-mlang="es" aria-pressed="${ml==="es"}">ES</button></div>
+      </div>
+      <div id="mailBox"></div>
+    </div>
+
+    <div class="d-sec"><h3>Notes</h3><textarea id="dNotes" placeholder="Phone screen notes, follow-ups…">${esc(c.notes??"")}</textarea>
+      <div><button class="btn sm" id="saveNotes">Save notes</button></div></div>
+    <div class="d-sec"><h3>Contact</h3><div class="contact">
+      ${c.phone?`<div><span class="mono">${esc(c.phone)}</span><button class="copy" data-copy="${esc(c.phone)}">Copy</button></div>`:""}
+      ${c.email?`<div><span>${esc(c.email)}</span><button class="copy" data-copy="${esc(c.email)}">Copy</button></div>`:""}
+      ${c.address?`<div class="small">${esc(c.address)}</div>`:""}
+    </div></div>
+    <div class="d-sec"><h3>What they want</h3><div class="kv">
+      <div><b>Store picked</b><span>${esc(c.storeRaw||"—")}</span></div>
+      <div><b>Position</b><span>${esc(c.position||"—")}</span></div>
+      <div><b>Type</b><span>${esc(c.employmentType||"—")}</span></div>
+      <div><b>Shift</b><span>${esc(c.shift||"—")}</span></div>
+      <div><b>Can start</b><span>${esc(fmtDate(c.startDate)||"—")}</span></div>
+      <div><b>Form language</b><span>${esc(c.formLanguage||"—")}</span></div>
+    </div><div style="margin-top:4px">${daysHtml(c)}</div></div>
+    <div class="d-sec"><h3>Last job</h3>
+      <div><b>${esc(c.jobTitle||"—")}</b>${c.employer?` at ${esc(c.employer)}`:""} <span class="small">${esc([c.jobStart,c.jobEnd].filter(Boolean).join(" to "))}</span></div>
+      ${c.jobDescription?`<div class="pre">${esc(c.jobDescription)}</div>`:""}</div>
+    <div class="d-sec"><h3>Education</h3><div>${esc([c.degree,c.school].filter(Boolean).join(", ")||"—")}</div></div>
+    ${c.skills?`<div class="d-sec"><h3>Skills</h3><div class="pre">${esc(c.skills)}</div></div>`:""}
+    ${c.references?`<div class="d-sec"><h3>References</h3><div class="pre">${esc(c.references)}</div></div>`:""}
+    ${(c.history||[]).length?`<div class="d-sec"><h3>History</h3><div class="hist">${c.history.slice().reverse().map(h=>`<span>${esc(STAGE[h.stage]?.label||h.stage)} · ${esc(fmtDateTime(h.at))}</span>`).join("")}</div></div>`:""}
+    <div class="d-sec">${confirmDelete?`<div class="confirm">Delete ${esc(c.name)} for good? <button class="btn danger" id="delYes">Delete</button><button class="btn ghost" id="delNo">Keep</button></div>`:`<div><button class="btn ghost danger sm" id="delBtn">Delete applicant</button></div>`}</div>
+  </aside>`;
+  refreshMail(c);
+  const dr=host.querySelector(".drawer"); if(dr) dr.scrollTop=scrollTop;
+  if(keepId && document.getElementById(keepId)) document.getElementById(keepId).focus();
+}
+function hoursFlag(c){
+  const h=parseFloat(c.offerHours), t=c.offerType||c.employmentType;
+  if(isNaN(h)) return "";
+  if(t==="Part-time"&&h>=30) return `<div class="warn">Part-time is capped under 30 hrs/week for ACA. Lower the hours or offer full-time.</div>`;
+  if(t==="Full-time"&&h<30) return `<div class="warn">Full-time needs 30+ hrs/week scheduled for ACA.</div>`;
+  return "";
+}
+function refreshMail(c){
+  const box=document.getElementById("mailBox"); if(!box) return;
+  const ms=mailStage||c.stage, ml=mailLang||(isSpanish(c)?"es":"en"), m=emailFor(c,ms,ml);
+  const mailer=getMailer(), web=c.email?composeUrl(mailer,c.email,m.s,m.b):"";
+  const app=c.email?`mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(m.s)}&body=${encodeURIComponent(m.b.replace(/\n/g,"\r\n"))}`:"";
+  const tx=textFor(c,ms,ml), sms=smsUrl(c.phone,tx.b);
+  box.innerHTML=`<div class="mail">
+    <div class="mh"><span class="small">To: ${esc(c.email||"no email on file")}</span>
+      <span class="row-actions">${app?`<a class="btn sm primary" href="${esc(app)}" style="text-decoration:none">Open in Outlook app</a><a class="btn sm" href="${esc(web)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(MAILERS[mailer].label)} on the web</a>`:""}<button class="btn sm" data-copymail="s">Copy subject</button><button class="btn sm" data-copymail="b">Copy message</button></span></div>
+    <div class="subj">${m.sHtml}</div><div class="bdy">${m.bHtml}</div></div>
+    ${app?`<div class="row-actions small">Web button uses <select id="mailer" class="btn sm" aria-label="Email service">${Object.entries(MAILERS).map(([k,v])=>`<option value="${k}" ${k===mailer?"selected":""}>${v.label}</option>`).join("")}</select> If the Outlook app doesn’t open, use the web button or the copy buttons.</div>`:""}
+    <div class="mail" style="margin-top:4px">
+      <div class="mh"><span class="small">Text to: <span class="mono">${esc(c.phone||"no phone on file")}</span> · ${tx.b.length} characters</span>
+        <span class="row-actions">${sms?`<a class="btn sm primary" href="${esc(sms)}" style="text-decoration:none">Open in Messages</a>`:""}<button class="btn sm" data-copytext>Copy text</button></span></div>
+      <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
+    ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
+}
+function openDrawer(id){ openId=id; confirmDelete=false; mailStage=null; mailLang=null; renderDrawer(); }
+function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; }
+
+/* ---------- storage ---------- */
+function lsLoad(){ try{ return JSON.parse(localStorage.getItem("vista-hiring-local")||"[]"); }catch{ return []; } }
+function lsSave(){ try{ localStorage.setItem("vista-hiring-local",JSON.stringify(candidates)); }catch{} }
+async function saveDoc(c){
+  const {id,...body}=c;
+  if(db){ try{ await db.collection("candidates").doc(id).set(body); }catch(e){ toast(e.code==="invalid_argument"?"You have view-only access, so changes can’t be saved.":"Couldn’t save. Try again in a moment."); throw e; } }
+  else { const i=candidates.findIndex(x=>x.id===id); if(i>=0) candidates[i]=c; else candidates.push(c); lsSave(); renderAll(); }
+}
+async function patch(id,changes){
+  const c=candidates.find(x=>x.id===id); if(!c) return;
+  const next={...c,...changes,updatedAt:Date.now()};
+  Object.assign(c,next); renderAll();
+  if(db) await saveDoc(next); else lsSave();
+}
+async function removeDoc(id){
+  if(db) await db.collection("candidates").doc(id).delete();
+  else { candidates=candidates.filter(c=>c.id!==id); lsSave(); renderAll(); }
+}
+function newId(){ return "c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+async function addParsed(){
+  $("#addBtn").disabled=true;
+  let added=0, updated=0;
+  for(const a of parsed){
+    const dup=dupOf(a), now=Date.now();
+    if(dup){
+      const merged={...dup}; for(const [k,v] of Object.entries(a)) if(v!=="" && v!=null && !(Array.isArray(v)&&!v.length) && k!=="interviewer") merged[k]=v;
+      merged.updatedAt=now; await saveDoc(merged).catch(()=>{}); updated++;
+    } else {
+      await saveDoc({...a,id:newId(),stage:"new",notes:"",createdAt:now,updatedAt:now,history:[{stage:"new",at:now}]}).catch(()=>{}); added++;
+    }
+  }
+  $("#pasteBox").value=""; parsed=[]; renderPreview();
+  toast([added?`Added ${added}`:"",updated?`Updated ${updated}`:""].filter(Boolean).join(", ")+".");
+}
+
+/* ---------- export ---------- */
+async function exportCsv(){
+  const cols=[["name","Name"],["phone","Phone"],["email","Email"],["store","Store"],["stage","Stage"],["position","Position wanted"],["hireFor","Hiring for"],["employmentType","Type"],["shift","Shift"],["startDate","Can start"],["availability","Availability"],["jobTitle","Last job title"],["employer","Last employer"],["interviewer","Handled by"],["interviewDate","Screen/interview"],["offerRate","Offer rate"],["offerPer","Per"],["offerHours","Hours/wk"],["offerStart","Offer start"],["offerResponse","Offer answer"],["notes","Notes"],["address","Address"],["referralDetail","Referral"]];
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const list=tab==="applicants"?visible():candidates;
+  const rows=[cols.map(c=>q(c[1])).join(",")].concat(list.map(c=>cols.map(([k])=>q(k==="stage"?STAGE[c.stage]?.label:c[k])).join(",")));
+  try{ await downloads.save({filename:`vista-applicants-${new Date().toISOString().slice(0,10)}.csv`,data:rows.join("\n")}); }catch{ toast("Download was cancelled."); }
+}
+
+/* ---------- ui wiring ---------- */
+let toastT; function toast(m){ $("#toastHost").innerHTML=`<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toastT); toastT=setTimeout(()=>$("#toastHost").innerHTML="",2600); }
+async function copyText(t,label){ try{ await navigator.clipboard.writeText(t); toast(label||"Copied."); }catch{ toast("Copy is blocked here. Select the text and copy it instead."); } }
+function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
+function renderAll(){
+  renderPipe();
+  if(tab==="dashboard") renderDashboard();
+  if(tab==="applicants"){ renderRows(); renderPreview(); }
+  if(tab==="templates") renderTemplates();
+  if(tab==="stores") renderStores();
+  if(tab==="team"&&sb) renderTeam();
+  if(openId) renderDrawer();
+}
+function renderStoreFilter(){
+  if(typeof fillManStores==="function"&&$("#mStore")) fillManStores();
+  const sel=$("#fStore"), v=sel.value;
+  sel.innerHTML=`<option value="">All stores</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join("")+`<option value="none">No store set</option>`;
+  sel.value=[...sel.options].some(o=>o.value===v)?v:"";
+}
+function renderStores(){
+  $("#storeList").innerHTML=STORES.map((s,i)=>{
+    const n=candidates.filter(c=>c.store===s).length, o=openings.filter(x=>x.store===s).length;
+    return `<div class="li" style="cursor:default;align-items:center"><div><b>${esc(s)}</b><div class="small">${n} applicant${n===1?"":"s"}${o?` · ${o} opening${o===1?"":"s"}`:""}</div></div>
+      <div class="row-actions">${confirmStoreDel===s?`<span class="small">${n||o?"Their applicants and openings keep this name.":""}</span><button class="btn sm danger" data-sdelyes="${i}">Remove</button><button class="btn sm ghost" data-sdelno>Keep</button>`:
+      `<button class="btn sm ghost" data-sup="${i}" ${i===0?"disabled":""} aria-label="Move up">↑</button><button class="btn sm ghost" data-sdown="${i}" ${i===STORES.length-1?"disabled":""} aria-label="Move down">↓</button><button class="btn sm ghost danger" data-sdel="${i}">Remove</button>`}</div></div>`; }).join("");
+}
+async function saveStores(list){
+  STORES=list; renderStoreFilter(); renderAll();
+  if(db){ try{ await db.doc("settings/stores").set({list}); }catch{ toast("Couldn’t save the store list."); } }
+  else { try{ localStorage.setItem("vista-hiring-stores",JSON.stringify(list)); }catch{} }
+}
+$("#storeForm").addEventListener("submit",e=>{ e.preventDefault();
+  const name=$("#newStore").value.trim().replace(/\s+/g," ");
+  if(!name) return;
+  if(STORES.some(s=>s.toLowerCase()===name.toLowerCase())){ toast(`${name} is already on the list.`); return; }
+  $("#newStore").value=""; saveStores([...STORES,name]).then(()=>toast(`${name} added.`));
+});
+$("#v-stores").addEventListener("click",e=>{
+  const t=e.target, i=k=>+t.closest(`[${k}]`).getAttribute(k);
+  if(t.closest("[data-sup]")){ const n=i("data-sup"), l=STORES.slice(); [l[n-1],l[n]]=[l[n],l[n-1]]; saveStores(l); }
+  else if(t.closest("[data-sdown]")){ const n=i("data-sdown"), l=STORES.slice(); [l[n+1],l[n]]=[l[n],l[n+1]]; saveStores(l); }
+  else if(t.closest("[data-sdel]")){ confirmStoreDel=STORES[i("data-sdel")]; renderStores(); }
+  else if(t.closest("[data-sdelno]")){ confirmStoreDel=null; renderStores(); }
+  else if(t.closest("[data-sdelyes]")){ const name=STORES[i("data-sdelyes")]; confirmStoreDel=null; saveStores(STORES.filter(s=>s!==name)).then(()=>toast(`${name} removed.`)); }
+});
+renderStoreFilter();
+document.querySelector(".tabs").addEventListener("click",e=>{ const b=e.target.closest("[data-tab]"); if(b) setTab(b.dataset.tab); });
+$("#v-dashboard").addEventListener("click",async e=>{
+  const t=e.target;
+  const o=t.closest("[data-open]"); if(o) return openDrawer(o.dataset.open);
+  const g=t.closest("[data-go]");
+  if(g){ if(g.dataset.go==="dashboard"){ $("#openPanel").scrollIntoView({behavior:"smooth",block:"start"}); return; } filterStage=g.dataset.stage||""; setTab(g.dataset.go); return; }
+  const sg=t.closest("[data-storego]"); if(sg){ filterStage=""; $("#fStore").value=sg.dataset.storego; setTab("applicants"); return; }
+  if(t.id==="addOpening"){ editingOpening="new"; confirmOpenDel=null; document.activeElement?.blur(); renderOpenings(); return; }
+  if(t.id==="oCancel"){ editingOpening=null; document.activeElement?.blur(); renderOpenings(); return; }
+  const ed=t.closest("[data-oedit]"); if(ed){ editingOpening=ed.dataset.oedit; confirmOpenDel=null; document.activeElement?.blur(); renderOpenings(); $("#openPanel").scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  const dl=t.closest("[data-odel]"); if(dl){ confirmOpenDel=dl.dataset.odel; renderOpenings(); return; }
+  if(t.closest("[data-odelno]")){ confirmOpenDel=null; renderOpenings(); return; }
+  const dy=t.closest("[data-odelyes]"); if(dy){ confirmOpenDel=null; await deleteOpening(dy.dataset.odelyes).then(()=>toast("Opening removed.")).catch(()=>toast("Couldn’t remove it.")); }
+});
+$("#v-dashboard").addEventListener("submit",async e=>{
+  if(e.target.id!=="oForm") return; e.preventDefault();
+  const store=$("#oStore").value, position=$("#oPos").value.trim();
+  if(!store||!position){ toast("Pick a store and enter a position."); return; }
+  const prev=editingOpening==="new"?null:openings.find(x=>x.id===editingOpening);
+  const o={id:prev?.id||"o"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),store,position,needed:Math.max(1,parseInt($("#oNeed").value)||1),
+    type:$("#oType").value,shift:$("#oShift").value,notes:$("#oNotes").value.trim(),createdAt:prev?.createdAt||Date.now(),updatedAt:Date.now()};
+  editingOpening=null; document.activeElement?.blur();
+  if(db){ const i=openings.findIndex(x=>x.id===o.id); if(i>=0) openings[i]=o; else openings.push(o); renderOpenings(); }
+  await saveOpening(o).then(()=>toast(prev?"Opening updated.":"Opening added.")).catch(()=>{});
+});
+let pt; $("#pasteBox").addEventListener("input",()=>{ clearTimeout(pt); pt=setTimeout(()=>{ parsed=parseApplications($("#pasteBox").value); renderPreview(); },120); });
+$("#clearBtn").onclick=()=>{ $("#pasteBox").value=""; parsed=[]; renderPreview(); };
+$("#addBtn").onclick=addParsed;
+/* manual entry */
+document.querySelector(".daypick").innerHTML=DAYS.map(d=>`<label><input type="checkbox" value="${d}">${d.slice(0,3)}</label>`).join("");
+function fillManStores(){ const v=$("#mStore").value; $("#mStore").innerHTML=`<option value="">Not sure yet</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join(""); if([...$("#mStore").options].some(o=>o.value===v)) $("#mStore").value=v; }
+$("#v-applicants").addEventListener("click",e=>{ const b=e.target.closest("[data-addmode]"); if(!b) return;
+  const man=b.dataset.addmode==="manual";
+  document.querySelectorAll("[data-addmode]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  $("#manualPanel").hidden=!man; $("#pastePanel").hidden=man;
+  if(man){ fillManStores(); $("#mName").focus(); } });
+$("#manForm").addEventListener("reset",()=>{ $("#manMsg").textContent=""; });
+$("#manForm").addEventListener("submit",async e=>{ e.preventDefault();
+  const name=$("#mName").value.trim().replace(/\s+/g," "), phone=$("#mPhone").value.trim(), email=$("#mEmail").value.trim();
+  if(!name){ $("#manMsg").textContent="Enter a name."; return; }
+  if(!phone&&!email){ $("#manMsg").textContent="Add a phone number or email so you can reach them."; return; }
+  if(phone&&digits(phone).length!==10){ $("#manMsg").textContent="Phone should be 10 digits, like 915-555-1234."; return; }
+  const days=[...document.querySelectorAll(".daypick input:checked")].map(i=>i.value);
+  const job=$("#mJob").value.trim();
+  const a={name,phone:fmtPhone(phone),email,store:$("#mStore").value,storeRaw:$("#mStore").value,position:$("#mPos").value.trim(),
+    employmentType:$("#mType").value,shift:$("#mShift").value,startDate:$("#mStart").value,formLanguage:$("#mLang").value,
+    referralSource:$("#mRef").value,referralDetail:$("#mRefD").value.trim(),availability:days.join(", "),availDays:days,jobTitle:job,interviewer:"Miguel"};
+  for(const k of Object.keys(a)) if(a[k]===""||(Array.isArray(a[k])&&!a[k].length)) delete a[k];
+  const dup=dupOf(a);
+  if(dup){ $("#manMsg").innerHTML=`${esc(dup.name)} is already in the tracker with that phone or email. <button class="copy" type="button" data-open-dup="${esc(dup.id)}">Open their card</button>`; return; }
+  const now=Date.now();
+  await saveDoc({...a,id:newId(),stage:"new",notes:$("#mNotes").value.trim(),createdAt:now,updatedAt:now,history:[{stage:"new",at:now}],source:"manual"}).then(()=>{
+    $("#manForm").reset(); toast(`${name} added.`); $("#mName").focus(); }).catch(()=>{});
+});
+$("#manualPanel").addEventListener("click",e=>{ const b=e.target.closest("[data-open-dup]"); if(b) openDrawer(b.dataset.openDup); });
+["#q","#fStore","#fType","#fSort"].forEach(s=>$(s).addEventListener("input",renderRows));
+$("#pipe").addEventListener("click",e=>{ const b=e.target.closest("[data-stage]"); if(!b) return; filterStage=b.dataset.stage; renderPipe(); renderRows(); });
+$("#rows").addEventListener("click",e=>{ const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); });
+$("#rows").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); }});
+$("#exportBtn").onclick=exportCsv;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&openId) closeDrawer(); });
+
+// templates
+$("#v-templates").addEventListener("click",async e=>{
+  const t=e.target;
+  const n=t.closest("[data-tpl]"); if(n){ tplSel.stage=n.dataset.tpl; document.activeElement?.blur(); return renderTemplates(); }
+  const chb=t.closest("[data-ch]"); if(chb){ tplSel.ch=chb.dataset.ch; document.activeElement?.blur(); return renderTemplates(); }
+  const l=t.closest("[data-lang]"); if(l){ tplSel.lang=l.dataset.lang; document.activeElement?.blur(); return renderTemplates(); }
+  const tk=t.closest("[data-token]");
+  if(tk){ const f=document.getElementById(lastTplField)||$("#tplB"); const s=f.selectionStart??f.value.length, en=f.selectionEnd??s, ins=`{${tk.dataset.token}}`;
+    f.value=f.value.slice(0,s)+ins+f.value.slice(en); f.focus(); f.selectionStart=f.selectionEnd=s+ins.length; return; }
+  if(t.id==="tplSave"){ const key=tplSel.lang+(tplSel.ch==="sms"?"_sms":""); tplOverrides={...tplOverrides,[tplSel.stage]:{...(tplOverrides[tplSel.stage]||{}),[key]:{s:$("#tplS")?.value||"",b:$("#tplB").value}}};
+    t.blur(); await saveTemplates().catch(()=>{}); toast("Template saved."); renderTemplates(); }
+  if(t.id==="tplReset"){ const o={...(tplOverrides[tplSel.stage]||{})}; delete o[tplSel.lang+(tplSel.ch==="sms"?"_sms":"")]; tplOverrides={...tplOverrides,[tplSel.stage]:o};
+    await saveTemplates().catch(()=>{}); toast("Original restored."); renderTemplates(); }
+});
+$("#v-templates").addEventListener("focusin",e=>{ if(e.target.id==="tplS"||e.target.id==="tplB") lastTplField=e.target.id; });
+
+// drawer
+$("#drawerHost").addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.closest("[data-close]")) return closeDrawer();
+  const c=candidates.find(x=>x.id===openId); if(!c) return;
+  const st=t.closest("[data-setstage]");
+  if(st){ const ns=st.dataset.setstage; if(c.stage!==ns){ mailStage=null; const ch={stage:ns,history:[...(c.history||[]),{stage:ns,at:Date.now()}]};
+      if(ns==="offer"&&!c.offerResponse) ch.offerResponse="Waiting"; if(ns==="hired") ch.offerResponse="Accepted";
+      if(ns==="offer"&&!c.offerType) ch.offerType=c.employmentType||""; patch(openId,ch).catch(()=>{}); } return; }
+  const ml=t.closest("[data-mlang]"); if(ml){ mailLang=ml.dataset.mlang; return renderDrawer(); }
+  if(t.closest("[data-copytext]")){ const x=textFor(c,mailStage||c.stage,mailLang||(isSpanish(c)?"es":"en")); return copyText(x.b,"Text copied. Paste it into Messages."); }
+  const cm=t.closest("[data-copymail]"); if(cm){ const m=emailFor(c,mailStage||c.stage,mailLang||(isSpanish(c)?"es":"en")); return copyText(cm.dataset.copymail==="s"?m.s:m.b, cm.dataset.copymail==="s"?"Subject copied.":"Message copied. Paste it into Outlook."); }
+  const cp=t.closest("[data-copy]"); if(cp) return copyText(cp.dataset.copy);
+  if(t.id==="addOffer"){ patch(openId,{offerType:c.employmentType||"",offerPer:"hour"}).catch(()=>{}); return; }
+  if(t.id==="saveNotes"){ await patch(openId,{notes:$("#dNotes").value}).catch(()=>{}); toast("Notes saved."); return; }
+  if(t.id==="delBtn"){ confirmDelete=true; renderDrawer(); return; }
+  if(t.id==="delNo"){ confirmDelete=false; renderDrawer(); return; }
+  if(t.id==="delYes"){ const id=openId; closeDrawer(); await removeDoc(id).then(()=>toast("Deleted.")).catch(()=>toast("Couldn’t delete.")); }
+});
+const FIELD={dStore:"store",dWho:"interviewer",dWhen:"interviewDate",dHireFor:"hireFor",dRate:"offerRate",dPer:"offerPer",dOType:"offerType",dHours:"offerHours",dOStart:"offerStart",dResp:"offerResponse",
+  fhReq:"fhReq",tabcReq:"tabcReq"};
+$("#drawerHost").addEventListener("change",e=>{
+  const t=e.target;
+  if(t.id==="mStage"){ mailStage=t.value; return renderDrawer(); }
+  if(t.id==="mailer"){ try{ localStorage.setItem("vista-hiring-mailer",t.value); }catch{} const c=candidates.find(x=>x.id===openId); if(c) refreshMail(c); return; }
+  if(["fhHave","tabcHave","fhFiled","tabcFiled"].includes(t.id)){ patch(openId,{[t.id]:t.checked}).catch(()=>{}); return; }
+  if(FIELD[t.id]){ let v=t.value; if(t.id==="dRate") v=v.replace(/[^0-9.]/g,""); patch(openId,{[FIELD[t.id]]:v}).catch(()=>{}); if(["dRate","dHours"].includes(t.id)){ t.blur(); renderDrawer(); } }
+});
+$("#drawerHost").addEventListener("input",e=>{
+  const t=e.target; if(!["dRate","dHours","dHireFor"].includes(t.id)) return;
+  const c=candidates.find(x=>x.id===openId); if(!c) return;
+  refreshMail({...c,[FIELD[t.id]]:t.value});
+});
+
+/* ---------- Supabase connection ---------- */
+const SUPABASE_URL="__SUPABASE_URL__";
+const SUPABASE_ANON_KEY="__SUPABASE_ANON_KEY__";
+let sb=null, me=null, staffRow=null, team=[];
+function dbError(error){ return {code:error?.code==="42501"||/row-level security/i.test(error?.message||"")?"invalid_argument":"unavailable",message:error?.message||"Error"}; }
+function makeDb(){
+  function collection(name){
+    return {
+      doc(id){ return {
+        async set(body){ const {error}=await sb.from(name).upsert({id,data:body,updated_at:new Date().toISOString()}); if(error) throw dbError(error); },
+        async delete(){ const {error}=await sb.from(name).delete().eq("id",id); if(error) throw dbError(error); }
+      }; },
+      onSnapshot(next,err){
+        const map=new Map();
+        const emit=()=>next({docs:[...map.entries()].map(([id,data])=>({id,exists:true,data:()=>data}))});
+        const ch=sb.channel("rt-"+name).on("postgres_changes",{event:"*",schema:"public",table:name},p=>{
+          if(p.eventType==="DELETE") map.delete(p.old.id); else map.set(p.new.id,p.new.data);
+          emit();
+        }).subscribe();
+        (async()=>{
+          const all=[]; let from=0;
+          for(;;){ const {data,error}=await sb.from(name).select("id,data").range(from,from+999);
+            if(error){ err&&err(dbError(error)); return; }
+            all.push(...data); if(data.length<1000) break; from+=1000; }
+          all.forEach(r=>{ if(!map.has(r.id)) map.set(r.id,r.data); }); emit();
+        })();
+        return ()=>sb.removeChannel(ch);
+      }
+    };
+  }
+  function doc(path){
+    const key=path.split("/")[1];
+    return {
+      async set(body){ const {error}=await sb.from("settings").upsert({key,value:body,updated_at:new Date().toISOString()}); if(error) throw dbError(error); },
+      onSnapshot(next,err){
+        const send=v=>next({exists:v!=null,data:()=>v});
+        const ch=sb.channel("rt-settings-"+key).on("postgres_changes",{event:"*",schema:"public",table:"settings",filter:"key=eq."+key},p=>{
+          send(p.eventType==="DELETE"?null:p.new.value);
+        }).subscribe();
+        (async()=>{ const {data,error}=await sb.from("settings").select("value").eq("key",key).maybeSingle();
+          if(error){ err&&err(dbError(error)); return; } send(data?data.value:null); })();
+        return ()=>sb.removeChannel(ch);
+      }
+    };
+  }
+  return {collection,doc};
+}
+downloads={ async save({filename,data}){
+  const url=URL.createObjectURL(new Blob(["﻿"+data],{type:"text/csv;charset=utf-8"}));
+  const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+} };
+
+/* ---------- sign-in ---------- */
+let authMode="signin";
+function showAuth(mode,msg,isErr){
+  authMode=mode||authMode;
+  $("#authGate").hidden=false; $("#app").hidden=true;
+  const titles={signin:"Sign in",signup:"Create your account",reset:"Reset your password",newpass:"Choose a new password",denied:"No access yet",setup:"Almost ready"};
+  $("#authTitle").textContent=titles[authMode];
+  const show=(id,on)=>{ const el=$(id); if(el) el.hidden=!on; };
+  show("#aEmailWrap",["signin","signup","reset"].includes(authMode));
+  show("#aPassWrap",["signin","signup","newpass"].includes(authMode));
+  show("#aSubmit",!["denied","setup"].includes(authMode));
+  show("#aLinks",["signin","signup","reset"].includes(authMode));
+  show("#aSignOut",authMode==="denied");
+  $("#aSubmit").textContent={signin:"Sign in",signup:"Create account",reset:"Email me a reset link",newpass:"Save new password"}[authMode]||"";
+  $("#aPass").autocomplete=authMode==="signin"?"current-password":"new-password";
+  $("#aLinks").innerHTML=authMode==="signin"
+    ?`<button type="button" class="copy" data-amode="signup">First time? Create your account</button><button type="button" class="copy" data-amode="reset">Forgot password?</button>`
+    :`<button type="button" class="copy" data-amode="signin">Back to sign in</button>`;
+  const m=$("#authMsg"); m.textContent=msg||(authMode==="signup"?"Use the email Miguel added to the team. Passwords need at least 8 characters.":"");
+  m.className="small"+(isErr?" auth-err":"");
+}
+$("#authGate").addEventListener("click",e=>{ const b=e.target.closest("[data-amode]"); if(b) showAuth(b.dataset.amode,""); });
+$("#aSignOut").addEventListener("click",()=>sb.auth.signOut());
+$("#signOutBtn").addEventListener("click",()=>sb.auth.signOut());
+$("#authForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const email=$("#aEmail").value.trim().toLowerCase(), password=$("#aPass").value, btn=$("#aSubmit");
+  btn.disabled=true;
+  try{
+    if(authMode==="signin"){
+      const {error}=await sb.auth.signInWithPassword({email,password});
+      if(error) showAuth("signin",/confirm/i.test(error.message)?"Confirm your email first. Check your inbox for the link from Supabase.":"That email and password don’t match.",true);
+    } else if(authMode==="signup"){
+      if(password.length<8){ showAuth("signup","Use at least 8 characters for your password.",true); return; }
+      const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
+      if(error) showAuth("signup",/registered/i.test(error.message)?"That email already has an account. Sign in instead.":error.message,true);
+      else if(!data.session) showAuth("signin","Check your email and click the confirmation link, then sign in here.");
+    } else if(authMode==="reset"){
+      const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+      showAuth("signin",error?error.message:"If that email has an account, a reset link is on its way.",!!error);
+    } else if(authMode==="newpass"){
+      if(password.length<8){ showAuth("newpass","Use at least 8 characters.",true); return; }
+      const {error}=await sb.auth.updateUser({password});
+      if(error) showAuth("newpass",error.message,true); else { toast("Password updated."); enterApp(); }
+    }
+  } finally { btn.disabled=false; }
+});
+
+let started=false;
+async function enterApp(){
+  const {data:{user}}=await sb.auth.getUser();
+  if(!user){ showAuth("signin"); return; }
+  me=user;
+  const {data:row}=await sb.from("staff").select("email,name,is_admin").eq("email",(user.email||"").toLowerCase()).maybeSingle();
+  if(!row){ showAuth("denied",`You’re signed in as ${user.email}, but that email isn’t on the hiring team yet. Ask Miguel to add it on the Team tab, then reload this page.`); return; }
+  staffRow=row;
+  $("#authGate").hidden=true; $("#app").hidden=false;
+  $("#whoami").textContent=row.name||user.email;
+  $("#exportBtn").hidden=false;
+  if(!started){ started=true; db=makeDb(); startData(); }
+}
+function startData(){
+  $("#status").textContent="Loading…";
+  db.collection("candidates").onSnapshot(snap=>{
+    candidates=snap.docs.map(d=>{ const x=d.data(); return {id:d.id,...x,history:[...(x.history||[])],availDays:[...(x.availDays||[])]}; });
+    $("#status").textContent=`${candidates.length} applicant${candidates.length===1?"":"s"} · synced`;
+    renderAll();
+  },()=>{ $("#status").textContent="Couldn’t load. Reload the page."; });
+  db.collection("openings").onSnapshot(snap=>{ openings=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{});
+  db.doc("settings/stores").onSnapshot(s=>{
+    const l=s.exists?s.data().list:null;
+    STORES=Array.isArray(l)&&l.length?[...l]:DEFAULT_STORES.slice();
+    renderStoreFilter(); renderAll();
+  },()=>{});
+  db.doc("settings/templates").onSnapshot(s=>{ tplOverrides=s.exists?JSON.parse(JSON.stringify(s.data().t||{})):{}; if(tab==="templates") renderTemplates(); if(openId){ const c=candidates.find(x=>x.id===openId); if(c) refreshMail(c);} },()=>{});
+  loadTeam();
+  sb.channel("rt-staff").on("postgres_changes",{event:"*",schema:"public",table:"staff"},()=>loadTeam()).subscribe();
+}
+
+/* ---------- team ---------- */
+let confirmTeamDel=null;
+async function loadTeam(){
+  const {data}=await sb.from("staff").select("email,name,is_admin,added_at").order("added_at");
+  team=data||[]; if(tab==="team") renderTeam();
+}
+function renderTeam(){
+  const admin=!!staffRow?.is_admin;
+  $("#teamForm").hidden=!admin;
+  $("#teamNote").textContent=admin?"Add someone’s email here, then send them this site’s link. They click “First time? Create your account”, pick a password, and confirm the email Supabase sends them.":"Only Miguel can add or remove people.";
+  $("#teamList").innerHTML=team.map(t=>{ const self=t.email===(me?.email||"").toLowerCase();
+    return `<div class="li" style="cursor:default;align-items:center"><div><b>${esc(t.name||t.email)}</b>${t.is_admin?` <span class="lang">Admin</span>`:""}<div class="small">${esc(t.name?t.email:"")}${self?" · you":""}</div></div>
+    <div class="row-actions">${admin&&!self?(confirmTeamDel===t.email?`<button class="btn sm danger" data-tdelyes="${esc(t.email)}">Remove</button><button class="btn sm ghost" data-tdelno>Keep</button>`:`<button class="btn sm ghost danger" data-tdel="${esc(t.email)}">Remove</button>`):""}</div></div>`; }).join("")||`<div class="none">No one yet.</div>`;
+}
+$("#teamForm").addEventListener("submit",async e=>{ e.preventDefault();
+  const email=$("#tEmail").value.trim().toLowerCase(), name=$("#tName").value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("Enter a valid email."); return; }
+  const {error}=await sb.from("staff").insert({email,name:name||null});
+  if(error){ toast(/duplicate/i.test(error.message)?"That email is already on the team.":"Couldn’t add them. Only admins can add people."); return; }
+  $("#tEmail").value=""; $("#tName").value=""; toast(`${name||email} added. Send them the site link.`); loadTeam();
+});
+$("#v-team").addEventListener("click",async e=>{
+  const t=e.target;
+  const d=t.closest("[data-tdel]"); if(d){ confirmTeamDel=d.dataset.tdel; renderTeam(); return; }
+  if(t.closest("[data-tdelno]")){ confirmTeamDel=null; renderTeam(); return; }
+  const y=t.closest("[data-tdelyes]"); if(y){ const email=y.dataset.tdelyes; confirmTeamDel=null;
+    const {error}=await sb.from("staff").delete().eq("email",email);
+    toast(error?"Couldn’t remove them.":"Removed. They can no longer see applicants."); loadTeam(); }
+});
+
+/* ---------- boot ---------- */
+setTab(["#applicants","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
+(async()=>{
+  if(SUPABASE_URL.startsWith("__")||!window.supabase){
+    showAuth("setup","This site isn’t connected to its database yet. Add the Supabase project URL and anon key at the top of the script in index.html.",true); return;
+  }
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  sb.auth.onAuthStateChange((event,session)=>{
+    if(event==="PASSWORD_RECOVERY"){ showAuth("newpass","Enter a new password for your account."); return; }
+    if(event==="SIGNED_OUT"){ location.hash=""; location.reload(); return; }
+    if(event==="SIGNED_IN"&&!started&&authMode!=="newpass") setTimeout(enterApp,0);
+  });
+  const {data:{session}}=await sb.auth.getSession();
+  if(session&&authMode!=="newpass") enterApp(); else if(!session) showAuth("signin");
+})();
+</script>
+</body>
+</html>
