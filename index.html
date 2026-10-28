@@ -199,6 +199,28 @@ table.main tr:last-child td{border-bottom:none}
 .d-grid label{display:flex;flex-direction:column;gap:4px;font-size:.75rem;color:var(--muted);font-weight:600;min-width:0}
 .d-grid select,.d-grid input,.d-sec textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);font-size:.9rem;color:var(--fg);font-weight:400;min-width:0;width:100%}
 .d-sec textarea{min-height:90px;resize:vertical}
+.cal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.cal-legend{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);flex-wrap:wrap}
+.cal-legend i,.cal-dots i,.evdot{display:inline-block;width:9px;height:9px;border-radius:50%}
+.cal-legend i{margin-left:6px}
+.evdot{margin-right:8px;vertical-align:1px}
+.ev-screen{--ev:var(--s-screen)} .ev-interview{--ev:var(--s-int)} .ev-start{--ev:var(--s-hired)}
+.cal-legend i,.cal-dots i,.evdot{background:var(--ev)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.cal-dow{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cal-day{min-height:104px;padding:4px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:3px;min-width:0}
+.cal-day.other{background:var(--sunk)} .cal-day.other .cal-num{color:var(--muted)}
+.cal-num{font-size:.78rem;font-weight:600;font-variant-numeric:tabular-nums;align-self:flex-end;width:24px;height:24px;display:grid;place-items:center;border-radius:50%}
+.cal-day{cursor:pointer}
+.cal-day.sel{box-shadow:inset 0 0 0 2px var(--purple)}
+.cal-day.today .cal-num{background:var(--purple);color:#fff}
+.ev{all:unset;box-sizing:border-box;cursor:pointer;font-size:.72rem;line-height:1.25;padding:2px 5px;border-radius:4px;background:color-mix(in srgb,var(--ev) 15%,transparent);border-left:3px solid var(--ev);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ev:hover{background:color-mix(in srgb,var(--ev) 28%,transparent)}
+.ev:focus-visible{outline:2px solid var(--blue)}
+.ev-t{font-weight:600}
+.cal-dots{display:none;gap:3px;flex-wrap:wrap;justify-content:center}
+.cal-agday{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:12px 0 2px}
+@media (max-width:760px){ .cal-day{min-height:58px;padding:3px} .ev{display:none} .cal-day .small{display:none} .cal-dots{display:flex} .cal-num{align-self:center} }
 .waitpill{display:inline-block;margin-top:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--s-int) 16%,transparent);color:var(--s-int);white-space:nowrap}
 .waitpill.late{background:var(--s-int);color:#fff}
 .checkbox{border:1px dashed var(--line);border-radius:10px;padding:12px}
@@ -369,6 +391,7 @@ img{max-width:100%}
     <button role="tab" data-tab="dashboard" aria-selected="true">Dashboard</button>
     <button role="tab" data-tab="applicants" aria-selected="false">Applicants<span class="count" id="tabCount"></span></button>
     <button role="tab" data-tab="add" aria-selected="false">Add applicant</button>
+    <button role="tab" data-tab="calendar" aria-selected="false">Calendar</button>
     <button role="tab" data-tab="templates" aria-selected="false">Email templates</button>
     <button role="tab" data-tab="stores" aria-selected="false">Stores</button>
     <button role="tab" data-tab="team" aria-selected="false">Team</button>
@@ -488,6 +511,18 @@ img{max-width:100%}
         <button class="btn primary" type="submit">Add store</button>
       </form>
     </div>
+  </section>
+
+  <section class="view" id="v-calendar" hidden>
+    <div class="panel cal">
+      <div class="cal-head">
+        <div class="row-actions"><button class="btn sm" data-cal="prev" aria-label="Previous month">‹</button><h2 id="calTitle" style="margin:0;min-width:9.5em;text-align:center"></h2><button class="btn sm" data-cal="next" aria-label="Next month">›</button><button class="btn sm ghost" data-cal="today">Today</button></div>
+        <div class="row-actions"><select id="calStore" class="btn sm" aria-label="Store"></select>
+          <span class="cal-legend"><i class="ev-screen"></i>Phone screen <i class="ev-interview"></i>Interview <i class="ev-start"></i>Start date</span></div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="panel"><h2 id="calAgendaTitle">Coming up</h2><div class="list" id="calAgenda"></div></div>
   </section>
 
   <section class="view" id="v-templates" hidden>
@@ -1240,7 +1275,7 @@ async function exportCsv(){
 /* ---------- ui wiring ---------- */
 let toastT; function toast(m){ $("#toastHost").innerHTML=`<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toastT); toastT=setTimeout(()=>$("#toastHost").innerHTML="",2600); }
 async function copyText(t,label){ try{ await navigator.clipboard.writeText(t); toast(label||"Copied."); }catch{ toast("Copy is blocked here. Select the text and copy it instead."); } }
-function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
+function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
 function renderAll(){
   renderPipe();
   if(tab==="dashboard") renderDashboard();
@@ -1248,9 +1283,65 @@ function renderAll(){
   if(tab==="add") renderPreview();
   if(tab==="templates") renderTemplates();
   if(tab==="stores") renderStores();
+  if(tab==="calendar") renderCalendar();
   if(tab==="team"&&sb) renderTeam();
   if(openId) renderDrawer();
 }
+/* ---------- calendar ---------- */
+let calSel=null;
+let calMonth=(()=>{ const d=new Date(); return new Date(d.getFullYear(),d.getMonth(),1); })();
+function dayKey(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function calEvents(){
+  const st=$("#calStore")?.value||"", out=[];
+  for(const c of candidates){
+    if(st&&c.store!==st) continue;
+    if(c.interviewDate&&!["declined","noshow"].includes(c.stage)){
+      const d=new Date(c.interviewDate); if(!isNaN(d)){
+        const kind=["new","screen"].includes(c.stage)?"screen":"interview";
+        out.push({c,kind,date:d,time:d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}),label:kind==="screen"?"Phone screen":"Interview"}); } }
+    if(c.offerStart&&["offer","hired"].includes(c.stage)){
+      const d=parseISO(c.offerStart); if(d) out.push({c,kind:"start",date:d,time:"",label:"Starts"+(c.stage==="offer"?" (offer)":"")}); }
+  }
+  return out.sort((a,b)=>a.date-b.date);
+}
+function renderCalendar(){
+  const sel=$("#calStore"), v=sel.value;
+  sel.innerHTML=`<option value="">All stores</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join(""); sel.value=v;
+  $("#calTitle").textContent=calMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const evs=calEvents(), byDay={};
+  evs.forEach(e=>{ (byDay[dayKey(e.date)]=byDay[dayKey(e.date)]||[]).push(e); });
+  const first=new Date(calMonth), start=new Date(first); start.setDate(1-first.getDay());
+  const todayK=dayKey(new Date());
+  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  for(let i=0;i<42;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    if(i===35&&d.getMonth()!==calMonth.getMonth()) break;
+    const k=dayKey(d), list=byDay[k]||[], other=d.getMonth()!==calMonth.getMonth();
+    html+=`<div class="cal-day${other?" other":""}${k===todayK?" today":""}${k===calSel?" sel":""}" data-day="${k}"><div class="cal-num">${d.getDate()}</div>
+      ${list.slice(0,4).map(e=>`<button class="ev ev-${e.kind}" data-open="${esc(e.c.id)}" title="${esc(e.label+": "+e.c.name+(e.c.store?" · "+e.c.store:""))}"><span class="ev-t">${esc(e.time||e.label)}</span> ${esc(e.c.name)}</button>`).join("")}
+      ${list.length>4?`<div class="small">+${list.length-4} more</div>`:""}
+      ${list.length?`<div class="cal-dots">${list.map(e=>`<i class="ev-${e.kind}"></i>`).join("")}</div>`:""}</div>`;
+  }
+  $("#calGrid").innerHTML=html;
+  const now=new Date(); now.setHours(0,0,0,0); const end=new Date(now); end.setDate(end.getDate()+14);
+  const up=calSel?(byDay[calSel]||[]):evs.filter(e=>e.date>=now&&e.date<end);
+  $("#calAgendaTitle").innerHTML=calSel?`${esc(parseISO(calSel).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}))} <button class="copy" data-cal="clear">Show next 14 days</button>`:`Coming up <span class="small">next 14 days</span>`;
+  let lastDay="";
+  $("#calAgenda").innerHTML=up.length?up.map(e=>{ const k=dayKey(e.date), head=k!==lastDay?`<div class="cal-agday">${esc(e.date.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}))}</div>`:""; lastDay=k;
+    return head+`<div class="li" data-open="${esc(e.c.id)}"><div><span class="evdot ev-${e.kind}"></span><b>${esc(e.c.name)}</b><div class="small">${esc([e.label,e.c.store,e.c.hireFor||e.c.position].filter(Boolean).join(" · "))}</div></div><div class="r mono">${esc(e.time)}</div></div>`; }).join(""):(calSel?`<div class="none">Nothing scheduled this day.</div>`:`<div class="none">Nothing scheduled in the next two weeks. Set a screen or interview time, or an offer start date, on an applicant’s card.</div>`);
+}
+$("#v-calendar").addEventListener("click",e=>{
+  const o=e.target.closest("[data-open]"); if(o) return openDrawer(o.dataset.open);
+  const b=e.target.closest("[data-cal]");
+  if(!b){ const day=e.target.closest("[data-day]"); if(day){ calSel=calSel===day.dataset.day?null:day.dataset.day; renderCalendar(); if(calSel&&innerWidth<760) $("#calAgendaTitle").scrollIntoView({behavior:"smooth",block:"start"}); } return; }
+  if(b.dataset.cal==="clear"){ calSel=null; renderCalendar(); return; }
+  if(b.dataset.cal==="prev") calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1);
+  if(b.dataset.cal==="next") calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1);
+  if(b.dataset.cal==="today"){ const d=new Date(); calMonth=new Date(d.getFullYear(),d.getMonth(),1); }
+  renderCalendar();
+});
+$("#calStore").addEventListener("change",renderCalendar);
+
 function renderStoreFilter(){
   if(typeof fillManStores==="function"&&$("#mStore")) fillManStores();
   const sel=$("#fStore"), v=sel.value;
@@ -1597,7 +1688,7 @@ $("#v-team").addEventListener("click",async e=>{
 });
 
 /* ---------- boot ---------- */
-setTab(["#applicants","#add","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
+setTab(["#applicants","#add","#calendar","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
 (async()=>{
   if(!SUPABASE_ANON_KEY.startsWith("eyJ")&&!SUPABASE_ANON_KEY.startsWith("sb_publishable_")||!window.supabase){
     showAuth("setup","This site isn’t connected to its database yet. Paste the Supabase anon key into config.js in the GitHub repo.",true); return;
