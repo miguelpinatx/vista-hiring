@@ -15,7 +15,7 @@
 :root{
   --bg:#F6F5F9; --surface:#FFFFFF; --sunk:#EFEDF3; --fg:#221B2B; --muted:#6B6377; --line:#E2DEE9;
   --purple:#834B9E; --purple-soft:#F1E8F6; --yellow:#FEC938; --blue:#007BC4;
-  --s-new:#007BC4; --s-screen:#834B9E; --s-int:#B7791F; --s-offer:#0F8A7E; --s-hired:#2F8A3B; --s-out:#8A8293;
+  --s-new:#007BC4; --s-screen:#834B9E; --s-int:#B7791F; --s-offer:#0F8A7E; --s-hired:#2F8A3B; --s-out:#8A8293; --s-future:#4F5BD5;
   --danger:#B42318; --grid:#ECE9F1;
   --display:"Bricolage Grotesque", "Figtree", system-ui, sans-serif;
   --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -24,12 +24,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#15121A; --surface:#1F1A26; --sunk:#191520; --fg:#EEEAF3; --muted:#A79EB3; --line:#342C3E;
   --purple:#BC8ED6; --purple-soft:#2E2338; --yellow:#FEC938; --blue:#56ADE6;
-  --s-new:#56ADE6; --s-screen:#BC8ED6; --s-int:#E3A84A; --s-offer:#3EC2B3; --s-hired:#5CC26A; --s-out:#8F879A;
+  --s-new:#56ADE6; --s-screen:#BC8ED6; --s-int:#E3A84A; --s-offer:#3EC2B3; --s-hired:#5CC26A; --s-out:#8F879A; --s-future:#8E97F2;
   --danger:#F07D72; --grid:#2A2333; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#15121A; --surface:#1F1A26; --sunk:#191520; --fg:#EEEAF3; --muted:#A79EB3; --line:#342C3E;
   --purple:#BC8ED6; --purple-soft:#2E2338; --yellow:#FEC938; --blue:#56ADE6;
-  --s-new:#56ADE6; --s-screen:#BC8ED6; --s-int:#E3A84A; --s-offer:#3EC2B3; --s-hired:#5CC26A; --s-out:#8F879A;
+  --s-new:#56ADE6; --s-screen:#BC8ED6; --s-int:#E3A84A; --s-offer:#3EC2B3; --s-hired:#5CC26A; --s-out:#8F879A; --s-future:#8E97F2;
   --danger:#F07D72; --grid:#2A2333; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
@@ -221,6 +221,10 @@ table.main tr:last-child td{border-bottom:none}
 .cal-dots{display:none;gap:3px;flex-wrap:wrap;justify-content:center}
 .cal-agday{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:12px 0 2px}
 @media (max-width:760px){ .cal-day{min-height:58px;padding:3px} .ev{display:none} .cal-day .small{display:none} .cal-dots{display:flex} .cal-num{align-self:center} }
+.fp{align-items:flex-start}
+.fp .r{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fp-fit{font-size:.82rem;color:var(--s-future);font-weight:600;margin-top:3px}
+.fp-note{margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .waitpill{display:inline-block;margin-top:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--s-int) 16%,transparent);color:var(--s-int);white-space:nowrap}
 .waitpill.late{background:var(--s-int);color:#fff}
 .checkbox{border:1px dashed var(--line);border-radius:10px;padding:12px}
@@ -392,6 +396,7 @@ img{max-width:100%}
     <button role="tab" data-tab="applicants" aria-selected="false">Applicants<span class="count" id="tabCount"></span></button>
     <button role="tab" data-tab="add" aria-selected="false">Add applicant</button>
     <button role="tab" data-tab="calendar" aria-selected="false">Calendar</button>
+    <button role="tab" data-tab="future" aria-selected="false">Future pool<span class="count" id="futureCount"></span></button>
     <button role="tab" data-tab="templates" aria-selected="false">Email templates</button>
     <button role="tab" data-tab="stores" aria-selected="false">Stores</button>
     <button role="tab" data-tab="team" aria-selected="false">Team</button>
@@ -525,6 +530,18 @@ img{max-width:100%}
     <div class="panel"><h2 id="calAgendaTitle">Coming up</h2><div class="list" id="calAgenda"></div></div>
   </section>
 
+  <section class="view" id="v-future" hidden>
+    <div class="panel">
+      <h2>Future pool <span class="small">good people you didn’t hire yet</span></h2>
+      <p class="small" style="margin:0 0 12px">Set an applicant’s stage to <b>Future opportunity</b> to keep them here. When a spot opens, find them by store or position and click <b>Reconsider</b> to put them back in the pipeline.</p>
+      <div class="filters" style="margin-bottom:12px">
+        <input id="fpQ" type="search" placeholder="Search name, position, good fit for, notes…" aria-label="Search future pool">
+        <select id="fpStore" aria-label="Store"></select>
+      </div>
+      <div class="list" id="futureList"></div>
+    </div>
+  </section>
+
   <section class="view" id="v-templates" hidden>
     <div class="tpl-layout">
       <div class="tpl-nav" id="tplNav"></div>
@@ -548,6 +565,7 @@ const STAGES=[
   {id:"interview",label:"Interview",c:"--s-int"},
   {id:"offer",label:"Offer",c:"--s-offer"},
   {id:"hired",label:"Hired",c:"--s-hired"},
+  {id:"future",label:"Future opportunity",c:"--s-future"},
   {id:"declined",label:"Not moving forward",c:"--s-out"},
   {id:"noshow",label:"No show / no reply",c:"--s-out"}
 ];
@@ -693,6 +711,24 @@ Por favor llegue 10 minutos antes y preséntese con el gerente de tienda. Traiga
 Con gusto,
 {sender_name}
 Vista Markets`}},
+ future:{en:{s:"Staying in touch – Vista Markets",b:`Hi {first_name},
+
+Thank you for your interest in Vista Markets and for taking the time to talk with us. We don't have the right opening for you at the moment, but we were glad to meet you and would like to keep your application on file.
+
+When a position that fits you opens up, we'll reach out first. You're also welcome to check in with us any time at {sender_phone}.
+
+Thank you,
+{sender_name}
+Vista Markets`},
+  es:{s:"Seguimos en contacto – Vista Markets",b:`Hola {first_name},
+
+Gracias por su interés en Vista Markets y por tomarse el tiempo de hablar con nosotros. Por el momento no tenemos la vacante adecuada para usted, pero nos dio gusto conocerle y nos gustaría guardar su solicitud.
+
+Cuando se abra un puesto que le quede bien, le contactaremos primero. También puede comunicarse con nosotros cuando guste al {sender_phone}.
+
+Gracias,
+{sender_name}
+Vista Markets`}},
  declined:{en:{s:"Your application with Vista Markets",b:`Hi {first_name},
 
 Thank you for your interest in Vista Markets and for the time you spent applying. After reviewing our current openings, we won't be moving forward with your application at this time.
@@ -741,6 +777,8 @@ const DEFAULT_SMS={
       es:"¡Felicidades {first_name}! Vista Markets le ofrece el puesto de {position} en {store}: {pay}, {employment_type}, empezando el {offer_start}. Responda SÍ para aceptar o llámeme al {sender_phone}. – {sender_name}"},
  hired:{en:"Welcome to Vista Markets, {first_name}! Your first day is {offer_start} at our {store} store. Arrive 10 min early, check in with the manager, and bring your photo ID, work documents and food handler card. – {sender_name}",
       es:"¡Bienvenido(a) a Vista Markets, {first_name}! Su primer día es el {offer_start} en la tienda {store}. Llegue 10 min antes, preséntese con el gerente y traiga identificación, documentos de trabajo y tarjeta de manejo de alimentos. – {sender_name}"},
+ future:{en:"Hi {first_name}, thank you for talking with Vista Markets. We don't have the right opening right now, but we'll keep your application on file and reach out first when one fits. – {sender_name}",
+      es:"Hola {first_name}, gracias por hablar con Vista Markets. Por ahora no tenemos la vacante adecuada, pero guardaremos su solicitud y le contactaremos primero cuando haya una. – {sender_name}"},
  declined:{en:"Hi {first_name}, thank you for applying to Vista Markets. We won't be moving forward right now, but you're welcome to apply again in the future. – {sender_name}",
       es:"Hola {first_name}, gracias por aplicar a Vista Markets. Por ahora no continuaremos con su solicitud, pero puede volver a aplicar en el futuro. – {sender_name}"},
  noshow:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. We tried to reach you about your application for {store}. Still interested? Reply here or call {sender_phone}.",
@@ -882,8 +920,9 @@ function openingStats(o){
   const hired=candidates.filter(c=>c.stage==="hired"&&matchesOpening(c,o)&&stageEnteredAt(c)>=(o.createdAt||0)).length;
   const offer=candidates.filter(c=>c.stage==="offer"&&matchesOpening(c,o)).length;
   const pipe=candidates.filter(c=>["new","screen","interview"].includes(c.stage)&&matchesOpening(c,o)).length;
+  const future=candidates.filter(c=>c.stage==="future"&&(matchesOpening(c,o)||(norm(o.position)&&norm(c.futureFor).includes(norm(o.position))))).length;
   const needed=Math.max(1,parseInt(o.needed)||1);
-  return {needed,hired:Math.min(hired,needed),offer,pipe,left:Math.max(0,needed-hired)};
+  return {needed,hired:Math.min(hired,needed),offer,pipe,future,left:Math.max(0,needed-hired)};
 }
 function totalToFill(){ return openings.reduce((n,o)=>n+openingStats(o).left,0); }
 function renderOpenForm(){
@@ -917,7 +956,7 @@ function renderOpenings(){
         return `<div class="op ${st.left?"":"done"}">
           <div><div class="t">${esc(o.position)}</div><div class="meta">${esc([o.type,o.shift].filter(Boolean).join(" · ")||"")}${o.notes?`${o.type||o.shift?" · ":""}${esc(o.notes)}`:""}</div></div>
           <div class="seatcol"><div class="seats" title="${st.hired} hired of ${st.needed}">${seats}</div>
-            <div class="cnt">${st.left?`${st.left} of ${st.needed} open`:"Filled"}${st.offer?` · ${st.offer} offer out`:""}${st.pipe?` · ${st.pipe} in pipeline`:st.left&&!st.offer?" · no applicants yet":""}</div></div>
+            <div class="cnt">${st.left?`${st.left} of ${st.needed} open`:"Filled"}${st.offer?` · ${st.offer} offer out`:""}${st.pipe?` · ${st.pipe} in pipeline`:st.left&&!st.offer?" · no applicants yet":""}${st.left&&st.future?` · <button class="copy" data-pool="${esc(o.store)}">${st.future} in future pool</button>`:""}</div></div>
           <div class="acts">${confirmOpenDel===o.id?`<button class="btn sm danger" data-odelyes="${o.id}">Remove</button><button class="btn sm ghost" data-odelno>Keep</button>`:`<button class="btn sm ghost" data-oedit="${o.id}">Edit</button><button class="btn sm ghost" data-odel="${o.id}" aria-label="Remove opening">${st.left?"Close":"Remove"}</button>`}</div>
         </div>`; }).join("")}</div></div>`; }).join("")+
     (staffed.length?`<div class="nostaff">No openings listed: ${staffed.join(", ")}</div>`:"");
@@ -1116,7 +1155,7 @@ function renderDrawer(){
   const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
   if(!c){ host.innerHTML=""; openId=null; return; }
   const active=document.activeElement, keepId=active&&active.id;
-  const typing=["dWhen","dOStart","ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
+  const typing=["dFutureFor","dWhen","dOStart","ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
   if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
   const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
@@ -1136,6 +1175,9 @@ function renderDrawer(){
       <label>Screen / interview time<input id="dWhen" type="datetime-local" value="${esc(c.interviewDate||"")}"></label>
       <label>Handled by<select id="dWho">${people.map(s=>`<option ${c.interviewer===s?"selected":""}>${esc(s)}</option>`).join("")}</select></label>
     </div>
+    ${c.stage==="future"?`<div class="d-sec checkbox" style="border-color:var(--s-future)"><h3>Future opportunity</h3>
+      <label class="field">Good fit for (positions, stores, shifts)<input id="dFutureFor" value="${esc(c.futureFor||"")}" placeholder="e.g. Bakery or cashier at Montana/Horizon, weekends" autocomplete="off"></label>
+      <div class="small">They show on the Future pool tab and next to matching openings on the dashboard.</div></div>`:""}
     ${storeCheckSection(c)}
 
     ${["offer","hired"].includes(c.stage)||c.offerRate?`
@@ -1275,7 +1317,7 @@ async function exportCsv(){
 /* ---------- ui wiring ---------- */
 let toastT; function toast(m){ $("#toastHost").innerHTML=`<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toastT); toastT=setTimeout(()=>$("#toastHost").innerHTML="",2600); }
 async function copyText(t,label){ try{ await navigator.clipboard.writeText(t); toast(label||"Copied."); }catch{ toast("Copy is blocked here. Select the text and copy it instead."); } }
-function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
+function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","future","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
 function renderAll(){
   renderPipe();
   if(tab==="dashboard") renderDashboard();
@@ -1284,9 +1326,39 @@ function renderAll(){
   if(tab==="templates") renderTemplates();
   if(tab==="stores") renderStores();
   if(tab==="calendar") renderCalendar();
+  if(tab==="future") renderFuture();
+  const fc=candidates.filter(c=>c.stage==="future").length; $("#futureCount").textContent=fc||"";
   if(tab==="team"&&sb) renderTeam();
   if(openId) renderDrawer();
 }
+/* ---------- future pool ---------- */
+function renderFuture(){
+  const sel=$("#fpStore"), v=sel.value;
+  sel.innerHTML=`<option value="">All stores</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join("")+`<option value="none">No store set</option>`; sel.value=[...sel.options].some(o=>o.value===v)?v:"";
+  const q=$("#fpQ").value.trim().toLowerCase(), st=sel.value;
+  const list=candidates.filter(c=>c.stage==="future")
+    .filter(c=>!st||(st==="none"?!c.store:c.store===st))
+    .filter(c=>!q||[c.name,c.position,c.hireFor,c.futureFor,c.store,c.jobTitle,c.skills,notesText(c)].join(" ").toLowerCase().includes(q))
+    .sort((a,b)=>stageEnteredAt(b)-stageEnteredAt(a));
+  const total=candidates.filter(c=>c.stage==="future").length;
+  $("#futureList").innerHTML=list.length?list.map(c=>{ const ln=latestNote(c);
+    return `<div class="li fp" data-open="${esc(c.id)}">
+      <div style="min-width:0"><b>${esc(c.name)}</b>${isSpanish(c)?`<span class="lang">ES</span>`:""}
+        <div class="small">${esc([c.store,c.hireFor||c.position,c.employmentType].filter(Boolean).join(" · "))} · <span class="mono">${esc(c.phone||"")}</span></div>
+        ${c.futureFor?`<div class="fp-fit">Good fit for: ${esc(c.futureFor)}</div>`:""}
+        ${ln?`<div class="small fp-note">“${esc(ln.n.text)}”</div>`:""}</div>
+      <div class="r"><div class="small">Since ${esc(new Date(stageEnteredAt(c)).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}))}</div>
+        <button class="btn sm" data-reconsider="${esc(c.id)}">Reconsider</button></div></div>`; }).join("")
+    :`<div class="none">${total?"Nobody matches these filters.":"No one in the future pool yet. Open an applicant and set their stage to Future opportunity."}</div>`;
+}
+$("#v-future").addEventListener("click",async e=>{
+  const r=e.target.closest("[data-reconsider]");
+  if(r){ e.stopPropagation(); const c=candidates.find(x=>x.id===r.dataset.reconsider); if(!c) return; const now=Date.now();
+    await patch(c.id,{stage:"new",history:[...(c.history||[]),{stage:"new",at:now}],notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:"Moved back from the future pool to reconsider.",at:now,by:myName()}]}).then(()=>toast(`${c.name} is back in New.`)).catch(()=>{}); return; }
+  const o=e.target.closest("[data-open]"); if(o) openDrawer(o.dataset.open);
+});
+$("#fpQ").addEventListener("input",renderFuture); $("#fpStore").addEventListener("change",renderFuture);
+
 /* ---------- calendar ---------- */
 let calSel=null;
 let calMonth=(()=>{ const d=new Date(); return new Date(d.getFullYear(),d.getMonth(),1); })();
@@ -1295,7 +1367,7 @@ function calEvents(){
   const st=$("#calStore")?.value||"", out=[];
   for(const c of candidates){
     if(st&&c.store!==st) continue;
-    if(c.interviewDate&&!["declined","noshow"].includes(c.stage)){
+    if(c.interviewDate&&!["declined","noshow","future"].includes(c.stage)){
       const d=new Date(c.interviewDate); if(!isNaN(d)){
         const kind=["new","screen"].includes(c.stage)?"screen":"interview";
         out.push({c,kind,date:d,time:d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}),label:kind==="screen"?"Phone screen":"Interview"}); } }
@@ -1381,6 +1453,7 @@ $("#v-dashboard").addEventListener("click",async e=>{
   const o=t.closest("[data-open]"); if(o) return openDrawer(o.dataset.open);
   const g=t.closest("[data-go]");
   if(g){ if(g.dataset.go==="dashboard"){ $("#openPanel").scrollIntoView({behavior:"smooth",block:"start"}); return; } filterStage=g.dataset.stage||""; setTab(g.dataset.go); return; }
+  const pl=t.closest("[data-pool]"); if(pl){ setTab("future"); $("#fpStore").value=pl.dataset.pool; renderFuture(); return; }
   const sg=t.closest("[data-storego]"); if(sg){ filterStage=""; $("#fStore").value=sg.dataset.storego; setTab("applicants"); return; }
   if(t.id==="addOpening"){ editingOpening="new"; confirmOpenDel=null; document.activeElement?.blur(); renderOpenings(); return; }
   if(t.id==="oCancel"){ editingOpening=null; document.activeElement?.blur(); renderOpenings(); return; }
@@ -1510,7 +1583,7 @@ $("#drawerHost").addEventListener("submit",async e=>{
 $("#drawerHost").addEventListener("focusout",e=>{
   if(["dWhen","dOStart"].includes(e.target.id)) setTimeout(()=>{ if(openId&&!["dWhen","dOStart"].includes(document.activeElement?.id)) renderDrawer(); },150);
 });
-const FIELD={dStore:"store",dWho:"interviewer",dWhen:"interviewDate",dHireFor:"hireFor",dRate:"offerRate",dPer:"offerPer",dOType:"offerType",dHours:"offerHours",dOStart:"offerStart",dResp:"offerResponse",
+const FIELD={dFutureFor:"futureFor",dStore:"store",dWho:"interviewer",dWhen:"interviewDate",dHireFor:"hireFor",dRate:"offerRate",dPer:"offerPer",dOType:"offerType",dHours:"offerHours",dOStart:"offerStart",dResp:"offerResponse",
   fhReq:"fhReq",tabcReq:"tabcReq"};
 $("#drawerHost").addEventListener("change",e=>{
   const t=e.target;
@@ -1688,7 +1761,7 @@ $("#v-team").addEventListener("click",async e=>{
 });
 
 /* ---------- boot ---------- */
-setTab(["#applicants","#add","#calendar","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
+setTab(["#applicants","#add","#calendar","#future","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
 (async()=>{
   if(!SUPABASE_ANON_KEY.startsWith("eyJ")&&!SUPABASE_ANON_KEY.startsWith("sb_publishable_")||!window.supabase){
     showAuth("setup","This site isn’t connected to its database yet. Paste the Supabase anon key into config.js in the GitHub repo.",true); return;
