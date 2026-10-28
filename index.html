@@ -199,6 +199,10 @@ table.main tr:last-child td{border-bottom:none}
 .d-grid label{display:flex;flex-direction:column;gap:4px;font-size:.75rem;color:var(--muted);font-weight:600;min-width:0}
 .d-grid select,.d-grid input,.d-sec textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);font-size:.9rem;color:var(--fg);font-weight:400;min-width:0;width:100%}
 .d-sec textarea{min-height:90px;resize:vertical}
+.waitpill{display:inline-block;margin-top:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--s-int) 16%,transparent);color:var(--s-int);white-space:nowrap}
+.waitpill.late{background:var(--s-int);color:#fff}
+.checkbox{border:1px dashed var(--line);border-radius:10px;padding:12px}
+.checkbox.waiting{border:1px solid var(--s-int);border-left-width:4px;background:color-mix(in srgb,var(--s-int) 6%,transparent)}
 .offerbox{border:1px solid var(--s-offer);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
 .offerbox .big{font-family:var(--display);font-size:1.3rem;font-weight:700}
 .money{position:relative}
@@ -384,6 +388,7 @@ img{max-width:100%}
     </div>
     <div class="panel" style="overflow-x:auto"><h2>By store</h2><div id="byStore"></div></div>
     <div class="dgrid">
+      <div class="panel"><h2>Waiting on stores <span class="small">oldest first</span></h2><div class="list" id="waitingStores"></div></div>
       <div class="panel"><h2>Upcoming screens &amp; interviews</h2><div class="list" id="upcoming"></div></div>
       <div class="panel"><h2>Offers out</h2><div class="list" id="offersOut"></div></div>
     </div>
@@ -929,6 +934,8 @@ function renderDashboard(){
   $("#byStore").innerHTML=`<table class="stbl"><thead><tr><th>Store</th>${STAGES.slice(0,5).map(s=>`<th>${s.label}</th>`).join("")}<th>Total</th></tr></thead><tbody>${tbl}</tbody></table>`;
 
   const li=(c,right)=>`<div class="li" data-open="${esc(c.id)}"><div><b>${esc(c.name)}</b><div class="small">${esc([c.store,c.hireFor||c.position].filter(Boolean).join(" · "))}</div></div><div class="r">${right}</div></div>`;
+  const waiting=candidates.filter(isWaiting).sort((a,b)=>a.storeCheck.askedAt-b.storeCheck.askedAt);
+  $("#waitingStores").innerHTML=waiting.length?waiting.slice(0,10).map(c=>li(c,`<div>${waitPill(c)}</div><div class="small">${esc(c.storeCheck.reason||"")}</div>`)).join("")+(waiting.length>10?`<button class="copy" data-go="applicants" data-stage="__waiting">See all ${waiting.length}</button>`:""):`<div class="none">Not waiting on any store right now.</div>`;
   $("#upcoming").innerHTML=upcomingList.length?upcomingList.slice(0,8).map(c=>li(c,`<div class="mono">${esc(fmtDateTime(c.interviewDate))}</div><div class="small">${esc(STAGE[c.stage].label)} · ${esc(c.interviewer||"")}</div>`)).join(""):`<div class="none">Nothing scheduled. Set a time in an applicant’s card to see it here.</div>`;
   $("#offersOut").innerHTML=offers.length?offers.map(c=>li(c,`<div class="mono">${esc(payText(c,"en")||"No pay set")}</div><div class="small">${c.offerStart?"Start "+esc(fmtDate(c.offerStart)):""} ${c.offerResponse?"· "+esc(c.offerResponse):""}</div>`)).join(""):`<div class="none">No open offers.</div>`;
   const due=candidates.filter(c=>["offer","hired"].includes(c.stage)&&certMissing(c).length).sort((a,b)=>(a.offerStart||"9999").localeCompare(b.offerStart||"9999"));
@@ -967,7 +974,7 @@ function renderPreview(){
 /* ---------- applicants table ---------- */
 function visible(){
   const q=$("#q").value.trim().toLowerCase(), st=$("#fStore").value, ty=$("#fType").value, sort=$("#fSort").value;
-  let list=candidates.filter(c=>(!filterStage||c.stage===filterStage)&&(!st||(st==="none"?!c.store:c.store===st))&&(!ty||(c.employmentType||"").toLowerCase()===ty.toLowerCase()));
+  let list=candidates.filter(c=>(!filterStage||(filterStage==="__waiting"?isWaiting(c):c.stage===filterStage))&&(!st||(st==="none"?!c.store:c.store===st))&&(!ty||(c.employmentType||"").toLowerCase()===ty.toLowerCase()));
   if(q){ const qd=q.replace(/\D/g,""); list=list.filter(c=>[c.name,c.email,c.employer,c.jobTitle,c.skills,c.position,c.hireFor,c.address,notesText(c)].join(" ").toLowerCase().includes(q)||(qd.length>=3&&digits(c.phone).includes(qd))); }
   if(sort==="name") list.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
   else if(sort==="start") list.sort((a,b)=>(a.startDate||"9999").localeCompare(b.startDate||"9999"));
@@ -977,6 +984,7 @@ function visible(){
 function renderPipe(){
   const counts={}; candidates.forEach(c=>counts[c.stage||"new"]=(counts[c.stage||"new"]||0)+1);
   $("#pipe").innerHTML=`<button class="chip" aria-pressed="${!filterStage}" data-stage=""><span>All</span><span class="n">${candidates.length}</span></button>`+
+    `<button class="chip waitchip" aria-pressed="${filterStage==="__waiting"}" data-stage="__waiting"><span class="sw" style="background:var(--s-int)"></span><span>Waiting on store</span><span class="n">${candidates.filter(isWaiting).length}</span></button>`+
     STAGES.map(s=>`<button class="chip" aria-pressed="${filterStage===s.id}" data-stage="${s.id}"><span class="sw" style="background:var(${s.c})"></span><span>${s.label}</span><span class="n">${counts[s.id]||0}</span></button>`).join("");
   $("#tabCount").textContent=candidates.length||"";
 }
@@ -991,7 +999,7 @@ function renderRows(){
     <td class="notecell">${noteCell(c)}</td>
     <td class="hide-sm">${daysHtml(c)}</td>
     <td class="mono">${esc(fmtDate(c.startDate)||"—")}</td>
-    <td>${pill(c.stage)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
+    <td>${pill(c.stage)}${waitPill(c)?`<div>${waitPill(c)}</div>`:""}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
   </tr>`).join("");
 }
 
@@ -1023,7 +1031,28 @@ async function saveTemplates(){
 
 /* ---------- drawer ---------- */
 let confirmDelete=false, mailStage=null, mailLang=null;
-let editContact=false, confirmNoteDel=null;
+let editContact=false, confirmNoteDel=null, askingStore=false;
+const CHECK_REASONS=["In-person interview","Availability match","OK to hire","Other"];
+function isWaiting(c){ return c.storeCheck?.status==="waiting"; }
+function waitDays(c){ return Math.floor((Date.now()-(c.storeCheck?.askedAt||Date.now()))/864e5); }
+function waitLabel(c){ const d=waitDays(c); return d<1?"today":d===1?"1 day":d+" days"; }
+function waitPill(c){ if(!isWaiting(c)) return ""; const d=waitDays(c);
+  return `<span class="waitpill${d>=2?" late":""}" title="${esc(c.storeCheck.reason||"")}">Waiting on ${esc(c.store||"store")} · ${d<1?"today":d+"d"}</span>`; }
+function storeCheckSection(c){
+  const sc=c.storeCheck||null, storeName=c.store||"the store";
+  if(isWaiting(c)) return `<div class="d-sec checkbox waiting"><h3>Waiting on store</h3>
+      <div><b>${esc(sc.reason||"Store check")}</b> · asked ${esc(storeName)} ${esc(fmtDateTime(sc.askedAt))}${sc.askedBy?` by ${esc(sc.askedBy)}`:""} <span class="small">(${esc(waitLabel(c))})</span></div>
+      ${sc.note?`<div class="pre">${esc(sc.note)}</div>`:""}
+      <div class="row-actions"><button class="btn sm primary" data-check="approved">Store approved</button><button class="btn sm" data-check="declined">Store passed</button><button class="btn sm ghost" data-check="cancel">Cancel request</button></div></div>`;
+  if(askingStore) return `<div class="d-sec checkbox"><h3>Check with ${esc(storeName)}</h3>
+      ${c.store?"":`<div class="warn">Set the store above first so you know who you’re waiting on.</div>`}
+      <div class="d-grid"><label>What are you asking?<select id="ckReason">${CHECK_REASONS.map(r=>`<option>${r}</option>`).join("")}</select></label>
+      <label>Note (optional)<input id="ckNote" placeholder="e.g. Sent to Gustavo, asked about weekend availability" autocomplete="off"></label></div>
+      <div class="row-actions"><button class="btn sm primary" data-check="start">Mark waiting on store</button><button class="btn sm ghost" data-check="close">Cancel</button></div></div>`;
+  const last=sc&&sc.status!=="waiting"?`<span class="small">Last check: ${esc(sc.reason||"")} · ${sc.status==="approved"?"approved":sc.status==="declined"?"store passed":"cancelled"} ${esc(fmtDateTime(sc.answeredAt))}</span>`:"";
+  return `<div class="d-sec"><div class="row-actions"><button class="btn sm" data-check="ask">Check with store</button>${last}</div></div>`;
+}
+
 function latestNote(c){ const l=(c.notesLog||[]).slice().sort((a,b)=>b.at-a.at); if(l.length) return {n:l[0],more:l.length-1+(c.notes&&c.notes.trim()?1:0)}; if(c.notes&&c.notes.trim()) return {n:{text:c.notes,at:null},more:0}; return null; }
 function noteCell(c){
   const ln=latestNote(c);
@@ -1052,7 +1081,7 @@ function renderDrawer(){
   const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
   if(!c){ host.innerHTML=""; openId=null; return; }
   const active=document.activeElement, keepId=active&&active.id;
-  const typing=["dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
+  const typing=["ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
   if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
   const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
@@ -1072,6 +1101,7 @@ function renderDrawer(){
       <label>Screen / interview time<input id="dWhen" type="datetime-local" value="${esc(c.interviewDate||"")}"></label>
       <label>Handled by<select id="dWho">${people.map(s=>`<option ${c.interviewer===s?"selected":""}>${esc(s)}</option>`).join("")}</select></label>
     </div>
+    ${storeCheckSection(c)}
 
     ${["offer","hired"].includes(c.stage)||c.offerRate?`
     <div class="d-sec offerbox"><h3 style="color:var(--s-offer)">Job offer</h3>
@@ -1159,7 +1189,7 @@ function refreshMail(c){
       <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
     ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
 }
-function openDrawer(id){ openId=id; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; renderDrawer(); }
+function openDrawer(id){ openId=id; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
 function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; }
 
 /* ---------- storage ---------- */
@@ -1346,6 +1376,18 @@ $("#drawerHost").addEventListener("click",async e=>{
   const cm=t.closest("[data-copymail]"); if(cm){ const m=emailFor(c,mailStage||c.stage,mailLang||(isSpanish(c)?"es":"en")); return copyText(cm.dataset.copymail==="s"?m.s:m.b, cm.dataset.copymail==="s"?"Subject copied.":"Message copied. Paste it into Outlook."); }
   const cp=t.closest("[data-copy]"); if(cp) return copyText(cp.dataset.copy);
   if(t.id==="addOffer"){ patch(openId,{offerType:c.employmentType||"",offerPer:"hour"}).catch(()=>{}); return; }
+  const ck=t.closest("[data-check]");
+  if(ck){ const a=ck.dataset.check, who=myName(), now=Date.now();
+    if(a==="ask"){ askingStore=true; renderDrawer(); return; }
+    if(a==="close"){ askingStore=false; renderDrawer(); return; }
+    if(a==="start"){ const reason=$("#ckReason").value, note=$("#ckNote").value.trim(); askingStore=false; document.activeElement?.blur();
+      await patch(openId,{storeCheck:{status:"waiting",reason,note,store:c.store||"",askedAt:now,askedBy:who},
+        notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Asked ${c.store||"the store"}: ${reason}${note?" — "+note:""}`,at:now,by:who}]}).then(()=>toast(`Marked waiting on ${c.store||"store"}.`)).catch(()=>{}); return; }
+    if(["approved","declined","cancel"].includes(a)){ const sc=c.storeCheck||{};
+      const word=a==="approved"?"approved":a==="declined"?"passed":"request cancelled";
+      await patch(openId,{storeCheck:{...sc,status:a==="cancel"?"cancelled":a,answeredAt:now,answeredBy:who},
+        notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`${sc.store||c.store||"Store"} ${word}: ${sc.reason||"store check"}`,at:now,by:who}]}).then(()=>toast(a==="approved"?"Store approved. Logged in notes.":a==="declined"?"Store passed. Logged in notes.":"Request cancelled.")).catch(()=>{}); return; }
+  }
   if(t.id==="addNote"){ const text=$("#dNote").value.trim(); if(!text){ $("#dNote").focus(); return; }
     const n={id:"n"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),text,at:Date.now(),by:myName()};
     $("#dNote").value=""; t.blur();
