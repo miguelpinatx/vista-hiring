@@ -1081,7 +1081,7 @@ function renderDrawer(){
   const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
   if(!c){ host.innerHTML=""; openId=null; return; }
   const active=document.activeElement, keepId=active&&active.id;
-  const typing=["ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
+  const typing=["dWhen","dOStart","ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
   if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
   const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
@@ -1415,6 +1415,9 @@ $("#drawerHost").addEventListener("submit",async e=>{
   if(other) return msg(`${other.name} already has that phone or email.`);
   editContact=false; document.activeElement?.blur();
   await patch(openId,{name,phone:phone?fmtPhone(phone):"",email,address,contactEditedAt:Date.now(),contactEditedBy:myName()}).then(()=>toast("Contact updated.")).catch(()=>{});
+});
+$("#drawerHost").addEventListener("focusout",e=>{
+  if(["dWhen","dOStart"].includes(e.target.id)) setTimeout(()=>{ if(openId&&!["dWhen","dOStart"].includes(document.activeElement?.id)) renderDrawer(); },150);
 });
 const FIELD={dStore:"store",dWho:"interviewer",dWhen:"interviewDate",dHireFor:"hireFor",dRate:"offerRate",dPer:"offerPer",dOType:"offerType",dHours:"offerHours",dOStart:"offerStart",dResp:"offerResponse",
   fhReq:"fhReq",tabcReq:"tabcReq"};
