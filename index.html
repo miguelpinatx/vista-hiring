@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Vista Hiring Tracker</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#834B9E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -218,6 +220,17 @@ table.main tr:last-child td{border-bottom:none}
 .cbadge{display:inline-block;font-size:.68rem;font-weight:600;padding:1px 6px;border-radius:4px;margin:4px 4px 0 0;white-space:nowrap}
 .cbadge.ok{background:color-mix(in srgb,var(--s-hired) 16%,transparent);color:var(--s-hired)}
 .cbadge.need{background:color-mix(in srgb,var(--s-int) 18%,transparent);color:var(--s-int)}
+.brandrow{display:flex;align-items:center;gap:12px}
+.brandrow .logo{height:44px;width:auto;display:block}
+.auth-card .brandrow{flex-direction:column;align-items:flex-start;gap:6px}
+.auth-card .brandrow .logo{height:56px}
+.notecell{max-width:280px}
+.notebtn{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;cursor:pointer;width:100%;border-radius:6px;padding:4px 6px;margin:-4px -6px}
+.notebtn:hover{background:var(--purple-soft)}
+.notebtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.notebtn .snip{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.85rem;overflow-wrap:anywhere}
+.notebtn.empty{color:var(--muted);font-size:.8rem;font-weight:600}
+@media (max-width:640px){ .brandrow .logo{height:34px} .brandrow h1{font-size:1.15rem} .notecell{max-width:none} .notebtn{background:var(--sunk);margin:0;padding:8px 10px} }
 .note-add{display:flex;flex-direction:column;gap:6px}
 .note-add textarea{min-height:64px}
 .notes{display:flex;flex-direction:column;gap:8px}
@@ -284,7 +297,7 @@ table.main tr:last-child td{border-bottom:none}
   table.main tr.row td:nth-child(6){grid-column:2;grid-row:2;text-align:right}
   table.main tr.row td:nth-child(6)::before{content:"Start ";color:var(--muted);font-family:var(--body)}
   table.main tr.row td:nth-child(3){grid-column:1/-1;grid-row:3}
-  table.main tr.row td:nth-child(4){display:none}
+  table.main tr.row td:nth-child(4){grid-column:1/-1;grid-row:5}
   table.main tr.row td:nth-child(5){grid-column:1/-1;grid-row:4}
   table.main tr:not(.row) td{display:block;border:none}
   /* drawer full-screen */
@@ -324,7 +337,7 @@ img{max-width:100%}
 <body>
 <main class="auth" id="authGate">
   <form class="auth-card" id="authForm" novalidate>
-    <h1>Hiring Tracker<span class="dot" aria-hidden="true"></span></h1>
+    <div class="brandrow"><img src="logo.png" alt="Vista Markets" class="logo"><h1>Hiring Tracker</h1></div>
     <h2 id="authTitle">Sign in</h2>
     <label class="field" id="aEmailWrap">Email<input id="aEmail" type="email" autocomplete="email" required></label>
     <label class="field" id="aPassWrap">Password<input id="aPass" type="password" autocomplete="current-password" minlength="8"></label>
@@ -338,7 +351,7 @@ img{max-width:100%}
 <div class="wrap">
   <header>
     <div>
-      <h1>Hiring Tracker<span class="dot" aria-hidden="true"></span></h1>
+      <div class="brandrow"><img src="logo.png" alt="Vista Markets" class="logo"><h1>Hiring Tracker</h1></div>
       <p class="sub">Vista Markets applicants, from application to first shift.</p>
     </div>
     <div class="filters">
@@ -351,6 +364,7 @@ img{max-width:100%}
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="dashboard" aria-selected="true">Dashboard</button>
     <button role="tab" data-tab="applicants" aria-selected="false">Applicants<span class="count" id="tabCount"></span></button>
+    <button role="tab" data-tab="add" aria-selected="false">Add applicant</button>
     <button role="tab" data-tab="templates" aria-selected="false">Email templates</button>
     <button role="tab" data-tab="stores" aria-selected="false">Stores</button>
     <button role="tab" data-tab="team" aria-selected="false">Team</button>
@@ -382,6 +396,29 @@ img{max-width:100%}
 
   <!-- APPLICANTS -->
   <section class="view" id="v-applicants" hidden>
+
+    <div class="pipe" id="pipe" role="group" aria-label="Filter by stage"></div>
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search name, phone, past employer, skills…" aria-label="Search">
+      <select id="fStore" aria-label="Store"></select>
+      <select id="fType" aria-label="Employment type">
+        <option value="">Full &amp; part-time</option><option>Full-time</option><option>Part-time</option>
+      </select>
+      <select id="fSort" aria-label="Sort">
+        <option value="new">Newest first</option><option value="start">Soonest start date</option><option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div class="tablewrap">
+      <table class="main">
+        <thead><tr>
+          <th>Applicant</th><th>Store</th><th>Wants</th><th>Recent notes</th><th class="hide-sm">Available</th><th>Start</th><th>Stage</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="view" id="v-add" hidden>
     <div class="row-actions">
       <div class="seg" role="group" aria-label="How to add"><button data-addmode="paste" aria-pressed="true">Paste email</button><button data-addmode="manual" aria-pressed="false">Enter manually</button></div>
     </div>
@@ -420,26 +457,6 @@ img{max-width:100%}
       </div>
       <div class="preview" id="preview" aria-live="polite"></div>
     </section>
-
-    <div class="pipe" id="pipe" role="group" aria-label="Filter by stage"></div>
-    <div class="filters">
-      <input id="q" type="search" placeholder="Search name, phone, past employer, skills…" aria-label="Search">
-      <select id="fStore" aria-label="Store"></select>
-      <select id="fType" aria-label="Employment type">
-        <option value="">Full &amp; part-time</option><option>Full-time</option><option>Part-time</option>
-      </select>
-      <select id="fSort" aria-label="Sort">
-        <option value="new">Newest first</option><option value="start">Soonest start date</option><option value="name">Name A–Z</option>
-      </select>
-    </div>
-    <div class="tablewrap">
-      <table class="main">
-        <thead><tr>
-          <th>Applicant</th><th>Store</th><th>Wants</th><th class="hide-sm">Last job</th><th class="hide-sm">Available</th><th>Start</th><th>Stage</th>
-        </tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
   </section>
 
   <!-- TEMPLATES -->
@@ -965,13 +982,13 @@ function renderPipe(){
 }
 function renderRows(){
   const list=visible(), tb=$("#rows");
-  if(!candidates.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">No applicants yet. Paste an application email above to add the first one.</div></td></tr>`; return; }
+  if(!candidates.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">No applicants yet. Use the Add applicant tab to add the first one.</div></td></tr>`; return; }
   if(!list.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">Nobody matches these filters.</div></td></tr>`; return; }
   tb.innerHTML=list.map(c=>`<tr class="row" data-id="${esc(c.id)}" tabindex="0">
     <td><div class="nm">${esc(c.name||"(no name)")}${isSpanish(c)?`<span class="lang">ES</span>`:""}</div><div class="small mono">${esc(c.phone||"")}</div><div class="small">Applied ${esc(ago(c.createdAt))}</div></td>
     <td><span class="store">${esc(c.store||"—")}</span></td>
     <td>${wants(c)}</td>
-    <td class="hide-sm">${esc(c.jobTitle||"—")}<div class="small">${esc(c.employer||"")}</div></td>
+    <td class="notecell">${noteCell(c)}</td>
     <td class="hide-sm">${daysHtml(c)}</td>
     <td class="mono">${esc(fmtDate(c.startDate)||"—")}</td>
     <td>${pill(c.stage)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
@@ -1007,6 +1024,14 @@ async function saveTemplates(){
 /* ---------- drawer ---------- */
 let confirmDelete=false, mailStage=null, mailLang=null;
 let editContact=false, confirmNoteDel=null;
+function latestNote(c){ const l=(c.notesLog||[]).slice().sort((a,b)=>b.at-a.at); if(l.length) return {n:l[0],more:l.length-1+(c.notes&&c.notes.trim()?1:0)}; if(c.notes&&c.notes.trim()) return {n:{text:c.notes,at:null},more:0}; return null; }
+function noteCell(c){
+  const ln=latestNote(c);
+  if(!ln) return `<button class="notebtn empty" data-notes="${esc(c.id)}">+ Add note</button>`;
+  const when=ln.n.at?new Date(ln.n.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}):"Earlier";
+  return `<button class="notebtn" data-notes="${esc(c.id)}"><span class="snip">${esc(ln.n.text)}</span><span class="small">${esc(when)}${ln.n.by?` · ${esc(ln.n.by)}`:""}${ln.more?` · +${ln.more} more`:""}</span></button>`;
+}
+function openNotes(id){ openDrawer(id); requestAnimationFrame(()=>{ const sec=document.getElementById("notesSec"); if(sec){ sec.scrollIntoView({block:"start"}); document.getElementById("dNote")?.focus({preventScroll:true}); } }); }
 function myName(){ return staffRow?.name||me?.email||"Miguel"; }
 function notesText(c){ return [...(c.notesLog||[]).map(n=>n.text), c.notes||""].join(" "); }
 function notesForCsv(c){
@@ -1072,7 +1097,7 @@ function renderDrawer(){
       <div id="mailBox"></div>
     </div>
 
-    <div class="d-sec"><h3>Notes</h3>
+    <div class="d-sec" id="notesSec"><h3>Notes</h3>
       <div class="note-add"><textarea id="dNote" placeholder="Add a note: phone screen, follow-up, reference check…"></textarea>
         <div><button class="btn sm primary" id="addNote">Add note</button></div></div>
       <div class="notes">${noteList(c)}</div></div>
@@ -1142,7 +1167,8 @@ function lsLoad(){ try{ return JSON.parse(localStorage.getItem("vista-hiring-loc
 function lsSave(){ try{ localStorage.setItem("vista-hiring-local",JSON.stringify(candidates)); }catch{} }
 async function saveDoc(c){
   const {id,...body}=c;
-  if(db){ try{ await db.collection("candidates").doc(id).set(body); }catch(e){ toast(e.code==="invalid_argument"?"You have view-only access, so changes can’t be saved.":"Couldn’t save. Try again in a moment."); throw e; } }
+  if(db){ try{ await db.collection("candidates").doc(id).set(body); }catch(e){ toast(e.code==="invalid_argument"?"You have view-only access, so changes can’t be saved.":"Couldn’t save. Try again in a moment."); throw e; }
+    const i=candidates.findIndex(x=>x.id===id); if(i>=0) candidates[i]={...c}; else { candidates.push({...c}); renderAll(); } }
   else { const i=candidates.findIndex(x=>x.id===id); if(i>=0) candidates[i]=c; else candidates.push(c); lsSave(); renderAll(); }
 }
 async function patch(id,changes){
@@ -1152,7 +1178,7 @@ async function patch(id,changes){
   if(db) await saveDoc(next); else lsSave();
 }
 async function removeDoc(id){
-  if(db) await db.collection("candidates").doc(id).delete();
+  if(db){ await db.collection("candidates").doc(id).delete(); candidates=candidates.filter(c=>c.id!==id); renderAll(); }
   else { candidates=candidates.filter(c=>c.id!==id); lsSave(); renderAll(); }
 }
 function newId(){ return "c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
@@ -1184,11 +1210,12 @@ async function exportCsv(){
 /* ---------- ui wiring ---------- */
 let toastT; function toast(m){ $("#toastHost").innerHTML=`<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toastT); toastT=setTimeout(()=>$("#toastHost").innerHTML="",2600); }
 async function copyText(t,label){ try{ await navigator.clipboard.writeText(t); toast(label||"Copied."); }catch{ toast("Copy is blocked here. Select the text and copy it instead."); } }
-function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
+function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
 function renderAll(){
   renderPipe();
   if(tab==="dashboard") renderDashboard();
-  if(tab==="applicants"){ renderRows(); renderPreview(); }
+  if(tab==="applicants") renderRows();
+  if(tab==="add") renderPreview();
   if(tab==="templates") renderTemplates();
   if(tab==="stores") renderStores();
   if(tab==="team"&&sb) renderTeam();
@@ -1258,7 +1285,7 @@ $("#addBtn").onclick=addParsed;
 /* manual entry */
 document.querySelector(".daypick").innerHTML=DAYS.map(d=>`<label><input type="checkbox" value="${d}">${d.slice(0,3)}</label>`).join("");
 function fillManStores(){ const v=$("#mStore").value; $("#mStore").innerHTML=`<option value="">Not sure yet</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join(""); if([...$("#mStore").options].some(o=>o.value===v)) $("#mStore").value=v; }
-$("#v-applicants").addEventListener("click",e=>{ const b=e.target.closest("[data-addmode]"); if(!b) return;
+$("#v-add").addEventListener("click",e=>{ const b=e.target.closest("[data-addmode]"); if(!b) return;
   const man=b.dataset.addmode==="manual";
   document.querySelectorAll("[data-addmode]").forEach(x=>x.setAttribute("aria-pressed",x===b));
   $("#manualPanel").hidden=!man; $("#pastePanel").hidden=man;
@@ -1284,7 +1311,7 @@ $("#manForm").addEventListener("submit",async e=>{ e.preventDefault();
 $("#manualPanel").addEventListener("click",e=>{ const b=e.target.closest("[data-open-dup]"); if(b) openDrawer(b.dataset.openDup); });
 ["#q","#fStore","#fType","#fSort"].forEach(s=>$(s).addEventListener("input",renderRows));
 $("#pipe").addEventListener("click",e=>{ const b=e.target.closest("[data-stage]"); if(!b) return; filterStage=b.dataset.stage; renderPipe(); renderRows(); });
-$("#rows").addEventListener("click",e=>{ const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); });
+$("#rows").addEventListener("click",e=>{ const nb=e.target.closest("[data-notes]"); if(nb){ e.stopPropagation(); openNotes(nb.dataset.notes); return; } const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); });
 $("#rows").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); }});
 $("#exportBtn").onclick=exportCsv;
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&openId) closeDrawer(); });
@@ -1525,7 +1552,7 @@ $("#v-team").addEventListener("click",async e=>{
 });
 
 /* ---------- boot ---------- */
-setTab(["#applicants","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
+setTab(["#applicants","#add","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
 (async()=>{
   if(!SUPABASE_ANON_KEY.startsWith("eyJ")&&!SUPABASE_ANON_KEY.startsWith("sb_publishable_")||!window.supabase){
     showAuth("setup","This site isn’t connected to its database yet. Paste the Supabase anon key into config.js in the GitHub repo.",true); return;
