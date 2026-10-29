@@ -225,6 +225,7 @@ table.main tr:last-child td{border-bottom:none}
 .fp .r{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .fp-fit{font-size:.82rem;color:var(--s-future);font-weight:600;margin-top:3px}
 .fp-note{margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.calrow{justify-content:space-between;background:var(--sunk);border-radius:8px;padding:8px 10px}
 .waitpill{display:inline-block;margin-top:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--s-int) 16%,transparent);color:var(--s-int);white-space:nowrap}
 .waitpill.late{background:var(--s-int);color:#fff}
 .checkbox{border:1px dashed var(--line);border-radius:10px;padding:12px}
@@ -585,7 +586,7 @@ const DEPTS=["Cashier","Head Cashier","Stocker","Pricing","Office","Hot Deli","C
 const DEFAULT_TPL={
  new:{en:{s:"We received your application – Vista Markets",b:`Hi {first_name},
 
-Thank you for applying to Vista Markets! We received your application for {position} at our {store} store.
+Thank you for applying to Vista Markets! We received your application for {position} at {store_name}.
 
 Our team is reviewing it now. If your experience is a good fit, we'll call you at {phone} within the next few days to set up a quick phone screen.
 
@@ -595,7 +596,7 @@ Vista Markets
 {sender_phone}`},
   es:{s:"Recibimos su solicitud – Vista Markets",b:`Hola {first_name},
 
-¡Gracias por aplicar a Vista Markets! Recibimos su solicitud para {position} en nuestra tienda {store}.
+¡Gracias por aplicar a Vista Markets! Recibimos su solicitud para {position} en {store_name}.
 
 Nuestro equipo la está revisando. Si su experiencia es una buena opción, le llamaremos al {phone} en los próximos días para una breve entrevista por teléfono.
 
@@ -605,7 +606,7 @@ Vista Markets
 {sender_phone}`}},
  screen:{en:{s:"Quick phone call about your Vista Markets application",b:`Hi {first_name},
 
-Thanks again for applying to Vista Markets. I'd like to set up a short phone call (about 10 minutes) to learn more about you and talk about openings at our {store} store.
+Thanks again for applying to Vista Markets. I'd like to set up a short phone call (about 10 minutes) to learn more about you and talk about openings at {store_name}.
 
 I have you down for {interview_time}. If that time doesn't work, just reply to this email or call me at {sender_phone} and we'll find another time.
 
@@ -614,101 +615,145 @@ Talk soon,
 Vista Markets`},
   es:{s:"Llamada breve sobre su solicitud en Vista Markets",b:`Hola {first_name},
 
-Gracias otra vez por aplicar a Vista Markets. Me gustaría hacerle una llamada corta (unos 10 minutos) para conocerle mejor y hablar de las vacantes en nuestra tienda {store}.
+Gracias otra vez por aplicar a Vista Markets. Me gustaría hacerle una llamada corta (unos 10 minutos) para conocerle mejor y hablar de las vacantes en {store_name}.
 
 Le tengo programado(a) para el {interview_time}. Si ese horario no le funciona, responda a este correo o llámeme al {sender_phone} y buscamos otro horario.
 
 Saludos,
 {sender_name}
 Vista Markets`}},
- interview:{en:{s:"Interview invitation – Vista Markets {store}",b:`Hi {first_name},
+ interview:{en:{s:"Interview invitation – {store_name}",b:`Hi {first_name},
 
-We'd like to invite you to an in-person interview for the {position} position at our {store} store.
+We'd like to invite you to an in-person interview for the {position} position at {store_name}.
 
 When: {interview_time}
-Where: Vista Markets {store} – please ask for the store manager at the front office.
+Where: {store_name}, {store_address}
+Ask for: the store manager at the front desk
 
-Please bring a photo ID and your food handler card if you have one. Plan for about 20–30 minutes.
-
-If you need to reschedule, call me at {sender_phone}.
+The interview takes about 20–30 minutes. If you need to reschedule, call or text me at {sender_phone}.
 
 See you then,
 {sender_name}
 Vista Markets`},
-  es:{s:"Invitación a entrevista – Vista Markets {store}",b:`Hola {first_name},
+  es:{s:"Invitación a entrevista – {store_name}",b:`Hola {first_name},
 
-Le invitamos a una entrevista en persona para el puesto de {position} en nuestra tienda {store}.
+Le invitamos a una entrevista en persona para el puesto de {position} en {store_name}.
 
 Cuándo: {interview_time}
-Dónde: Vista Markets {store} – pregunte por el gerente de tienda en la oficina de enfrente.
+Dónde: {store_name}, {store_address}
+Pregunte por: el gerente de tienda en el mostrador de enfrente
 
-Por favor traiga una identificación con foto y su tarjeta de manejo de alimentos si la tiene. La entrevista dura unos 20–30 minutos.
-
-Si necesita cambiar la cita, llámeme al {sender_phone}.
+La entrevista dura unos 20–30 minutos. Si necesita cambiar la cita, llámeme o mándeme un mensaje al {sender_phone}.
 
 Nos vemos,
 {sender_name}
 Vista Markets`}},
- offer:{en:{s:"Job offer – {position} at Vista Markets {store}",b:`Hi {first_name},
+ offer:{en:{s:"Job offer – {position} at {store_name}",b:`Hi {first_name},
 
-Congratulations! We're happy to offer you the position of {position} at our {store} store.
+Congratulations! We're happy to offer you the {position} position at {store_name}.
 
-Here are the details:
+Offer details
+• Location: {store_name}, {store_address}
 • Pay: {pay}
 • Schedule: {employment_type}, about {hours} hours per week
-• Start date: {offer_start}
 
-Please reply to this email or call me at {sender_phone} by {respond_by} to accept. Once you accept, we'll send your first-day details and new-hire paperwork.
+Next steps before your start date
 
-We're excited to have you on the team!
+1. Complete onboarding with our staffing agency, in person.
+   T&T Staff Management
+   511 Executive Center Blvd, El Paso, TX 79902
+   Monday–Friday, 8:00 AM – 5:00 PM · (915) 771-0393
+   Bring a valid photo ID and your Social Security card. Once you finish, let me know.
 
+2. Food Handler card (required). If you already have a valid one, send me a copy. If not, complete the Texas Food Handler course online (about 2 hours, $8.99):
+   {food_handler_link}
+
+3. TABC certification (if your position requires it). If you already have a valid one, send me a copy. If not, complete the TABC seller-server course online (about 2 hours):
+   {tabc_link}
+
+Once all steps are done, bring a copy of your cards to the store and send me a copy as well. Then we'll set your start date.
+
+Please reply to accept by {respond_by}, or call me at {sender_phone} with any questions.
+
+Welcome aboard!
 {sender_name}
 Vista Markets`},
-  es:{s:"Oferta de trabajo – {position} en Vista Markets {store}",b:`Hola {first_name},
+  es:{s:"Oferta de trabajo – {position} en {store_name}",b:`Hola {first_name},
 
-¡Felicidades! Nos da gusto ofrecerle el puesto de {position} en nuestra tienda {store}.
+¡Felicidades! Nos da gusto ofrecerle el puesto de {position} en {store_name}.
 
-Estos son los detalles:
+Detalles de la oferta
+• Lugar: {store_name}, {store_address}
 • Pago: {pay}
 • Horario: {employment_type}, aproximadamente {hours} horas por semana
-• Fecha de inicio: {offer_start}
 
-Por favor responda a este correo o llámeme al {sender_phone} antes del {respond_by} para aceptar. Cuando acepte, le enviaremos los detalles de su primer día y los documentos de nuevo empleado.
+Pasos antes de su fecha de inicio
 
-¡Nos emociona tenerle en el equipo!
+1. Complete su registro con nuestra agencia de personal, en persona.
+   T&T Staff Management
+   511 Executive Center Blvd, El Paso, TX 79902
+   Lunes a viernes, 8:00 a. m. – 5:00 p. m. · (915) 771-0393
+   Traiga una identificación con foto vigente y su tarjeta de Seguro Social. Cuando termine, avíseme.
 
+2. Tarjeta de manejo de alimentos (obligatoria). Si ya tiene una vigente, mándeme una copia. Si no, complete el curso de manipulador de alimentos de Texas en línea (unas 2 horas, $8.99):
+   {food_handler_link}
+
+3. Certificación TABC (si su puesto la requiere). Si ya tiene una vigente, mándeme una copia. Si no, complete el curso TABC en línea (unas 2 horas, disponible en español):
+   {tabc_link}
+
+Cuando termine todos los pasos, lleve una copia de sus tarjetas a la tienda y mándeme una copia también. Después fijaremos su fecha de inicio.
+
+Por favor responda para aceptar antes del {respond_by}, o llámeme al {sender_phone} si tiene preguntas.
+
+¡Bienvenido(a) al equipo!
 {sender_name}
 Vista Markets`}},
- hired:{en:{s:"Welcome to Vista Markets! Your first day",b:`Hi {first_name},
+ hired:{en:{s:"Your first day at {store_name}",b:`Hi {first_name},
 
-Welcome to the Vista Markets team! Here's what you need for your first day:
+You're all set! Here are your first-day details:
 
 • Date: {offer_start}
-• Store: Vista Markets {store}
-• Position: {position}
-• Pay: {pay}
+• Time: {start_time}
+• Report to: {store_name}, {store_address}
+• Ask for: the store manager at the front desk
 
-Please arrive 10 minutes early and check in with the store manager. Bring a photo ID, your Social Security card or other work authorization documents, and your food handler card if you have one. Wear closed-toe, non-slip shoes.
+What to expect on your first day
+You'll meet your manager and team, get a tour of the store and your department, review safety and food-safety basics, and begin hands-on training in your area.
 
-Questions before then? Call me at {sender_phone}.
+Dress code
+• Black or white polo or shirt
+• Black or khaki pants
+• Non-slip shoes
 
-Glad to have you,
+Hairnets and gloves are provided in each department.
+
+Questions before then? Call or text me at {sender_phone}.
+
+We're glad to have you on the team!
 {sender_name}
 Vista Markets`},
-  es:{s:"¡Bienvenido(a) a Vista Markets! Su primer día",b:`Hola {first_name},
+  es:{s:"Su primer día en {store_name}",b:`Hola {first_name},
 
-¡Bienvenido(a) al equipo de Vista Markets! Esto es lo que necesita para su primer día:
+¡Todo listo! Estos son los detalles de su primer día:
 
 • Fecha: {offer_start}
-• Tienda: Vista Markets {store}
-• Puesto: {position}
-• Pago: {pay}
+• Hora: {start_time}
+• Presentarse en: {store_name}, {store_address}
+• Pregunte por: el gerente de tienda en el mostrador de enfrente
 
-Por favor llegue 10 minutos antes y preséntese con el gerente de tienda. Traiga una identificación con foto, su tarjeta de Seguro Social u otros documentos de autorización de trabajo, y su tarjeta de manejo de alimentos si la tiene. Use zapatos cerrados y antiderrapantes.
+Qué esperar en su primer día
+Conocerá a su gerente y a su equipo, hará un recorrido por la tienda y su departamento, repasará lo básico de seguridad e higiene de alimentos y comenzará su capacitación práctica en su área.
 
-¿Preguntas antes de ese día? Llámeme al {sender_phone}.
+Código de vestimenta
+• Polo o camisa negra o blanca
+• Pantalón negro o caqui
+• Zapatos antiderrapantes
 
-Con gusto,
+Las redecillas y los guantes se proporcionan en cada departamento.
+
+¿Preguntas antes de ese día? Llámeme o mándeme un mensaje al {sender_phone}.
+
+¡Nos da gusto tenerle en el equipo!
 {sender_name}
 Vista Markets`}},
  future:{en:{s:"Staying in touch – Vista Markets",b:`Hi {first_name},
@@ -749,7 +794,7 @@ Le deseamos lo mejor,
 Vista Markets`}},
  noshow:{en:{s:"Following up on your Vista Markets application",b:`Hi {first_name},
 
-We tried to reach you about your application for {position} at our {store} store but weren't able to connect.
+We tried to reach you about your application for {position} at {store_name} but weren't able to connect.
 
 If you're still interested, please call me at {sender_phone} or reply to this email this week and we'll get you scheduled.
 
@@ -758,7 +803,7 @@ Thank you,
 Vista Markets`},
   es:{s:"Seguimiento a su solicitud en Vista Markets",b:`Hola {first_name},
 
-Intentamos comunicarnos con usted sobre su solicitud para {position} en nuestra tienda {store}, pero no logramos contactarle.
+Intentamos comunicarnos con usted sobre su solicitud para {position} en {store_name}, pero no logramos contactarle.
 
 Si todavía le interesa, por favor llámeme al {sender_phone} o responda a este correo esta semana y le programamos una cita.
 
@@ -767,24 +812,36 @@ Gracias,
 Vista Markets`}}
 };
 const DEFAULT_SMS={
- new:{en:"Hi {first_name}, this is {sender_name} with Vista Markets. We got your application for our {store} store. We'll call you in the next few days to set up a quick phone screen.",
-      es:"Hola {first_name}, le habla {sender_name} de Vista Markets. Recibimos su solicitud para nuestra tienda {store}. Le llamaremos en los próximos días para una breve entrevista por teléfono."},
+ new:{en:"Hi {first_name}, this is {sender_name} with Vista Markets. We got your application for {store_name}. We'll call you in the next few days to set up a quick phone screen.",
+      es:"Hola {first_name}, le habla {sender_name} de Vista Markets. Recibimos su solicitud para {store_name}. Le llamaremos en los próximos días para una breve entrevista por teléfono."},
  screen:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. Can we do a quick 10-minute phone call on {interview_time}? Reply YES or let me know a better time.",
       es:"Hola {first_name}, soy {sender_name} de Vista Markets. ¿Podemos hacer una llamada de 10 minutos el {interview_time}? Responda SÍ o dígame qué horario le funciona mejor."},
- interview:{en:"Hi {first_name}, you're invited to interview at Vista Markets {store} on {interview_time}. Ask for the store manager at the front office and bring a photo ID. Reply to confirm. – {sender_name}",
-      es:"Hola {first_name}, le invitamos a una entrevista en Vista Markets {store} el {interview_time}. Pregunte por el gerente en la oficina y traiga identificación con foto. Responda para confirmar. – {sender_name}"},
- offer:{en:"Congrats {first_name}! Vista Markets would like to offer you the {position} position at {store}: {pay}, {employment_type}, starting {offer_start}. Reply YES to accept or call me at {sender_phone}. – {sender_name}",
-      es:"¡Felicidades {first_name}! Vista Markets le ofrece el puesto de {position} en {store}: {pay}, {employment_type}, empezando el {offer_start}. Responda SÍ para aceptar o llámeme al {sender_phone}. – {sender_name}"},
- hired:{en:"Welcome to Vista Markets, {first_name}! Your first day is {offer_start} at our {store} store. Arrive 10 min early, check in with the manager, and bring your photo ID, work documents and food handler card. – {sender_name}",
-      es:"¡Bienvenido(a) a Vista Markets, {first_name}! Su primer día es el {offer_start} en la tienda {store}. Llegue 10 min antes, preséntese con el gerente y traiga identificación, documentos de trabajo y tarjeta de manejo de alimentos. – {sender_name}"},
+ interview:{en:"Hi {first_name}, you're invited to interview at {store_name} ({store_address}) on {interview_time}. Ask for the store manager at the front desk. Reply to confirm. – {sender_name}",
+      es:"Hola {first_name}, le invitamos a una entrevista en {store_name} ({store_address}) el {interview_time}. Pregunte por el gerente en el mostrador de enfrente. Responda para confirmar. – {sender_name}"},
+ offer:{en:"Congrats {first_name}! Vista Markets is offering you the {position} position at {store_name}, {pay}. Next step: onboarding in person at T&T Staff Management, 511 Executive Center Blvd (Mon–Fri 8–5). Bring your photo ID and Social Security card. Check your email for full details. – {sender_name}",
+      es:"¡Felicidades {first_name}! Vista Markets le ofrece el puesto de {position} en {store_name}, {pay}. Siguiente paso: registro en persona en T&T Staff Management, 511 Executive Center Blvd (lun–vie 8–5). Traiga su identificación con foto y su tarjeta de Seguro Social. Revise su correo para todos los detalles. – {sender_name}"},
+ hired:{en:"Welcome to Vista Markets, {first_name}! Your first day is {offer_start} at {start_time}, {store_name}, {store_address}. Ask for the manager at the front desk. Wear a black or white shirt, black or khaki pants and non-slip shoes. Hairnets and gloves provided. – {sender_name}",
+      es:"¡Bienvenido(a) a Vista Markets, {first_name}! Su primer día es el {offer_start} a las {start_time}, en {store_name}, {store_address}. Pregunte por el gerente en el mostrador. Use camisa negra o blanca, pantalón negro o caqui y zapatos antiderrapantes. Se proporcionan redecillas y guantes. – {sender_name}"},
  future:{en:"Hi {first_name}, thank you for talking with Vista Markets. We don't have the right opening right now, but we'll keep your application on file and reach out first when one fits. – {sender_name}",
       es:"Hola {first_name}, gracias por hablar con Vista Markets. Por ahora no tenemos la vacante adecuada, pero guardaremos su solicitud y le contactaremos primero cuando haya una. – {sender_name}"},
  declined:{en:"Hi {first_name}, thank you for applying to Vista Markets. We won't be moving forward right now, but you're welcome to apply again in the future. – {sender_name}",
       es:"Hola {first_name}, gracias por aplicar a Vista Markets. Por ahora no continuaremos con su solicitud, pero puede volver a aplicar en el futuro. – {sender_name}"},
- noshow:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. We tried to reach you about your application for {store}. Still interested? Reply here or call {sender_phone}.",
-      es:"Hola {first_name}, soy {sender_name} de Vista Markets. Intentamos comunicarnos sobre su solicitud para {store}. ¿Todavía le interesa? Responda aquí o llame al {sender_phone}."}
+ noshow:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. We tried to reach you about your application for {store_name}. Still interested? Reply here or call {sender_phone}.",
+      es:"Hola {first_name}, soy {sender_name} de Vista Markets. Intentamos comunicarnos sobre su solicitud para {store_name}. ¿Todavía le interesa? Responda aquí o llame al {sender_phone}."}
 };
-const TOKENS=["first_name","name","store","position","phone","employment_type","interview_time","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
+const DEFAULT_STORE_INFO={
+  Montana:{name:"Vista Markets Montana",address:"14700 Montana Ave, El Paso, TX 79938",phone:"(915) 849-1155"},
+  Doniphan:{name:"Vista Markets Doniphan",address:"3920 Doniphan Dr, El Paso, TX 79922",phone:"(915) 833-1075"},
+  Central:{name:"Vista Markets Central",address:"2231 N Zaragoza Rd, El Paso, TX 79938",phone:"(915) 921-8210"},
+  Horizon:{name:"Vista Markets Horizon",address:"121 N Kenazo Ave, Horizon City, TX 79928",phone:"(915) 852-2297"},
+  Piedras:{name:"Vista Markets Piedras",address:"3116 N Piedras St, El Paso, TX 79930",phone:"(915) 566-6387"},
+  Urban:{name:"Vista Markets Urban",address:"1960 George Dieter Dr, Ste 2A, El Paso, TX 79936",phone:"(915) 529-2094"},
+  Alameda:{name:"Vista Markets Alameda",address:"10005 Alameda Ave, El Paso, TX 79927",phone:"(915) 858-7991"},
+  Commissary:{name:"El Paso Prepared Foods",address:"950 Pendale Rd, El Paso, TX 79907",phone:"(915) 538-8942"}
+};
+let storeInfoOverrides={}, editingStore=null;
+function storeInfo(name){ const o={...(DEFAULT_STORE_INFO[name]||{}),...(storeInfoOverrides[name]||{})}; if(!o.name&&name) o.name="Vista Markets "+name; return o; }
+const TOKENS=["first_name","name","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
 
 let db=null, downloads=null, candidates=[], parsed=[], filterStage="", openId=null;
 let tplOverrides={}, tplSel={stage:"new",lang:"en",ch:"email"}, tab="dashboard";
@@ -857,7 +914,10 @@ function tokenValues(c,lang){
   const snd=SENDERS[c.interviewer]||SENDERS.Miguel, es=lang==="es";
   const respond=new Date(Date.now()+2*864e5);
   return {
-    first_name:firstName(c.name), name:c.name||"", store:c.store||"", position:c.hireFor||(/open to anything/i.test(c.position||"")?"":c.position)||"",
+    first_name:firstName(c.name), name:c.name||"", store:c.store||"", store_name:c.store?storeInfo(c.store).name:"", store_address:c.store?(storeInfo(c.store).address||""):"", store_phone:c.store?(storeInfo(c.store).phone||""):"",
+    start_time:c.offerStartTime?new Date("2000-01-01T"+c.offerStartTime).toLocaleTimeString(es?"es-MX":"en-US",{hour:"numeric",minute:"2-digit"}):"",
+    food_handler_link:es?"https://www.360training.com/course/curso-de-capacitacion-para-manipuladores-de-alimentos-de-texas":"https://www.360training.com/course/texas-food-handler-training",
+    tabc_link:"https://www.360training.com/course/tabc-seller-server-training", position:c.hireFor||(/open to anything/i.test(c.position||"")?"":c.position)||"",
     phone:c.phone||"", employment_type:es?((c.offerType||c.employmentType||"").replace(/Full-time/i,"tiempo completo").replace(/Part-time/i,"medio tiempo")):(c.offerType||c.employmentType||""),
     interview_time:c.interviewDate?(es?fmtDateTimeES(c.interviewDate):fmtDateTime(c.interviewDate,true)):"",
     pay:payText(c,lang), hours:c.offerHours||"", offer_start:c.offerStart?(es?fmtDateES(c.offerStart):fmtDate(c.offerStart,true)):"",
@@ -1155,7 +1215,7 @@ function renderDrawer(){
   const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
   if(!c){ host.innerHTML=""; openId=null; return; }
   const active=document.activeElement, keepId=active&&active.id;
-  const typing=["dFutureFor","dWhen","dOStart","ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
+  const typing=["dOTime","dFutureFor","dWhen","dOStart","ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
   if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
   const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
@@ -1169,7 +1229,7 @@ function renderDrawer(){
     </div>
     <div class="d-sec"><h3>Stage</h3><div class="stagebar">${STAGES.map(s=>`<button data-setstage="${s.id}" aria-pressed="${c.stage===s.id}" style="${c.stage===s.id?`background:var(${s.c})`:""}">${s.label}</button>`).join("")}</div></div>
     <div class="d-grid">
-      <label>Store<select id="dStore">${storeOpts}</select></label>
+      <label>Store<select id="dStore">${storeOpts}</select>${c.store&&storeInfo(c.store).address?`<span class="small" style="font-weight:400">${esc(storeInfo(c.store).address)}</span>`:""}</label>
       <datalist id="hireList">${[...new Set(openings.filter(o=>o.store===c.store&&openingStats(o).left).map(o=>o.position).concat(DEPTS))].map(p=>`<option value="${esc(p)}">`).join("")}</datalist>
       <label>Hiring for (position)<input id="dHireFor" list="hireList" value="${esc(c.hireFor||"")}" placeholder="${esc(/open to anything/i.test(c.position||"")?"e.g. Cashier":c.position||"e.g. Cashier")}"></label>
       <label>Screen / interview time<input id="dWhen" type="datetime-local" value="${esc(c.interviewDate||"")}"></label>
@@ -1178,6 +1238,8 @@ function renderDrawer(){
     ${c.stage==="future"?`<div class="d-sec checkbox" style="border-color:var(--s-future)"><h3>Future opportunity</h3>
       <label class="field">Good fit for (positions, stores, shifts)<input id="dFutureFor" value="${esc(c.futureFor||"")}" placeholder="e.g. Bakery or cashier at Montana/Horizon, weekends" autocomplete="off"></label>
       <div class="small">They show on the Future pool tab and next to matching openings on the dashboard.</div></div>`:""}
+    ${c.interviewDate&&!isNaN(new Date(c.interviewDate))?`<div class="d-sec"><div class="row-actions calrow"><span class="small"><b>${esc(calKind(c).label)}</b> ${esc(fmtDateTime(c.interviewDate,true))}</span>
+      <span class="row-actions"><button class="btn sm primary" data-ics>Add to Outlook</button><a class="copy" href="${esc(calLinks(c).outlook)}" target="_blank" rel="noopener">Outlook on the web</a></span></div></div>`:""}
     ${storeCheckSection(c)}
 
     ${["offer","hired"].includes(c.stage)||c.offerRate?`
@@ -1189,6 +1251,7 @@ function renderDrawer(){
         <label>Full / part-time<select id="dOType">${["","Full-time","Part-time"].map(v=>`<option value="${v}" ${(c.offerType||c.employmentType||"")===v?"selected":""}>${v||"—"}</option>`).join("")}</select></label>
         <label>Hours per week<input id="dHours" inputmode="numeric" value="${esc(c.offerHours||"")}" placeholder="${(c.offerType||c.employmentType)==="Part-time"?"up to 29":"30+"}"></label>
         <label>Start date<input id="dOStart" type="date" value="${esc(c.offerStart||"")}"></label>
+        <label>Start time<input id="dOTime" type="time" value="${esc(c.offerStartTime||"")}"></label>
         <label>Their answer<select id="dResp">${["","Waiting","Accepted","Declined","Countered"].map(v=>`<option value="${v}" ${(c.offerResponse||"")===v?"selected":""}>${v||"—"}</option>`).join("")}</select></label>
       </div>
       ${hoursFlag(c)}
@@ -1331,6 +1394,36 @@ function renderAll(){
   if(tab==="team"&&sb) renderTeam();
   if(openId) renderDrawer();
 }
+/* ---------- add to calendar ---------- */
+function calKind(c){ const screen=["new","screen"].includes(c.stage); return {screen,label:screen?"Phone screen":"Interview",mins:screen?15:30}; }
+function calEvent(c){
+  const k=calKind(c), start=new Date(c.interviewDate), end=new Date(start.getTime()+k.mins*60000);
+  const info=c.store?storeInfo(c.store):{};
+  const title=`${k.label}: ${c.name}${c.store?" ("+c.store+")":""}`;
+  const location=k.screen?`Call ${c.phone||""}`.trim():[info.name,info.address].filter(Boolean).join(", ");
+  const details=[`${k.label} with ${c.name}`,c.phone&&`Phone: ${c.phone}`,c.email&&`Email: ${c.email}`,(c.hireFor||c.position)&&`Position: ${c.hireFor||c.position}`,c.store&&`Store: ${info.name||c.store}`,isSpanish(c)&&"Prefers Spanish",`Tracker: ${window.location.origin+window.location.pathname}`].filter(Boolean).join("\n");
+  return {title,start,end,location,details};
+}
+function calLinks(c){
+  const e=calEvent(c), z=d=>d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+  return {
+    outlook:`https://outlook.office.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&subject=${encodeURIComponent(e.title)}&startdt=${encodeURIComponent(e.start.toISOString())}&enddt=${encodeURIComponent(e.end.toISOString())}&location=${encodeURIComponent(e.location)}&body=${encodeURIComponent(e.details)}`,
+    google:`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.title)}&dates=${z(e.start)}/${z(e.end)}&location=${encodeURIComponent(e.location)}&details=${encodeURIComponent(e.details)}`
+  };
+}
+function downloadIcs(c){
+  const e=calEvent(c), z=d=>d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+  const esc2=t=>String(t).replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/([,;])/g,"\\$1");
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Vista Markets//Hiring Tracker//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT",
+    `UID:${c.id}-${z(e.start)}@vista-hiring`,`DTSTAMP:${z(new Date())}`,`DTSTART:${z(e.start)}`,`DTEND:${z(e.end)}`,
+    `SUMMARY:${esc2(e.title)}`,`LOCATION:${esc2(e.location)}`,`DESCRIPTION:${esc2(e.details)}`,
+    "BEGIN:VALARM","TRIGGER:-PT15M","ACTION:DISPLAY","DESCRIPTION:Reminder","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const url=URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
+  const a=document.createElement("a"); a.href=url; a.download=`${calKind(c).label.replace(/ /g,"-")}-${(c.name||"applicant").replace(/[^a-z0-9]+/gi,"-")}.ics`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast(/iPhone|iPad|Android/i.test(navigator.userAgent)?"Tap “Add to Calendar” to save it to your Outlook calendar.":"Calendar file downloaded. Open it and Outlook adds the event.");
+}
+
 /* ---------- future pool ---------- */
 function renderFuture(){
   const sel=$("#fpStore"), v=sel.value;
@@ -1423,9 +1516,18 @@ function renderStoreFilter(){
 function renderStores(){
   $("#storeList").innerHTML=STORES.map((s,i)=>{
     const n=candidates.filter(c=>c.store===s).length, o=openings.filter(x=>x.store===s).length;
-    return `<div class="li" style="cursor:default;align-items:center"><div><b>${esc(s)}</b><div class="small">${n} applicant${n===1?"":"s"}${o?` · ${o} opening${o===1?"":"s"}`:""}</div></div>
+    const info=storeInfo(s);
+    if(editingStore===s) return `<form class="li storeedit" data-sform="${i}" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px">
+      <b>${esc(s)}</b>
+      <div class="d-grid"><label class="field">Name in emails<input id="siName" value="${esc(info.name||"")}" autocomplete="off"></label>
+      <label class="field">Phone<input id="siPhone" value="${esc(info.phone||"")}" autocomplete="off"></label>
+      <label class="field" style="grid-column:1/-1">Address<input id="siAddr" value="${esc(info.address||"")}" placeholder="Street, City, TX ZIP" autocomplete="off"></label></div>
+      <div class="row-actions"><button class="btn sm primary" type="submit">Save</button><button class="btn sm ghost" type="button" data-scancel>Cancel</button></div></form>`;
+    return `<div class="li" style="cursor:default;align-items:center"><div style="min-width:0"><b>${esc(info.name||s)}</b>${info.name&&info.name!==s?` <span class="small">(${esc(s)})</span>`:""}
+      <div class="small">${info.address?esc(info.address):`<span class="auth-err">No address yet</span>`}${info.phone?` · <span class="mono">${esc(info.phone)}</span>`:""}</div>
+      <div class="small">${n} applicant${n===1?"":"s"}${o?` · ${o} opening${o===1?"":"s"}`:""}</div></div>
       <div class="row-actions">${confirmStoreDel===s?`<span class="small">${n||o?"Their applicants and openings keep this name.":""}</span><button class="btn sm danger" data-sdelyes="${i}">Remove</button><button class="btn sm ghost" data-sdelno>Keep</button>`:
-      `<button class="btn sm ghost" data-sup="${i}" ${i===0?"disabled":""} aria-label="Move up">↑</button><button class="btn sm ghost" data-sdown="${i}" ${i===STORES.length-1?"disabled":""} aria-label="Move down">↓</button><button class="btn sm ghost danger" data-sdel="${i}">Remove</button>`}</div></div>`; }).join("");
+      `<button class="btn sm ghost" data-sedit="${i}">Edit</button><button class="btn sm ghost" data-sup="${i}" ${i===0?"disabled":""} aria-label="Move up">↑</button><button class="btn sm ghost" data-sdown="${i}" ${i===STORES.length-1?"disabled":""} aria-label="Move down">↓</button><button class="btn sm ghost danger" data-sdel="${i}">Remove</button>`}</div></div>`; }).join("");
 }
 async function saveStores(list){
   STORES=list; renderStoreFilter(); renderAll();
@@ -1436,12 +1538,21 @@ $("#storeForm").addEventListener("submit",e=>{ e.preventDefault();
   const name=$("#newStore").value.trim().replace(/\s+/g," ");
   if(!name) return;
   if(STORES.some(s=>s.toLowerCase()===name.toLowerCase())){ toast(`${name} is already on the list.`); return; }
-  $("#newStore").value=""; saveStores([...STORES,name]).then(()=>toast(`${name} added.`));
+  $("#newStore").value=""; editingStore=name; saveStores([...STORES,name]).then(()=>{ toast(`${name} added. Add its address.`); $("#siAddr")?.focus(); });
+});
+$("#v-stores").addEventListener("submit",async e=>{
+  if(!e.target.matches("[data-sform]")) return; e.preventDefault();
+  const name=STORES[+e.target.dataset.sform];
+  const entry={name:$("#siName").value.trim(),address:$("#siAddr").value.trim(),phone:$("#siPhone").value.trim()};
+  storeInfoOverrides={...storeInfoOverrides,[name]:entry}; editingStore=null; renderStores();
+  if(db){ try{ await db.doc("settings/storeinfo").set({map:storeInfoOverrides}); toast(`${name} saved.`); }catch{ toast("Couldn’t save the store details."); } }
 });
 $("#v-stores").addEventListener("click",e=>{
   const t=e.target, i=k=>+t.closest(`[${k}]`).getAttribute(k);
   if(t.closest("[data-sup]")){ const n=i("data-sup"), l=STORES.slice(); [l[n-1],l[n]]=[l[n],l[n-1]]; saveStores(l); }
   else if(t.closest("[data-sdown]")){ const n=i("data-sdown"), l=STORES.slice(); [l[n+1],l[n]]=[l[n],l[n+1]]; saveStores(l); }
+  else if(t.closest("[data-sedit]")){ editingStore=STORES[i("data-sedit")]; confirmStoreDel=null; renderStores(); $("#siAddr")?.focus(); }
+  else if(t.closest("[data-scancel]")){ editingStore=null; renderStores(); }
   else if(t.closest("[data-sdel]")){ confirmStoreDel=STORES[i("data-sdel")]; renderStores(); }
   else if(t.closest("[data-sdelno]")){ confirmStoreDel=null; renderStores(); }
   else if(t.closest("[data-sdelyes]")){ const name=STORES[i("data-sdelyes")]; confirmStoreDel=null; saveStores(STORES.filter(s=>s!==name)).then(()=>toast(`${name} removed.`)); }
@@ -1540,6 +1651,7 @@ $("#drawerHost").addEventListener("click",async e=>{
   const cm=t.closest("[data-copymail]"); if(cm){ const m=emailFor(c,mailStage||c.stage,mailLang||(isSpanish(c)?"es":"en")); return copyText(cm.dataset.copymail==="s"?m.s:m.b, cm.dataset.copymail==="s"?"Subject copied.":"Message copied. Paste it into Outlook."); }
   const cp=t.closest("[data-copy]"); if(cp) return copyText(cp.dataset.copy);
   if(t.id==="addOffer"){ patch(openId,{offerType:c.employmentType||"",offerPer:"hour"}).catch(()=>{}); return; }
+  if(t.closest("[data-ics]")){ downloadIcs(c); return; }
   const ck=t.closest("[data-check]");
   if(ck){ const a=ck.dataset.check, who=myName(), now=Date.now();
     if(a==="ask"){ askingStore=true; renderDrawer(); return; }
@@ -1581,9 +1693,9 @@ $("#drawerHost").addEventListener("submit",async e=>{
   await patch(openId,{name,phone:phone?fmtPhone(phone):"",email,address,contactEditedAt:Date.now(),contactEditedBy:myName()}).then(()=>toast("Contact updated.")).catch(()=>{});
 });
 $("#drawerHost").addEventListener("focusout",e=>{
-  if(["dWhen","dOStart"].includes(e.target.id)) setTimeout(()=>{ if(openId&&!["dWhen","dOStart"].includes(document.activeElement?.id)) renderDrawer(); },150);
+  if(["dWhen","dOStart","dOTime"].includes(e.target.id)) setTimeout(()=>{ if(openId&&!["dWhen","dOStart","dOTime"].includes(document.activeElement?.id)) renderDrawer(); },150);
 });
-const FIELD={dFutureFor:"futureFor",dStore:"store",dWho:"interviewer",dWhen:"interviewDate",dHireFor:"hireFor",dRate:"offerRate",dPer:"offerPer",dOType:"offerType",dHours:"offerHours",dOStart:"offerStart",dResp:"offerResponse",
+const FIELD={dOTime:"offerStartTime",dFutureFor:"futureFor",dStore:"store",dWho:"interviewer",dWhen:"interviewDate",dHireFor:"hireFor",dRate:"offerRate",dPer:"offerPer",dOType:"offerType",dHours:"offerHours",dOStart:"offerStart",dResp:"offerResponse",
   fhReq:"fhReq",tabcReq:"tabcReq"};
 $("#drawerHost").addEventListener("change",e=>{
   const t=e.target;
@@ -1720,6 +1832,11 @@ function startData(){
     renderAll();
   },()=>{ $("#status").textContent="Couldn’t load. Reload the page."; });
   db.collection("openings").onSnapshot(snap=>{ openings=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{});
+  db.doc("settings/storeinfo").onSnapshot(s=>{
+    storeInfoOverrides=s.exists?JSON.parse(JSON.stringify(s.data().map||{})):{};
+    if(tab==="stores"&&!editingStore) renderStores();
+    if(openId){ const c=candidates.find(x=>x.id===openId); if(c) refreshMail(c); }
+  },()=>{});
   db.doc("settings/stores").onSnapshot(s=>{
     const l=s.exists?s.data().list:null;
     STORES=Array.isArray(l)&&l.length?[...l]:DEFAULT_STORES.slice();
