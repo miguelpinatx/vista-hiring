@@ -21,6 +21,16 @@ Applicant tracker for Vista Markets: paste or enter applications, move people th
 2. Send them the site link. They tap **First time? Create your account**, choose a password, and click the confirmation email.
 3. To remove access, click **Remove** next to their name on the Team tab.
 
+## Store managers
+
+Store managers sign in to the same site and see a simpler page with only the applicants the office shares with their store: contact info, position, availability and store notes. They can claim an applicant, add notes, and request approval to hire. Approving a request moves the applicant to Offer.
+
+1. One time: run `store-access.sql` in the SQL Editor (after `schema.sql`).
+2. Team tab → name and email → pick **Store manager – <store>** → **Add to team**.
+3. They create their account from the site link the same way office staff do.
+4. In an applicant's card, use **Store portal** to share them with one or more stores.
+5. When a new hire finishes onboarding, click **Onboarding complete: send to <store> to schedule** in their card. The store manager enters the first day and start time, which fill in on the offer. Then click **Move to Hired** to send the first-day email.
+
 ## Backups
 
 Use **Export CSV** in the app, or Supabase → Table Editor → `candidates` → Export.

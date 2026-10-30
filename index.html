@@ -187,6 +187,25 @@ table.main tr:last-child td{border-bottom:none}
 .tokens button{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);background:var(--sunk);border-radius:4px;padding:2px 6px;cursor:pointer}
 .row-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
+/* store portal */
+.portalpill{display:inline-block;margin-top:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--purple-soft);color:var(--purple);white-space:nowrap}
+.portalpill.ask{background:var(--s-offer);color:#fff}
+.portalbox{border:1px solid var(--line);border-radius:10px;padding:12px}
+.sharechips{display:flex;flex-wrap:wrap;gap:6px}
+.sharechips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 11px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--fg)}
+.sharechips button[aria-pressed="true"]{background:var(--purple);border-color:var(--purple);color:#fff}
+.hreq{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.hreq.pending{border-color:var(--s-offer);box-shadow:inset 3px 0 0 var(--s-offer)}
+.snote{font-size:.86rem;padding:6px 0;border-bottom:1px solid var(--line)}
+.snote:last-child{border-bottom:none}
+.snote .small{display:block}
+.s-cards{display:flex;flex-direction:column;gap:10px}
+.s-card{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:left;width:100%;color:var(--fg);font:inherit}
+.s-card:hover{background:var(--sunk)}
+.s-card .r{text-align:right;flex-shrink:0;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.contactrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.contactrow a.btn{text-decoration:none;color:var(--fg)}
+
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(10,6,14,.35);z-index:20}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:21;overflow-y:auto;
@@ -406,6 +425,7 @@ img{max-width:100%}
   <!-- DASHBOARD -->
   <section class="view" id="v-dashboard">
     <div class="kpis" id="kpis"></div>
+    <div class="panel" id="approvalPanel" hidden style="border-color:var(--s-offer)"><h2>Store portal <span class="small">hire requests and first-day scheduling</span></h2><div id="approvals"></div></div>
     <div class="panel" id="openPanel">
       <div class="ph"><h2>Open positions <span class="small">what each store needs filled</span></h2><button class="btn sm primary" id="addOpening">Add opening</button></div>
       <div id="openForm"></div>
@@ -502,6 +522,7 @@ img{max-width:100%}
       <form class="row-actions" id="teamForm" style="margin-top:14px" hidden>
         <input id="tName" placeholder="Name" aria-label="Name" style="flex:1 1 140px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)">
         <input id="tEmail" type="email" placeholder="Email" aria-label="Email" style="flex:2 1 200px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)">
+        <select id="tRole" aria-label="Access" style="flex:1 1 200px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)"></select>
         <button class="btn primary" type="submit">Add to team</button>
       </form>
     </div>
@@ -552,7 +573,25 @@ img{max-width:100%}
 </div>
 
 </div>
+<div id="storeApp" hidden>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brandrow"><img src="logo.png" alt="Vista Markets" class="logo"><h1 id="sTitle">Applicants</h1></div>
+      <p class="sub" id="sSub">Applicants the office has shared with your store.</p>
+    </div>
+    <div class="filters">
+      <span class="status" id="sStatus">Loading…</span>
+      <span class="who"><span id="sWho"></span><button class="btn sm ghost" id="sSignOut">Sign out</button></span>
+    </div>
+  </header>
+  <div class="pipe" id="sPipe" style="margin-bottom:14px"></div>
+  <div class="s-cards" id="sList"></div>
+  <p class="small" style="margin-top:18px">Claim an applicant to take them for your store. Then use <b>Request approval to hire</b> and the office will send the offer.</p>
+</div>
+</div>
 <div id="drawerHost"></div>
+<div id="sDrawerHost"></div>
 <div id="toastHost"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -1044,6 +1083,7 @@ function renderDashboard(){
   const k=[["To fill","open positions",totalToFill(),"dashboard",""],["Active","in the pipeline",active,"applicants",""],["New this week","since Sunday",thisWeek,"applicants",""],["Scheduled","screens & interviews",upcomingList.length,"applicants","interview"],["Offers out","waiting on an answer",offers.length,"applicants","offer"],["Hired","this month",hiredMo,"applicants","hired"]];
   $("#kpis").innerHTML=k.map(([l,e,n,t,s])=>`<button class="kpi" data-go="${t}" data-stage="${s}"><span>${l}</span><b>${n}</b><em>${e}</em></button>`).join("");
   renderOpenings();
+  renderApprovals();
 
   const max=Math.max(1,...STAGES.map(s=>count(c=>c.stage===s.id)));
   $("#funnel").innerHTML=STAGES.map(s=>{ const n=count(c=>c.stage===s.id); return `<div class="frow" data-go="applicants" data-stage="${s.id}"><span>${s.label}</span><span class="ftrack"><span class="fbar" style="display:block;width:${n/max*100}%;background:var(${s.c})"></span></span><span class="num">${n}</span></div>`; }).join("");
@@ -1133,7 +1173,7 @@ function renderRows(){
     <td class="notecell">${noteCell(c)}</td>
     <td class="hide-sm">${daysHtml(c)}</td>
     <td class="mono">${esc(fmtDate(c.startDate)||"—")}</td>
-    <td>${pill(c.stage)}${waitPill(c)?`<div>${waitPill(c)}</div>`:""}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
+    <td>${pill(c.stage)}${waitPill(c)?`<div>${waitPill(c)}</div>`:""}${portalBadge(c)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
   </tr>`).join("");
 }
 
@@ -1215,7 +1255,7 @@ function renderDrawer(){
   const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
   if(!c){ host.innerHTML=""; openId=null; return; }
   const active=document.activeElement, keepId=active&&active.id;
-  const typing=["dOTime","dFutureFor","dWhen","dOStart","ckNote","dNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
+  const typing=["dOTime","dFutureFor","dWhen","dOStart","ckNote","dNote","pNote","pDecide","pReadyNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
   if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
   const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
@@ -1241,6 +1281,7 @@ function renderDrawer(){
     ${c.interviewDate&&!isNaN(new Date(c.interviewDate))?`<div class="d-sec"><div class="row-actions calrow"><span class="small"><b>${esc(calKind(c).label)}</b> ${esc(fmtDateTime(c.interviewDate,true))}</span>
       <span class="row-actions"><button class="btn sm primary" data-ics>Add to Outlook</button><a class="copy" href="${esc(calLinks(c).outlook)}" target="_blank" rel="noopener">Outlook on the web</a></span></div></div>`:""}
     ${storeCheckSection(c)}
+    ${portalSection(c)}
 
     ${["offer","hired"].includes(c.stage)||c.offerRate?`
     <div class="d-sec offerbox"><h3 style="color:var(--s-offer)">Job offer</h3>
@@ -1329,7 +1370,7 @@ function refreshMail(c){
       <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
     ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
 }
-function openDrawer(id){ openId=id; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
+function openDrawer(id){ openId=id; readyForm=false; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
 function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; }
 
 /* ---------- storage ---------- */
@@ -1767,7 +1808,7 @@ downloads={ async save({filename,data}){
 let authMode="signin";
 function showAuth(mode,msg,isErr){
   authMode=mode||authMode;
-  $("#authGate").hidden=false; $("#app").hidden=true;
+  $("#authGate").hidden=false; $("#app").hidden=true; $("#storeApp").hidden=true;
   const titles={signin:"Sign in",signup:"Create your account",reset:"Reset your password",newpass:"Choose a new password",denied:"No access yet",setup:"Almost ready"};
   $("#authTitle").textContent=titles[authMode];
   const show=(id,on)=>{ const el=$(id); if(el) el.hidden=!on; };
@@ -1816,9 +1857,12 @@ async function enterApp(){
   const {data:{user}}=await sb.auth.getUser();
   if(!user){ showAuth("signin"); return; }
   me=user;
-  const {data:row}=await sb.from("staff").select("email,name,is_admin").eq("email",(user.email||"").toLowerCase()).maybeSingle();
+  const em=(user.email||"").toLowerCase();
+  let {data:row,error:rerr}=await sb.from("staff").select("email,name,is_admin,store").eq("email",em).maybeSingle();
+  if(rerr){ ({data:row}=await sb.from("staff").select("email,name,is_admin").eq("email",em).maybeSingle()); portalReady=false; }
   if(!row){ showAuth("denied",`You’re signed in as ${user.email}, but that email isn’t on the hiring team yet. Ask Miguel to add it on the Team tab, then reload this page.`); return; }
   staffRow=row;
+  if(row.store){ enterStore(row); return; }
   $("#authGate").hidden=true; $("#app").hidden=false;
   $("#whoami").textContent=row.name||user.email;
   $("#exportBtn").hidden=false;
@@ -1843,30 +1887,33 @@ function startData(){
     renderStoreFilter(); renderAll();
   },()=>{});
   db.doc("settings/templates").onSnapshot(s=>{ tplOverrides=s.exists?JSON.parse(JSON.stringify(s.data().t||{})):{}; if(tab==="templates") renderTemplates(); if(openId){ const c=candidates.find(x=>x.id===openId); if(c) refreshMail(c);} },()=>{});
-  loadTeam();
+  loadTeam(); if(portalReady) startPortal();
   sb.channel("rt-staff").on("postgres_changes",{event:"*",schema:"public",table:"staff"},()=>loadTeam()).subscribe();
 }
 
 /* ---------- team ---------- */
 let confirmTeamDel=null;
 async function loadTeam(){
-  const {data}=await sb.from("staff").select("email,name,is_admin,added_at").order("added_at");
+  let {data,error}=await sb.from("staff").select("email,name,is_admin,store,added_at").order("added_at");
+  if(error) ({data}=await sb.from("staff").select("email,name,is_admin,added_at").order("added_at"));
   team=data||[]; if(tab==="team") renderTeam();
 }
 function renderTeam(){
   const admin=!!staffRow?.is_admin;
   $("#teamForm").hidden=!admin;
+  const rs=$("#tRole"); if(rs&&!rs.options.length||rs&&rs.options.length!==STORES.length+1){ const keep=rs.value; rs.innerHTML=`<option value="">Office (sees everything)</option>`+(portalReady?STORES.map(x=>`<option value="${esc(x)}">Store manager – ${esc(x)}</option>`).join(""):""); if(keep) rs.value=keep; }
   $("#teamNote").textContent=admin?"Add someone’s email here, then send them this site’s link. They click “First time? Create your account”, pick a password, and confirm the email Supabase sends them.":"Only Miguel can add or remove people.";
   $("#teamList").innerHTML=team.map(t=>{ const self=t.email===(me?.email||"").toLowerCase();
-    return `<div class="li" style="cursor:default;align-items:center"><div><b>${esc(t.name||t.email)}</b>${t.is_admin?` <span class="lang">Admin</span>`:""}<div class="small">${esc(t.name?t.email:"")}${self?" · you":""}</div></div>
+    return `<div class="li" style="cursor:default;align-items:center"><div><b>${esc(t.name||t.email)}</b>${t.is_admin?` <span class="lang">Admin</span>`:""}${t.store?` <span class="portalpill">Store · ${esc(t.store)}</span>`:""}<div class="small">${esc(t.name?t.email:"")}${self?" · you":""}</div></div>
     <div class="row-actions">${admin&&!self?(confirmTeamDel===t.email?`<button class="btn sm danger" data-tdelyes="${esc(t.email)}">Remove</button><button class="btn sm ghost" data-tdelno>Keep</button>`:`<button class="btn sm ghost danger" data-tdel="${esc(t.email)}">Remove</button>`):""}</div></div>`; }).join("")||`<div class="none">No one yet.</div>`;
 }
 $("#teamForm").addEventListener("submit",async e=>{ e.preventDefault();
   const email=$("#tEmail").value.trim().toLowerCase(), name=$("#tName").value.trim();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("Enter a valid email."); return; }
-  const {error}=await sb.from("staff").insert({email,name:name||null});
+  const store=$("#tRole")?.value||"";
+  const {error}=await sb.from("staff").insert(store?{email,name:name||null,store}:{email,name:name||null});
   if(error){ toast(/duplicate/i.test(error.message)?"That email is already on the team.":"Couldn’t add them. Only admins can add people."); return; }
-  $("#tEmail").value=""; $("#tName").value=""; toast(`${name||email} added. Send them the site link.`); loadTeam();
+  $("#tEmail").value=""; $("#tName").value=""; toast(`${name||email} added${store?" as "+store+" store manager":""}. Send them the site link.`); loadTeam();
 });
 $("#v-team").addEventListener("click",async e=>{
   const t=e.target;
@@ -1876,6 +1923,320 @@ $("#v-team").addEventListener("click",async e=>{
     const {error}=await sb.from("staff").delete().eq("email",email);
     toast(error?"Couldn’t remove them.":"Removed. They can no longer see applicants."); loadTeam(); }
 });
+
+/* ---------- store portal: office side ---------- */
+let portalReady=true, shares=[], storeNotes=[], hireReqs=[], portalStarted=false;
+async function loadPortal(){
+  const [a,b,c]=await Promise.all([
+    sb.from("shares").select("*"),
+    sb.from("store_notes").select("*").order("created_at"),
+    sb.from("hire_requests").select("*").order("created_at",{ascending:false})]);
+  if(a.error){ portalReady=false; renderAll(); return; }
+  shares=a.data||[]; storeNotes=b.data||[]; hireReqs=c.data||[];
+  renderAll();
+}
+let portalT; function portalSoon(){ clearTimeout(portalT); portalT=setTimeout(loadPortal,250); }
+function startPortal(){
+  if(portalStarted) return; portalStarted=true; loadPortal();
+  ["shares","store_notes","hire_requests"].forEach(t=>sb.channel("rt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},portalSoon).subscribe());
+}
+const sharesFor=id=>shares.filter(x=>x.candidate_id===id);
+const reqsFor=id=>hireReqs.filter(x=>x.candidate_id===id);
+function payFmt(p){ p=String(p||"").trim(); return /^\$?\d+(\.\d+)?$/.test(p)?`$${p.replace("$","")}/hr`:p; }
+function reqLine(r){ return [r.position,payFmt(r.pay),r.start_date?"start "+fmtDate(r.start_date):""].filter(Boolean).join(" · "); }
+function portalBadge(c){
+  if(!portalReady) return "";
+  const p=reqsFor(c.id).find(r=>r.status==="pending");
+  if(p) return `<div><span class="portalpill ask">Hire request · ${esc(p.store)}</span></div>`;
+  const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at);
+  if(cl) return `<div><span class="portalpill">Claimed · ${esc(cl.store)}</span></div>`;
+  if(sh.length) return `<div><span class="portalpill">Shared · ${sh.length===1?esc(sh[0].store):sh.length+" stores"}</span></div>`;
+  return "";
+}
+let readyForm=false;
+function fmtTime(t){ return t?new Date("2000-01-01T"+t).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):""; }
+function certSummary(c){ return Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>`${CERTS[k].short} ${certDone(c,k)&&certFiled(c,k)?"✓":"missing"}`).join(" · "); }
+function storeMgrs(store){ return team.filter(t=>t.store===store); }
+function mgrMail(c,store){
+  const m=storeMgrs(store);
+  if(!m.length) return `<div class="warn">No ${esc(store)} store manager on the Team tab yet, so nobody will see this. Add one on the Team tab.</div>`;
+  const subj=`${c.name||"New hire"} is ready to schedule`, body=`Hi,\n\n${c.name||"Our new hire"} finished onboarding and is ready for a first day at ${store}${c.hireFor?" ("+c.hireFor+")":""}.\n\nPlease sign in to the hiring site and confirm their start date and time:\n${location.origin+location.pathname}\n\nThanks,\n${myName()}`;
+  return `<div class="row-actions"><a class="copy" href="mailto:${m.map(x=>encodeURIComponent(x.email)).join(",")}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}">Email ${esc(m.map(x=>x.name||x.email).join(", "))} a heads-up</a></div>`;
+}
+function schedReq(c){ const a=reqsFor(c.id).filter(x=>x.status==="approved"); return a.find(x=>x.store===c.store)||a[0]||null; }
+function schedBlock(c){
+  if(!["offer","hired"].includes(c.stage)) return "";
+  const r=schedReq(c);
+  if(r?.confirmed_at) return `<div class="hreq" style="border-color:var(--s-hired)"><div><b style="color:var(--s-hired)">${esc(r.store)} confirmed the first day</b> <span class="small">${esc(r.confirmed_by||"")} · ${esc(fmtDateTime(r.confirmed_at))}</span></div>
+      <div class="mono">${esc(fmtDate(r.start_date_confirmed,true))} at ${esc(fmtTime(r.start_time))}</div>${r.confirm_note?`<div class="pre">${esc(r.confirm_note)}</div>`:""}
+      ${c.stage!=="hired"?`<div class="row-actions"><button type="button" class="btn sm primary" data-tohired>Move to Hired and send the first-day email</button></div>`:`<div class="small">The start date and time are filled in on the offer and in the Hired email.</div>`}</div>`;
+  if(r?.ready_at) return `<div class="hreq"><div><b>Waiting on ${esc(r.store)} to pick the first day</b> <span class="small">sent ${esc(fmtDateTime(r.ready_at))}</span></div>${r.ready_note?`<div class="pre">${esc(r.ready_note)}</div>`:""}${mgrMail(c,r.store)}</div>`;
+  const store=r?.store||c.store;
+  if(!store) return `<div class="small">Set the store above to send them to a store for scheduling.</div>`;
+  if(!readyForm) return `<div class="row-actions"><button type="button" class="btn sm" data-ready="open">Onboarding complete: send to ${esc(store)} to schedule</button></div>`;
+  const cs=certSummary(c);
+  return `<div class="hreq"><b>Send to ${esc(store)} to schedule</b>
+      <div class="small">The ${esc(store)} manager sees “Ready to schedule” and enters the first day and start time. It fills in here and on the offer automatically.</div>
+      ${cs?`<div class="small">${esc(cs)}</div>`:""}${/missing/.test(cs)?`<div class="warn">A required card is still missing. You can still send it.</div>`:""}
+      <input id="pReadyNote" placeholder="Note to the store (optional), e.g. T&T paperwork done today" autocomplete="off" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface);color:var(--fg)">
+      <div class="row-actions"><button type="button" class="btn sm primary" data-ready="send">Send to ${esc(store)}</button><button type="button" class="btn sm ghost" data-ready="close">Cancel</button></div></div>`;
+}
+function renderApprovals(){
+  const R=portalReady?hireReqs:[], nm=id=>candidates.find(x=>x.id===id);
+  const pend=R.filter(r=>r.status==="pending");
+  const waiting=R.filter(r=>r.status==="approved"&&r.ready_at&&!r.confirmed_at);
+  const confirmed=R.filter(r=>r.status==="approved"&&r.confirmed_at&&nm(r.candidate_id)&&nm(r.candidate_id).stage!=="hired");
+  $("#approvalPanel").hidden=!(pend.length||waiting.length||confirmed.length);
+  const row=(r,right,sub)=>`<div class="li" data-open="${esc(r.candidate_id)}"><div><b>${esc(nm(r.candidate_id)?.name||"Applicant")}</b><div class="small">${sub}</div></div><div class="r">${right}</div></div>`;
+  const sec=(title,list)=>list.length?`<h3 style="margin:10px 0 2px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">${title}</h3><div class="list">${list.join("")}</div>`:"";
+  $("#approvals").innerHTML=
+    sec("Stores asking to hire",pend.map(r=>row(r,`<div>${esc(reqLine(r))}</div><div class="small">Open to approve</div>`,`${esc(r.store)} · ${esc(r.requested_by||r.requested_email)} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
+    sec("First day confirmed: move to Hired",confirmed.map(r=>row(r,`<div class="mono">${esc(fmtDate(r.start_date_confirmed))} · ${esc(fmtTime(r.start_time))}</div><div class="small">Send the first-day email</div>`,`${esc(r.store)} · ${esc(r.confirmed_by||"")}`)))+
+    sec("Waiting on the store to pick a first day",waiting.map(r=>row(r,`<div class="small">sent ${esc(ago(new Date(r.ready_at).getTime()))}</div>`,esc(r.store))));
+}
+function portalTargets(c){ const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at); return cl?[cl.store]:sh.map(x=>x.store); }
+function portalSection(c){
+  if(!portalReady) return "";
+  const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at), reqs=reqsFor(c.id), notes=storeNotes.filter(n=>n.candidate_id===c.id);
+  const on=new Set(sh.map(x=>x.store)), targets=portalTargets(c);
+  const top=cl
+    ?`<div><b>Claimed by ${esc(cl.store)}</b>${cl.claimed_by?` · ${esc(cl.claimed_by)}`:""} <span class="small">${esc(fmtDateTime(cl.claimed_at))}</span></div>
+      <div class="row-actions"><button type="button" class="btn sm ghost danger" data-unshare="${esc(cl.store)}">Take back from ${esc(cl.store)}</button></div>`
+    :`<div class="small">${sh.length?"Managers at the highlighted stores can see this applicant and claim them.":"Share with a store so its manager can see this applicant and claim them."} They only see contact info, position, availability and store notes.</div>
+      <div class="sharechips">${STORES.map(st=>`<button type="button" data-share="${esc(st)}" aria-pressed="${on.has(st)}">${on.has(st)?"✓ ":""}${esc(st)}</button>`).join("")}</div>`;
+  const reqHtml=reqs.map(r=>r.status==="pending"
+    ?`<div class="hreq pending"><div><b>${esc(r.store)} wants to hire</b> <span class="small">${esc(r.requested_by||r.requested_email)} · ${esc(fmtDateTime(r.created_at))}</span></div>
+      <div class="mono">${esc(reqLine(r))}</div>${r.note?`<div class="pre">${esc(r.note)}</div>`:""}
+      <input id="pDecide" placeholder="Note back to the store (optional)" autocomplete="off" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface);color:var(--fg)">
+      <div class="row-actions"><button type="button" class="btn sm primary" data-hr="approve" data-rid="${esc(r.id)}">Approve and move to Offer</button><button type="button" class="btn sm" data-hr="decline" data-rid="${esc(r.id)}">Decline</button></div></div>`
+    :`<div class="small">${esc(r.store)} asked ${esc(reqLine(r))}: <b>${esc(r.status)}</b>${r.decided_by?` by ${esc(r.decided_by)}`:""}${r.decision_note?` · “${esc(r.decision_note)}”`:""} · ${esc(fmtDateTime(r.decided_at||r.created_at))}</div>`).join("");
+  const noteHtml=(notes.length||targets.length)?`<div class="d-sec" style="margin-top:6px"><h3>Store notes <span style="text-transform:none;letter-spacing:0;font-weight:400">· the store sees these</span></h3>
+      ${notes.length?`<div>${notes.map(n=>`<div class="snote">${esc(n.body)}<span class="small">${esc(n.store)} · ${esc(n.author||n.author_email)} · ${esc(fmtDateTime(n.created_at))}</span></div>`).join("")}</div>`:`<div class="none">No store notes yet.</div>`}
+      ${targets.length?`<textarea id="pNote" rows="2" placeholder="Message the store about this applicant…"></textarea>
+      <div class="row-actions">${targets.length>1?`<select id="pNoteStore" aria-label="Store" style="border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--fg)">${targets.map(x=>`<option>${esc(x)}</option>`).join("")}</select>`:""}<button type="button" class="btn sm" data-snote>Send to ${targets.length>1?"store":esc(targets[0])}</button></div>`:""}</div>`:"";
+  return `<div class="d-sec portalbox"><h3>Store portal</h3>${top}${reqHtml}${schedBlock(c)}${noteHtml}</div>`;
+}
+$("#drawerHost").addEventListener("click",async e=>{
+  const t=e.target; if(!sb||!portalReady) return;
+  const c=candidates.find(x=>x.id===openId); if(!c) return;
+  const rd=t.closest("[data-ready]");
+  if(rd){ const a=rd.dataset.ready;
+    if(a==="open"){ readyForm=true; renderDrawer(); $("#pReadyNote")?.focus(); return; }
+    if(a==="close"){ readyForm=false; document.activeElement?.blur(); renderDrawer(); return; }
+    const r=schedReq(c), store=r?.store||c.store, who=myName(), iso=new Date().toISOString(), now=Date.now();
+    const note=($("#pReadyNote")?.value||"").trim(), cs=certSummary(c);
+    const ready_note=[`Onboarding complete.${cs?" "+cs+".":""}`,note].filter(Boolean).join(" ");
+    rd.disabled=true; document.activeElement?.blur();
+    let error;
+    if(r){ ({error}=await sb.from("hire_requests").update({ready_at:iso,ready_by:who,ready_note}).eq("id",r.id)); }
+    else {
+      const sh=sharesFor(c.id).find(x=>x.store===store);
+      if(!sh) ({error}=await sb.from("shares").insert({candidate_id:c.id,store,shared_by:who,claimed_at:iso,claimed_by:"Office"}));
+      else if(!sh.claimed_at) ({error}=await sb.from("shares").update({claimed_at:iso,claimed_by:"Office"}).eq("candidate_id",c.id).eq("store",store));
+      if(!error) ({error}=await sb.from("hire_requests").insert({candidate_id:c.id,store,requested_by:who,position:c.hireFor||c.position||null,pay:c.offerRate||null,start_date:c.offerStart||null,
+        status:"approved",decided_by:who,decided_at:iso,ready_at:iso,ready_by:who,ready_note}));
+    }
+    if(error){ rd.disabled=false; toast("Couldn’t send it to the store. Try again."); return; }
+    readyForm=false;
+    await patch(c.id,{notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Onboarding complete. Sent to ${store} to pick the first day.${note?" "+note:""}`,at:now,by:who}]}).catch(()=>{});
+    toast(`Sent to ${store}. Their manager will confirm the first day and time.`); loadPortal(); return; }
+  if(t.closest("[data-tohired]")){ const now=Date.now(); mailStage=null;
+    await patch(c.id,{stage:"hired",offerResponse:"Accepted",history:[...(c.history||[]),{stage:"hired",at:now}]}).catch(()=>{});
+    toast("Moved to Hired. The first-day email below has their start date and time."); return; }
+  const sh=t.closest("[data-share]");
+  if(sh){ const st=sh.dataset.share, has=sharesFor(c.id).some(x=>x.store===st);
+    const {error}=has?await sb.from("shares").delete().eq("candidate_id",c.id).eq("store",st)
+                     :await sb.from("shares").insert({candidate_id:c.id,store:st,shared_by:myName()});
+    if(error){ toast("Couldn’t update sharing. Try again."); return; }
+    toast(has?`No longer shared with ${st}.`:`Shared with ${st}. Their manager can now see and claim ${c.name||"this applicant"}.`); loadPortal(); return; }
+  const us=t.closest("[data-unshare]");
+  if(us){ const st=us.dataset.unshare;
+    const {error}=await sb.from("shares").delete().eq("candidate_id",c.id).eq("store",st);
+    if(error){ toast("Couldn’t take them back."); return; }
+    toast(`${st} can no longer see ${c.name||"this applicant"}.`); loadPortal(); return; }
+  if(t.closest("[data-snote]")){ const body=($("#pNote")?.value||"").trim(); if(!body){ toast("Write a note first."); return; }
+    const store=$("#pNoteStore")?.value||portalTargets(c)[0];
+    const {error}=await sb.from("store_notes").insert({candidate_id:c.id,store,author:myName(),body});
+    if(error){ toast("Couldn’t send the note."); return; }
+    $("#pNote").value=""; document.activeElement?.blur(); toast(`Note sent to ${store}.`); loadPortal(); return; }
+  const hr=t.closest("[data-hr]");
+  if(hr){ const r=hireReqs.find(x=>x.id===hr.dataset.rid); if(!r) return;
+    const dn=(hr.closest(".hreq")?.querySelector("input")?.value||"").trim(), now=Date.now(), who=myName();
+    const status=hr.dataset.hr==="approve"?"approved":"declined";
+    hr.disabled=true; document.activeElement?.blur();
+    const {error}=await sb.from("hire_requests").update({status,decided_by:who,decided_at:new Date().toISOString(),decision_note:dn||null}).eq("id",r.id);
+    if(error){ hr.disabled=false; toast("Couldn’t save. Try again."); return; }
+    const logText=status==="approved"
+      ?`Approved ${r.store}’s request to hire${r.position?" as "+r.position:""}${r.pay?" at "+payFmt(r.pay):""}${r.start_date?", start "+fmtDate(r.start_date):""}.${r.note?" Store said: "+r.note:""}${dn?" Note to store: "+dn:""}`
+      :`Declined ${r.store}’s request to hire.${dn?" Note to store: "+dn:""}`;
+    const ch={notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:logText,at:now,by:who}]};
+    if(status==="approved"){
+      const rate=(String(r.pay||"").match(/\d+(?:\.\d+)?/)||[""])[0];
+      Object.assign(ch,{store:r.store,offerResponse:"Waiting",offerPer:c.offerPer||"hour",offerType:c.offerType||c.employmentType||""});
+      if(r.position) ch.hireFor=r.position;
+      if(rate) ch.offerRate=rate;
+      if(r.start_date) ch.offerStart=r.start_date;
+      if(!["offer","hired"].includes(c.stage)){ ch.stage="offer"; ch.history=[...(c.history||[]),{stage:"offer",at:now}]; }
+      mailStage=null;
+    }
+    await patch(c.id,ch).catch(()=>{});
+    toast(status==="approved"?"Approved. Moved to Offer. Send the offer below.":"Declined. The store will see your note.");
+    loadPortal(); return; }
+});
+
+/* ---------- store manager view ---------- */
+let sApps=[], sNotes=[], sReqs=[], sFilter="new", sOpen=null, sReqForm=false, sStartEdit=false, sFirstLoad=true;
+function enterStore(row){
+  $("#authGate").hidden=true; $("#app").hidden=true; $("#storeApp").hidden=false;
+  $("#sTitle").textContent=`${row.store} applicants`;
+  $("#sWho").textContent=row.name||me.email;
+  document.title=`${row.store} · Vista Hiring`;
+  if(started) return; started=true;
+  loadStore();
+  ["shares","store_notes","hire_requests"].forEach(t=>sb.channel("srt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},storeSoon).subscribe());
+  setInterval(()=>{ if(!document.hidden) loadStore(); },120000);
+}
+let storeT; function storeSoon(){ clearTimeout(storeT); storeT=setTimeout(loadStore,250); }
+async function loadStore(){
+  const [a,b,c]=await Promise.all([
+    sb.rpc("store_applicants"),
+    sb.from("store_notes").select("*").order("created_at"),
+    sb.from("hire_requests").select("*").order("created_at",{ascending:false})]);
+  if(a.error){ $("#sStatus").textContent="Couldn’t load. Reload the page."; return; }
+  sApps=a.data||[]; sNotes=b.data||[]; sReqs=c.data||[];
+  $("#sStatus").textContent=`${sApps.length} applicant${sApps.length===1?"":"s"} · synced`;
+  if(sFirstLoad){ sFirstLoad=false; if(sApps.some(a=>sStatus(a)==="ready")) sFilter="ready"; }
+  renderStoreApp();
+}
+function sStatus(a){
+  if(!a.claimed_at) return "new";
+  const latest=sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
+  if(latest?.status==="pending") return "waiting";
+  if(latest?.status==="approved") return latest.confirmed_at?"scheduled":latest.ready_at?"ready":"approved";
+  return "claimed";
+}
+const S_FILTERS=[["new","New to you"],["claimed","Claimed"],["waiting","Waiting approval"],["approved","Approved"],["ready","Ready to schedule"],["scheduled","Scheduled"],["all","All"]];
+const sLatest=a=>sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
+function sBadge(st,a){ return {new:`<span class="portalpill">New</span>`,claimed:`<span class="portalpill">Claimed${a.claimed_by?" · "+esc(a.claimed_by):""}</span>`,waiting:`<span class="portalpill ask">Waiting approval</span>`,approved:`<span class="pill" style="color:var(--s-hired)">Approved</span>`,ready:`<span class="portalpill ask">Ready to schedule</span>`,scheduled:`<span class="pill" style="color:var(--s-hired)">Starts ${esc(fmtDate(sLatest(a)?.start_date_confirmed))} · ${esc(fmtTime(sLatest(a)?.start_time))}</span>`}[st]||""; }
+function sDays(a){ return daysHtml({availDays:Array.isArray(a.avail_days)?a.avail_days:[],availability:a.availability}); }
+function renderStoreApp(){
+  const cnt={all:sApps.length}; sApps.forEach(a=>{ const s=sStatus(a); cnt[s]=(cnt[s]||0)+1; });
+  $("#sPipe").innerHTML=S_FILTERS.map(([k,l])=>`<button class="chip" data-sf="${k}" aria-pressed="${sFilter===k}"><span>${l}</span><span class="n">${cnt[k]||0}</span></button>`).join("");
+  const list=sApps.filter(a=>sFilter==="all"||sStatus(a)===sFilter);
+  $("#sList").innerHTML=list.length?list.map(a=>{ const st=sStatus(a);
+    return `<button type="button" class="s-card" data-sopen="${esc(a.id)}">
+      <div style="min-width:0"><div class="nm">${esc(a.name||"(no name)")}${/span|espa/i.test(a.form_language||"")?`<span class="lang">ES</span>`:""}</div>
+      <div class="small">${esc(a.hire_for||a.position_wanted||"Any position")}${a.employment_type||a.shift?" · "+esc([a.employment_type,a.shift].filter(Boolean).join(" · ")):""}</div>
+      <div style="margin-top:6px">${sDays(a)}</div></div>
+      <div class="r">${sBadge(st,a)}<span class="small">Shared ${esc(ago(new Date(a.shared_at).getTime()))}</span></div></button>`; }).join("")
+    :`<div class="emptystate">${sApps.length?"Nobody in this list right now.":"No applicants shared with your store yet. The office shares them here as they come in."}</div>`;
+  if(sOpen) renderStoreDrawer();
+}
+function sHireSection(a){
+  if(!a.claimed_at) return `<div class="d-sec"><h3>Hire</h3><div class="small">Claim this applicant first. Then you can ask the office for approval to hire.</div></div>`;
+  const reqs=sReqs.filter(r=>r.candidate_id===a.id), pend=reqs.find(r=>r.status==="pending"), latest=reqs.find(r=>r.status!=="cancelled");
+  if(pend) return `<div class="d-sec"><h3>Hire</h3><div class="hreq pending"><div><b>Waiting on the office</b> <span class="small">sent ${esc(fmtDateTime(pend.created_at))}</span></div>
+      <div class="mono">${esc(reqLine(pend))}</div>${pend.note?`<div class="pre">${esc(pend.note)}</div>`:""}
+      <div class="row-actions"><button type="button" class="btn sm ghost" data-sreqcancel="${esc(pend.id)}">Cancel request</button></div></div></div>`;
+  if(latest?.status==="approved"){
+    const L=latest, appr=`<div class="small">Approved${L.decided_by?` by ${esc(L.decided_by)}`:""} ${esc(fmtDateTime(L.decided_at))} · ${esc(reqLine(L))}</div>`;
+    if(L.ready_at&&(!L.confirmed_at||sStartEdit)) return `<div class="d-sec"><h3>First day</h3><div class="hreq pending">
+      <div><b>Onboarding complete: ready to schedule</b> <span class="small">${esc(fmtDateTime(L.ready_at))}</span></div>
+      ${L.ready_note?`<div class="pre">${esc(L.ready_note)}</div>`:""}
+      <div class="d-grid">
+        <label>First day<input id="sdDate" type="date" value="${esc(L.start_date_confirmed||L.start_date||"")}"></label>
+        <label>Start time<input id="sdTime" type="time" value="${esc(L.start_time||"")}"></label>
+      </div>
+      <div class="d-grid"><label style="grid-column:1/-1">Note for the office (optional)<input id="sdNote" value="${esc(L.confirm_note||"")}" placeholder="e.g. Ask for Rosa at the deli" autocomplete="off"></label></div>
+      <div class="row-actions"><button type="button" class="btn sm primary" data-sdconfirm="${esc(L.id)}">Confirm first day</button>${sStartEdit?`<button type="button" class="btn sm ghost" data-sdedit="close">Cancel</button>`:""}</div></div>${appr}</div>`;
+    if(L.confirmed_at) return `<div class="d-sec"><h3>First day</h3><div class="hreq" style="border-color:var(--s-hired)">
+      <div><b style="color:var(--s-hired)">Scheduled</b> <span class="small">confirmed by ${esc(L.confirmed_by||"")} ${esc(fmtDateTime(L.confirmed_at))}</span></div>
+      <div class="mono">${esc(fmtDate(L.start_date_confirmed,true))} at ${esc(fmtTime(L.start_time))}</div>${L.confirm_note?`<div class="pre">${esc(L.confirm_note)}</div>`:""}
+      <div class="small">The office sends them the first-day details.</div>
+      <div class="row-actions"><button type="button" class="btn sm ghost" data-sdedit="open">Change day or time</button></div></div>${appr}</div>`;
+    return `<div class="d-sec"><h3>Hire</h3><div class="hreq" style="border-color:var(--s-hired)"><div><b style="color:var(--s-hired)">Approved</b>${L.decided_by?` by ${esc(L.decided_by)}`:""} <span class="small">${esc(fmtDateTime(L.decided_at))}</span></div>
+      <div class="mono">${esc(reqLine(L))}</div>${L.decision_note?`<div class="pre">${esc(L.decision_note)}</div>`:""}
+      <div class="small">The office is sending the offer and onboarding. When they finish, this changes to “Ready to schedule” and you pick their first day.</div></div></div>`;
+  }
+  const declined=latest?.status==="declined"?`<div class="hreq"><div><b>Not approved</b>${latest.decided_by?` by ${esc(latest.decided_by)}`:""} <span class="small">${esc(fmtDateTime(latest.decided_at))}</span></div><div class="mono">${esc(reqLine(latest))}</div>${latest.decision_note?`<div class="pre">${esc(latest.decision_note)}</div>`:""}</div>`:"";
+  if(!sReqForm) return `<div class="d-sec"><h3>Hire</h3>${declined}<div class="row-actions"><button type="button" class="btn primary" data-sreq>Request approval to hire</button></div></div>`;
+  const pos=/open to anything/i.test(a.position_wanted||"")?(a.hire_for||""):(a.hire_for||a.position_wanted||"");
+  return `<div class="d-sec checkbox"><h3>Request approval to hire</h3>
+    <div class="d-grid">
+      <label>Position<input id="rPos" value="${esc(pos)}" placeholder="e.g. Cashier" autocomplete="off"></label>
+      <label>Pay ($ per hour)<input id="rPay" inputmode="decimal" placeholder="e.g. 13.50" autocomplete="off"></label>
+      <label>Start date<input id="rStart" type="date"></label>
+      <label>Note to the office<input id="rNote" placeholder="e.g. Interviewed Tuesday, great fit for mornings" autocomplete="off"></label>
+    </div>
+    <div class="row-actions"><button type="button" class="btn sm primary" data-sreqsend>Send request</button><button type="button" class="btn sm ghost" data-sreqx>Cancel</button></div></div>`;
+}
+function renderStoreDrawer(){
+  const a=sApps.find(x=>x.id===sOpen), host=$("#sDrawerHost");
+  if(!a){ host.innerHTML=""; sOpen=null; return; }
+  if(["sNote","rPos","rPay","rStart","rNote","sdDate","sdTime","sdNote"].includes(document.activeElement?.id)&&host.querySelector(".drawer")) return;
+  const scroll=host.querySelector(".drawer")?.scrollTop||0;
+  const st=sStatus(a), notes=sNotes.filter(n=>n.candidate_id===a.id), tel=(a.phone||"").replace(/[^\d+]/g,"");
+  host.innerHTML=`<div class="scrim" data-sclose></div>
+  <aside class="drawer" role="dialog" aria-label="${esc(a.name||"Applicant")}">
+    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2><div class="small">Shared with ${esc(staffRow.store)} ${esc(fmtDateTime(a.shared_at))}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
+    <div class="d-sec">${a.claimed_at?`<div>${sBadge(st,a)} <span class="small">Claimed ${esc(fmtDateTime(a.claimed_at))}</span></div>`
+      :`<div class="row-actions"><button type="button" class="btn primary" data-sclaim>Claim for ${esc(staffRow.store)}</button><span class="small">Takes them for your store so other stores can’t.</span></div>`}</div>
+    <div class="d-sec"><h3>Contact</h3>
+      <div class="contactrow">${a.phone?`<span class="mono">${esc(a.phone)}</span><a class="btn sm" href="tel:${esc(tel)}">Call</a><a class="btn sm" href="sms:${esc(tel)}">Text</a><button type="button" class="btn sm ghost" data-scopy="${esc(a.phone)}">Copy</button>`:`<span class="small">No phone on file</span>`}</div>
+      <div class="contactrow">${a.email?`<span style="overflow-wrap:anywhere">${esc(a.email)}</span><a class="btn sm" href="mailto:${esc(a.email)}">Email</a><button type="button" class="btn sm ghost" data-scopy="${esc(a.email)}">Copy</button>`:`<span class="small">No email on file</span>`}</div></div>
+    <div class="d-sec"><h3>Position &amp; availability</h3>
+      <div class="kv"><div><b>Applied for</b><span>${esc(a.position_wanted||"—")}</span></div>${a.hire_for?`<div><b>Office suggests</b><span>${esc(a.hire_for)}</span></div>`:""}
+        <div><b>Full / part-time</b><span>${esc(a.employment_type||"—")}</span></div><div><b>Shift</b><span>${esc(a.shift||"—")}</span></div>
+        <div><b>Can start</b><span>${esc(fmtDate(a.can_start)||"—")}</span></div><div><b>Language</b><span>${esc(a.form_language||"—")}</span></div></div>
+      <div>${sDays(a)}</div>${a.availability?`<div class="pre">${esc(a.availability)}</div>`:""}</div>
+    ${sHireSection(a)}
+    <div class="d-sec"><h3>Store notes <span style="text-transform:none;letter-spacing:0;font-weight:400">· the office sees these too</span></h3>
+      ${notes.length?`<div>${notes.map(n=>`<div class="snote">${esc(n.body)}<span class="small">${esc(n.author||n.author_email)} · ${esc(fmtDateTime(n.created_at))}</span></div>`).join("")}</div>`:`<div class="none">No notes yet.</div>`}
+      <textarea id="sNote" rows="2" placeholder="Add a note: called, left voicemail, interviewed…"></textarea>
+      <div class="row-actions"><button type="button" class="btn sm" data-snoteadd>Add note</button></div></div>
+  </aside>`;
+  host.querySelector(".drawer").scrollTop=scroll;
+}
+$("#sPipe").addEventListener("click",e=>{ const b=e.target.closest("[data-sf]"); if(b){ sFilter=b.dataset.sf; renderStoreApp(); } });
+$("#sList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sReqForm=false; sStartEdit=false; renderStoreDrawer(); } });
+$("#sSignOut").addEventListener("click",()=>sb.auth.signOut());
+$("#sDrawerHost").addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.closest("[data-sclose]")){ sOpen=null; $("#sDrawerHost").innerHTML=""; return; }
+  const a=sApps.find(x=>x.id===sOpen); if(!a) return;
+  const who=staffRow.name||me.email;
+  const cp=t.closest("[data-scopy]"); if(cp) return copyText(cp.dataset.scopy);
+  const cl=t.closest("[data-sclaim]");
+  if(cl){ cl.disabled=true;
+    const {error}=await sb.rpc("claim_applicant",{cid:a.id,who});
+    if(error){ cl.disabled=false; toast(/another store/i.test(error.message)?"Another store already claimed this applicant.":"Couldn’t claim. Try again."); loadStore(); return; }
+    toast(`${a.name||"Applicant"} is claimed for ${staffRow.store}.`); loadStore(); return; }
+  if(t.closest("[data-snoteadd]")){ const body=$("#sNote").value.trim(); if(!body){ toast("Write a note first."); return; }
+    const {error}=await sb.from("store_notes").insert({candidate_id:a.id,store:staffRow.store,author:who,body});
+    if(error){ toast("Couldn’t save the note."); return; }
+    $("#sNote").value=""; document.activeElement?.blur(); toast("Note added."); loadStore(); return; }
+  if(t.closest("[data-sreq]")){ sReqForm=true; renderStoreDrawer(); $("#rPay")?.focus(); return; }
+  if(t.closest("[data-sreqx]")){ sReqForm=false; document.activeElement?.blur(); renderStoreDrawer(); return; }
+  const send=t.closest("[data-sreqsend]");
+  if(send){ const position=$("#rPos").value.trim(), pay=$("#rPay").value.trim(), start=$("#rStart").value, note=$("#rNote").value.trim();
+    if(!position){ toast("Enter the position."); return; }
+    send.disabled=true;
+    const {error}=await sb.from("hire_requests").insert({candidate_id:a.id,store:staffRow.store,requested_by:who,position,pay:pay||null,start_date:start||null,note:note||null});
+    if(error){ send.disabled=false; toast("Couldn’t send the request. Try again."); return; }
+    sReqForm=false; document.activeElement?.blur(); toast("Sent. The office will review it and send the offer."); loadStore(); return; }
+  const se=t.closest("[data-sdedit]"); if(se){ sStartEdit=se.dataset.sdedit==="open"; document.activeElement?.blur(); renderStoreDrawer(); return; }
+  const sc=t.closest("[data-sdconfirm]");
+  if(sc){ const sdate=$("#sdDate").value, stime=$("#sdTime").value, snote=$("#sdNote").value.trim();
+    if(!sdate||!stime){ toast("Pick the first day and the start time."); return; }
+    sc.disabled=true; document.activeElement?.blur();
+    const {error}=await sb.rpc("confirm_start",{rid:sc.dataset.sdconfirm,sdate,stime,snote:snote||null,who});
+    if(error){ sc.disabled=false; toast("Couldn’t save the first day. Try again."); return; }
+    sStartEdit=false; toast(`First day set: ${fmtDate(sdate,true)} at ${fmtTime(stime)}. The office has it.`); loadStore(); return; }
+  const cx=t.closest("[data-sreqcancel]");
+  if(cx){ const {error}=await sb.from("hire_requests").update({status:"cancelled"}).eq("id",cx.dataset.sreqcancel);
+    toast(error?"Couldn’t cancel.":"Request cancelled."); loadStore(); return; }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&sOpen){ sOpen=null; $("#sDrawerHost").innerHTML=""; } });
 
 /* ---------- boot ---------- */
 setTab(["#applicants","#add","#calendar","#future","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");
