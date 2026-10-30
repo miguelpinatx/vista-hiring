@@ -585,6 +585,12 @@ img{max-width:100%}
       <span class="who"><span id="sWho"></span><button class="btn sm ghost" id="sSignOut">Sign out</button></span>
     </div>
   </header>
+  <div class="panel" id="sOpenPanel" style="margin-bottom:16px">
+    <div class="ph"><h2>Positions to fill <span class="small">tell the office what your store needs</span></h2><button class="btn sm primary" id="sOpenAdd" type="button">Request a position</button></div>
+    <div id="sOpenForm"></div>
+    <div class="list" id="sOpenList"></div>
+  </div>
+  <h2 style="margin:0 0 10px;font-size:1.05rem">Applicants</h2>
   <div class="pipe" id="sPipe" style="margin-bottom:14px"></div>
   <div class="s-cards" id="sList"></div>
   <p class="small" style="margin-top:18px">Claim an applicant to take them for your store. Then use <b>Request approval to hire</b> and the office will send the offer.</p>
@@ -1053,7 +1059,7 @@ function renderOpenings(){
       <div class="olist">${list.map(o=>{ const st=openingStats(o);
         const seats=Array.from({length:st.needed},(_,i)=>`<span class="seat ${i<st.hired?"hired":i<st.hired+st.offer?"offer":""}"></span>`).join("");
         return `<div class="op ${st.left?"":"done"}">
-          <div><div class="t">${esc(o.position)}</div><div class="meta">${esc([o.type,o.shift].filter(Boolean).join(" · ")||"")}${o.notes?`${o.type||o.shift?" · ":""}${esc(o.notes)}`:""}</div></div>
+          <div><div class="t">${esc(o.position)}${o.fromStore?` <span class="portalpill" title="Requested by the store">From ${esc(o.requestedBy||"store")}</span>`:""}</div><div class="meta">${esc([o.type,o.shift].filter(Boolean).join(" · ")||"")}${o.notes?`${o.type||o.shift?" · ":""}${esc(o.notes)}`:""}</div></div>
           <div class="seatcol"><div class="seats" title="${st.hired} hired of ${st.needed}">${seats}</div>
             <div class="cnt">${st.left?`${st.left} of ${st.needed} open`:"Filled"}${st.offer?` · ${st.offer} offer out`:""}${st.pipe?` · ${st.pipe} in pipeline`:st.left&&!st.offer?" · no applicants yet":""}${st.left&&st.future?` · <button class="copy" data-pool="${esc(o.store)}">${st.future} in future pool</button>`:""}</div></div>
           <div class="acts">${confirmOpenDel===o.id?`<button class="btn sm danger" data-odelyes="${o.id}">Remove</button><button class="btn sm ghost" data-odelno>Keep</button>`:`<button class="btn sm ghost" data-oedit="${o.id}">Edit</button><button class="btn sm ghost" data-odel="${o.id}" aria-label="Remove opening">${st.left?"Close":"Remove"}</button>`}</div>
@@ -1619,7 +1625,7 @@ $("#v-dashboard").addEventListener("submit",async e=>{
   const store=$("#oStore").value, position=$("#oPos").value.trim();
   if(!store||!position){ toast("Pick a store and enter a position."); return; }
   const prev=editingOpening==="new"?null:openings.find(x=>x.id===editingOpening);
-  const o={id:prev?.id||"o"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),store,position,needed:Math.max(1,parseInt($("#oNeed").value)||1),
+  const o={...(prev||{}),id:prev?.id||"o"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),store,position,needed:Math.max(1,parseInt($("#oNeed").value)||1),
     type:$("#oType").value,shift:$("#oShift").value,notes:$("#oNotes").value.trim(),createdAt:prev?.createdAt||Date.now(),updatedAt:Date.now()};
   editingOpening=null; document.activeElement?.blur();
   if(db){ const i=openings.findIndex(x=>x.id===o.id); if(i>=0) openings[i]=o; else openings.push(o); renderOpenings(); }
@@ -1986,12 +1992,14 @@ function renderApprovals(){
   const pend=R.filter(r=>r.status==="pending");
   const waiting=R.filter(r=>r.status==="approved"&&r.ready_at&&!r.confirmed_at);
   const confirmed=R.filter(r=>r.status==="approved"&&r.confirmed_at&&nm(r.candidate_id)&&nm(r.candidate_id).stage!=="hired");
-  $("#approvalPanel").hidden=!(pend.length||waiting.length||confirmed.length);
+  const newOpen=openings.filter(o=>o.fromStore&&(o.createdAt||0)>Date.now()-7*864e5).sort((a,b)=>b.createdAt-a.createdAt);
+  $("#approvalPanel").hidden=!(pend.length||waiting.length||confirmed.length||newOpen.length);
   const row=(r,right,sub)=>`<div class="li" data-open="${esc(r.candidate_id)}"><div><b>${esc(nm(r.candidate_id)?.name||"Applicant")}</b><div class="small">${sub}</div></div><div class="r">${right}</div></div>`;
   const sec=(title,list)=>list.length?`<h3 style="margin:10px 0 2px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">${title}</h3><div class="list">${list.join("")}</div>`:"";
   $("#approvals").innerHTML=
     sec("Stores asking to hire",pend.map(r=>row(r,`<div>${esc(reqLine(r))}</div><div class="small">Open to approve</div>`,`${esc(r.store)} · ${esc(r.requested_by||r.requested_email)} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
     sec("First day confirmed: move to Hired",confirmed.map(r=>row(r,`<div class="mono">${esc(fmtDate(r.start_date_confirmed))} · ${esc(fmtTime(r.start_time))}</div><div class="small">Send the first-day email</div>`,`${esc(r.store)} · ${esc(r.confirmed_by||"")}`)))+
+    sec("New openings from stores (last 7 days)",newOpen.map(o=>`<div class="li" data-go="dashboard"><div><b>${esc(o.store)}: ${esc(o.position)}</b><div class="small">${esc([o.type,o.shift,o.notes].filter(Boolean).join(" · "))}</div></div><div class="r"><div>${esc(o.needed||1)} needed</div><div class="small">${esc(o.requestedBy||"")} · ${esc(ago(o.createdAt))}</div></div></div>`))+
     sec("Waiting on the store to pick a first day",waiting.map(r=>row(r,`<div class="small">sent ${esc(ago(new Date(r.ready_at).getTime()))}</div>`,esc(r.store))));
 }
 function portalTargets(c){ const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at); return cl?[cl.store]:sh.map(x=>x.store); }
@@ -2088,13 +2096,13 @@ $("#drawerHost").addEventListener("click",async e=>{
 let sApps=[], sNotes=[], sReqs=[], sFilter="new", sOpen=null, sReqForm=false, sStartEdit=false, sFirstLoad=true;
 function enterStore(row){
   $("#authGate").hidden=true; $("#app").hidden=true; $("#storeApp").hidden=false;
-  $("#sTitle").textContent=`${row.store} applicants`;
+  $("#sTitle").textContent=`${row.store} hiring`;
   $("#sWho").textContent=row.name||me.email;
   document.title=`${row.store} · Vista Hiring`;
   if(started) return; started=true;
-  loadStore();
+  loadStore(); loadStoreOpenings();
   ["shares","store_notes","hire_requests"].forEach(t=>sb.channel("srt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},storeSoon).subscribe());
-  setInterval(()=>{ if(!document.hidden) loadStore(); },120000);
+  setInterval(()=>{ if(!document.hidden){ loadStore(); loadStoreOpenings(); } },120000);
 }
 let storeT; function storeSoon(){ clearTimeout(storeT); storeT=setTimeout(loadStore,250); }
 async function loadStore(){
@@ -2108,6 +2116,35 @@ async function loadStore(){
   if(sFirstLoad){ sFirstLoad=false; if(sApps.some(a=>sStatus(a)==="ready")) sFilter="ready"; }
   renderStoreApp();
 }
+let sOpenings=[], sOpenFormOn=false;
+async function loadStoreOpenings(){
+  const {data,error}=await sb.rpc("store_openings");
+  sOpenings=error?null:(data||[]); renderStoreOpenings();
+}
+function renderStoreOpenings(){
+  const f=$("#sOpenForm");
+  if(!f.contains(document.activeElement)) f.innerHTML=sOpenFormOn?`<form class="openform" id="sOForm" style="margin-bottom:12px">
+      <label class="field wide">Position<input id="soPos" list="sDeptList" required placeholder="e.g. Cashier" autocomplete="off"></label>
+      <label class="field">How many<input id="soNeed" type="number" min="1" max="50" value="1"></label>
+      <label class="field">Full / part-time<select id="soType">${["","Full-time","Part-time","Either"].map(v=>`<option value="${v}">${v||"—"}</option>`).join("")}</select></label>
+      <label class="field">Shift<select id="soShift">${["","AM","Mid","PM","Closing","Any shift"].map(v=>`<option value="${v}">${v||"—"}</option>`).join("")}</select></label>
+      <label class="field wide" style="grid-column:1/-1">Notes<input id="soNotes" placeholder="e.g. weekends needed, bilingual preferred" autocomplete="off"></label>
+      <div class="row-actions"><button class="btn primary sm" type="submit">Send to the office</button><button class="btn ghost sm" type="button" id="soCancel">Cancel</button></div>
+    </form><datalist id="sDeptList">${DEPTS.map(d=>`<option value="${d}">`).join("")}</datalist>`:"";
+  $("#sOpenAdd").hidden=sOpenFormOn;
+  const L=$("#sOpenList");
+  if(sOpenings===null){ L.innerHTML=`<div class="none">Openings aren’t set up yet. Ask Miguel to finish the setup.</div>`; $("#sOpenAdd").hidden=true; return; }
+  L.innerHTML=sOpenings.length?sOpenings.map(o=>`<div class="li" style="cursor:default"><div><b>${esc(o.pos_name)}</b><div class="small">${esc([o.otype,o.oshift,o.notes].filter(Boolean).join(" · "))}</div></div><div class="r"><div>${esc(o.needed)} needed</div><div class="small">${o.requested_by?esc(o.requested_by)+" · ":""}${esc(o.created_ms?ago(Number(o.created_ms)):"")}</div></div></div>`).join("")
+    :`<div class="none">No open positions listed for ${esc(staffRow.store)}. Tap “Request a position” when you need someone.</div>`;
+}
+$("#sOpenAdd").addEventListener("click",()=>{ sOpenFormOn=true; renderStoreOpenings(); $("#soPos")?.focus(); });
+$("#sOpenForm").addEventListener("click",e=>{ if(e.target.id==="soCancel"){ sOpenFormOn=false; document.activeElement?.blur(); renderStoreOpenings(); } });
+$("#sOpenForm").addEventListener("submit",async e=>{ e.preventDefault();
+  const pos=$("#soPos").value.trim(); if(!pos){ toast("Enter the position."); return; }
+  const btn=e.target.querySelector('[type="submit"]'); btn.disabled=true;
+  const {error}=await sb.rpc("submit_opening",{pos,need:parseInt($("#soNeed").value)||1,otype:$("#soType").value||null,oshift:$("#soShift").value||null,onote:$("#soNotes").value.trim()||null,who:staffRow.name||me.email});
+  if(error){ btn.disabled=false; toast("Couldn’t send it. Try again."); return; }
+  sOpenFormOn=false; document.activeElement?.blur(); toast(`Sent. The office sees “${pos}” on its open positions list.`); loadStoreOpenings(); });
 function sStatus(a){
   if(!a.claimed_at) return "new";
   const latest=sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");

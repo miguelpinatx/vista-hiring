@@ -23,9 +23,9 @@ Applicant tracker for Vista Markets: paste or enter applications, move people th
 
 ## Store managers
 
-Store managers sign in to the same site and see a simpler page with only the applicants the office shares with their store: contact info, position, availability and store notes. They can claim an applicant, add notes, and request approval to hire. Approving a request moves the applicant to Offer.
+Store managers sign in to the same site and see a simpler page with only the applicants the office shares with their store: contact info, position, availability and store notes. They can claim an applicant, add notes, and request approval to hire. Approving a request moves the applicant to Offer. Store managers can also request a position to fill; it appears on the office's Open positions list marked “From <name>”.
 
-1. One time: run `store-access.sql` in the SQL Editor (after `schema.sql`).
+1. One time: run `store-access.sql`, then `store-openings.sql`, in the SQL Editor (after `schema.sql`).
 2. Team tab → name and email → pick **Store manager – <store>** → **Add to team**.
 3. They create their account from the site link the same way office staff do.
 4. In an applicant's card, use **Store portal** to share them with one or more stores.
