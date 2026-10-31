@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Vista Hiring Tracker</title>
 <link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vista Hiring">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#834B9E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -206,6 +211,14 @@ table.main tr:last-child td{border-bottom:none}
 .contactrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .contactrow a.btn{text-decoration:none;color:var(--fg)}
 
+.previewbar{position:sticky;top:0;z-index:15;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--purple);color:#fff;padding:10px 16px;font-size:.88rem;font-weight:600}
+.previewbar select{background:#fff;color:var(--fg)}
+.portalpill.pass{background:var(--sunk);color:var(--muted)}
+.sharechips button.passed{text-decoration:line-through;color:var(--muted)}
+.skpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.skpis .kpi b{font-size:1.6rem}
+@media (max-width:900px){ .skpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:520px){ .skpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(10,6,14,.35);z-index:20}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:21;overflow-y:auto;
@@ -406,6 +419,7 @@ img{max-width:100%}
     </div>
     <div class="filters">
       <span class="status" id="status">Connecting…</span>
+      <select class="btn" id="storeViewPick" aria-label="Store view" hidden><option value="">Store view…</option></select>
       <button class="btn" id="exportBtn" hidden>Export CSV</button>
       <span class="who"><span id="whoami"></span><button class="btn sm ghost" id="signOutBtn">Sign out</button></span>
     </div>
@@ -437,7 +451,6 @@ img{max-width:100%}
     </div>
     <div class="panel" style="overflow-x:auto"><h2>By store</h2><div id="byStore"></div></div>
     <div class="dgrid">
-      <div class="panel"><h2>Waiting on stores <span class="small">oldest first</span></h2><div class="list" id="waitingStores"></div></div>
       <div class="panel"><h2>Upcoming screens &amp; interviews</h2><div class="list" id="upcoming"></div></div>
       <div class="panel"><h2>Offers out</h2><div class="list" id="offersOut"></div></div>
     </div>
@@ -574,6 +587,7 @@ img{max-width:100%}
 
 </div>
 <div id="storeApp" hidden>
+<div class="previewbar" id="sPreviewBar" hidden><span id="sPreviewText"></span><span class="row-actions"><select class="btn sm" id="sPreviewPick" aria-label="Switch store"></select><button class="btn sm primary" id="sPreviewExit" type="button">Back to office view</button></span></div>
 <div class="wrap">
   <header>
     <div>
@@ -582,15 +596,17 @@ img{max-width:100%}
     </div>
     <div class="filters">
       <span class="status" id="sStatus">Loading…</span>
-      <span class="who"><span id="sWho"></span><button class="btn sm ghost" id="sSignOut">Sign out</button></span>
+      <span class="who"><span id="sWho"></span><button class="btn sm" id="sLangBtn" type="button" lang="es">Español</button><button class="btn sm ghost" id="sSignOut">Sign out</button></span>
     </div>
   </header>
+  <div class="skpis" id="sKpis"></div>
+  <div class="panel" id="sSoon" hidden style="margin-bottom:16px"><h2>Coming up</h2><div class="list" id="sSoonList"></div></div>
   <div class="panel" id="sOpenPanel" style="margin-bottom:16px">
-    <div class="ph"><h2>Positions to fill <span class="small">tell the office what your store needs</span></h2><button class="btn sm primary" id="sOpenAdd" type="button">Request a position</button></div>
+    <div class="ph"><h2>Positions to fill<span id="sPosCount"></span> <span class="small">tell the office what your store needs</span></h2><button class="btn sm primary" id="sOpenAdd" type="button">Request a position</button></div>
     <div id="sOpenForm"></div>
     <div class="list" id="sOpenList"></div>
   </div>
-  <h2 style="margin:0 0 10px;font-size:1.05rem">Applicants</h2>
+  <h2 style="margin:0 0 10px;font-size:1.05rem" id="sAppsHead">Applicants</h2>
   <div class="pipe" id="sPipe" style="margin-bottom:14px"></div>
   <div class="s-cards" id="sList"></div>
   <p class="small" style="margin-top:18px">Claim an applicant to take them for your store. Then use <b>Request approval to hire</b> and the office will send the offer.</p>
@@ -612,10 +628,13 @@ const STAGES=[
   {id:"offer",label:"Offer",c:"--s-offer"},
   {id:"hired",label:"Hired",c:"--s-hired"},
   {id:"future",label:"Future opportunity",c:"--s-future"},
-  {id:"declined",label:"Not moving forward",c:"--s-out"},
-  {id:"noshow",label:"No show / no reply",c:"--s-out"}
+  {id:"declined",label:"Not moving forward",c:"--s-out"}
 ];
-const STAGE=Object.fromEntries(STAGES.map(s=>[s.id,s]));
+// Email/text templates that aren't stages (the old "No show / no reply" stage is now a follow-up template + a reason under Not moving forward)
+const TPL_EXTRA=[{id:"noshow",label:"Follow-up: couldn’t reach",c:"--s-out"}];
+const TPL_LIST=STAGES.concat(TPL_EXTRA);
+const STAGE=Object.fromEntries(TPL_LIST.map(s=>[s.id,s]));
+const CLOSE_REASONS=["Didn’t reply / no answer","No show","Not a fit","Turned down the offer","Took another job","Other"];
 const ACTIVE=["new","screen","interview","offer"];
 const KEYMAP={"name":"name","email":"email","phone":"phone","address":"address","store-location":"storeRaw","store":"storeRaw","position":"position",
  "employment-type":"employmentType","start-date":"startDate","shift":"shift","job-title":"jobTitle","employer":"employer","job-start":"jobStart",
@@ -673,7 +692,7 @@ We'd like to invite you to an in-person interview for the {position} position at
 
 When: {interview_time}
 Where: {store_name}, {store_address}
-Ask for: the store manager at the front desk
+Ask for: {ask_for}
 
 The interview takes about 20–30 minutes. If you need to reschedule, call or text me at {sender_phone}.
 
@@ -686,7 +705,7 @@ Le invitamos a una entrevista en persona para el puesto de {position} en {store_
 
 Cuándo: {interview_time}
 Dónde: {store_name}, {store_address}
-Pregunte por: el gerente de tienda en el mostrador de enfrente
+Pregunte por: {ask_for}
 
 La entrevista dura unos 20–30 minutos. Si necesita cambiar la cita, llámeme o mándeme un mensaje al {sender_phone}.
 
@@ -861,8 +880,8 @@ const DEFAULT_SMS={
       es:"Hola {first_name}, le habla {sender_name} de Vista Markets. Recibimos su solicitud para {store_name}. Le llamaremos en los próximos días para una breve entrevista por teléfono."},
  screen:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. Can we do a quick 10-minute phone call on {interview_time}? Reply YES or let me know a better time.",
       es:"Hola {first_name}, soy {sender_name} de Vista Markets. ¿Podemos hacer una llamada de 10 minutos el {interview_time}? Responda SÍ o dígame qué horario le funciona mejor."},
- interview:{en:"Hi {first_name}, you're invited to interview at {store_name} ({store_address}) on {interview_time}. Ask for the store manager at the front desk. Reply to confirm. – {sender_name}",
-      es:"Hola {first_name}, le invitamos a una entrevista en {store_name} ({store_address}) el {interview_time}. Pregunte por el gerente en el mostrador de enfrente. Responda para confirmar. – {sender_name}"},
+ interview:{en:"Hi {first_name}, you're invited to interview at {store_name} ({store_address}) on {interview_time}. Ask for {ask_for}. Reply to confirm. – {sender_name}",
+      es:"Hola {first_name}, le invitamos a una entrevista en {store_name} ({store_address}) el {interview_time}. Pregunte por {ask_for}. Responda para confirmar. – {sender_name}"},
  offer:{en:"Congrats {first_name}! Vista Markets is offering you the {position} position at {store_name}, {pay}. Next step: onboarding in person at T&T Staff Management, 511 Executive Center Blvd (Mon–Fri 8–5). Bring your photo ID and Social Security card. Check your email for full details. – {sender_name}",
       es:"¡Felicidades {first_name}! Vista Markets le ofrece el puesto de {position} en {store_name}, {pay}. Siguiente paso: registro en persona en T&T Staff Management, 511 Executive Center Blvd (lun–vie 8–5). Traiga su identificación con foto y su tarjeta de Seguro Social. Revise su correo para todos los detalles. – {sender_name}"},
  hired:{en:"Welcome to Vista Markets, {first_name}! Your first day is {offer_start} at {start_time}, {store_name}, {store_address}. Ask for the manager at the front desk. Wear a black or white shirt, black or khaki pants and non-slip shoes. Hairnets and gloves provided. – {sender_name}",
@@ -886,8 +905,9 @@ const DEFAULT_STORE_INFO={
 };
 let storeInfoOverrides={}, editingStore=null;
 function storeInfo(name){ const o={...(DEFAULT_STORE_INFO[name]||{}),...(storeInfoOverrides[name]||{})}; if(!o.name&&name) o.name="Vista Markets "+name; return o; }
-const TOKENS=["first_name","name","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
+const TOKENS=["first_name","name","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
 
+var UI_LOC;
 let db=null, downloads=null, candidates=[], parsed=[], filterStage="", openId=null;
 let tplOverrides={}, tplSel={stage:"new",lang:"en",ch:"email"}, tab="dashboard";
 let openings=[], editingOpening=null, confirmOpenDel=null;
@@ -936,8 +956,8 @@ function dupOf(a){
 
 /* ---------- formatting ---------- */
 function parseISO(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(iso||""); return m?new Date(+m[1],m[2]-1,+m[3]):null; }
-function fmtDate(iso,long){ const d=parseISO(iso); if(!d) return iso||""; return d.toLocaleDateString(undefined,long?{weekday:"long",month:"long",day:"numeric"}:{month:"short",day:"numeric"}); }
-function fmtDateTime(v,long){ if(!v) return ""; const d=new Date(v); return isNaN(d)?v:d.toLocaleString(undefined,long?{weekday:"long",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"}:{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}); }
+function fmtDate(iso,long){ const d=parseISO(iso); if(!d) return iso||""; return d.toLocaleDateString(UI_LOC,long?{weekday:"long",month:"long",day:"numeric"}:{month:"short",day:"numeric"}); }
+function fmtDateTime(v,long){ if(!v) return ""; const d=new Date(v); return isNaN(d)?v:d.toLocaleString(UI_LOC,long?{weekday:"long",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"}:{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}); }
 function fmtDateES(iso){ const d=parseISO(iso); return d?d.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"}):(iso||""); }
 function fmtDateTimeES(v){ const d=new Date(v); return isNaN(d)?v:d.toLocaleString("es-MX",{weekday:"long",day:"numeric",month:"long",hour:"numeric",minute:"2-digit"}); }
 function ago(ts){ if(!ts) return ""; const s=(Date.now()-ts)/1000; if(s<3600) return Math.max(1,Math.round(s/60))+"m ago";
@@ -964,6 +984,7 @@ function tokenValues(c,lang){
     food_handler_link:es?"https://www.360training.com/course/curso-de-capacitacion-para-manipuladores-de-alimentos-de-texas":"https://www.360training.com/course/texas-food-handler-training",
     tabc_link:"https://www.360training.com/course/tabc-seller-server-training", position:c.hireFor||(/open to anything/i.test(c.position||"")?"":c.position)||"",
     phone:c.phone||"", employment_type:es?((c.offerType||c.employmentType||"").replace(/Full-time/i,"tiempo completo").replace(/Part-time/i,"medio tiempo")):(c.offerType||c.employmentType||""),
+    ask_for:c.interviewAskFor||(es?"el gerente de tienda en el mostrador de enfrente":"the store manager at the front desk"),
     interview_time:c.interviewDate?(es?fmtDateTimeES(c.interviewDate):fmtDateTime(c.interviewDate,true)):"",
     pay:payText(c,lang), hours:c.offerHours||"", offer_start:c.offerStart?(es?fmtDateES(c.offerStart):fmtDate(c.offerStart,true)):"",
     respond_by:es?respond.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"}):respond.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}),
@@ -1115,7 +1136,6 @@ function renderDashboard(){
 
   const li=(c,right)=>`<div class="li" data-open="${esc(c.id)}"><div><b>${esc(c.name)}</b><div class="small">${esc([c.store,c.hireFor||c.position].filter(Boolean).join(" · "))}</div></div><div class="r">${right}</div></div>`;
   const waiting=candidates.filter(isWaiting).sort((a,b)=>a.storeCheck.askedAt-b.storeCheck.askedAt);
-  $("#waitingStores").innerHTML=waiting.length?waiting.slice(0,10).map(c=>li(c,`<div>${waitPill(c)}</div><div class="small">${esc(c.storeCheck.reason||"")}</div>`)).join("")+(waiting.length>10?`<button class="copy" data-go="applicants" data-stage="__waiting">See all ${waiting.length}</button>`:""):`<div class="none">Not waiting on any store right now.</div>`;
   $("#upcoming").innerHTML=upcomingList.length?upcomingList.slice(0,8).map(c=>li(c,`<div class="mono">${esc(fmtDateTime(c.interviewDate))}</div><div class="small">${esc(STAGE[c.stage].label)} · ${esc(c.interviewer||"")}</div>`)).join(""):`<div class="none">Nothing scheduled. Set a time in an applicant’s card to see it here.</div>`;
   $("#offersOut").innerHTML=offers.length?offers.map(c=>li(c,`<div class="mono">${esc(payText(c,"en")||"No pay set")}</div><div class="small">${c.offerStart?"Start "+esc(fmtDate(c.offerStart)):""} ${c.offerResponse?"· "+esc(c.offerResponse):""}</div>`)).join(""):`<div class="none">No open offers.</div>`;
   const due=candidates.filter(c=>["offer","hired"].includes(c.stage)&&certMissing(c).length).sort((a,b)=>(a.offerStart||"9999").localeCompare(b.offerStart||"9999"));
@@ -1164,7 +1184,6 @@ function visible(){
 function renderPipe(){
   const counts={}; candidates.forEach(c=>counts[c.stage||"new"]=(counts[c.stage||"new"]||0)+1);
   $("#pipe").innerHTML=`<button class="chip" aria-pressed="${!filterStage}" data-stage=""><span>All</span><span class="n">${candidates.length}</span></button>`+
-    `<button class="chip waitchip" aria-pressed="${filterStage==="__waiting"}" data-stage="__waiting"><span class="sw" style="background:var(--s-int)"></span><span>Waiting on store</span><span class="n">${candidates.filter(isWaiting).length}</span></button>`+
     STAGES.map(s=>`<button class="chip" aria-pressed="${filterStage===s.id}" data-stage="${s.id}"><span class="sw" style="background:var(${s.c})"></span><span>${s.label}</span><span class="n">${counts[s.id]||0}</span></button>`).join("");
   $("#tabCount").textContent=candidates.length||"";
 }
@@ -1179,14 +1198,14 @@ function renderRows(){
     <td class="notecell">${noteCell(c)}</td>
     <td class="hide-sm">${daysHtml(c)}</td>
     <td class="mono">${esc(fmtDate(c.startDate)||"—")}</td>
-    <td>${pill(c.stage)}${waitPill(c)?`<div>${waitPill(c)}</div>`:""}${portalBadge(c)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
+    <td>${pill(c.stage)}${c.stage==="declined"&&c.closeReason?`<div class="small" style="margin-top:4px">${esc(c.closeReason)}</div>`:""}${waitPill(c)?`<div>${waitPill(c)}</div>`:""}${portalBadge(c)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
   </tr>`).join("");
 }
 
 /* ---------- templates editor ---------- */
 function renderTemplates(){
   const sms=tplSel.ch==="sms", key=tplSel.lang+(sms?"_sms":"");
-  $("#tplNav").innerHTML=STAGES.map(s=>`<button data-tpl="${s.id}" aria-pressed="${tplSel.stage===s.id}"><span class="sw" style="background:var(${s.c})"></span>${s.label}${tplOverrides[s.id]?.[key]?` <span class="small">· edited</span>`:""}</button>`).join("");
+  $("#tplNav").innerHTML=TPL_LIST.map(s=>`<button data-tpl="${s.id}" aria-pressed="${tplSel.stage===s.id}"><span class="sw" style="background:var(${s.c})"></span>${s.label}${tplOverrides[s.id]?.[key]?` <span class="small">· edited</span>`:""}</button>`).join("");
   const t=tplFor(tplSel.stage,tplSel.lang,tplSel.ch), edited=!!tplOverrides[tplSel.stage]?.[key];
   const ed=$("#tplEdit"); const keep=document.activeElement?.id;
   if(keep==="tplS"||keep==="tplB") return; // don't clobber typing
@@ -1213,7 +1232,7 @@ async function saveTemplates(){
 let confirmDelete=false, mailStage=null, mailLang=null;
 let editContact=false, confirmNoteDel=null, askingStore=false;
 const CHECK_REASONS=["In-person interview","Availability match","OK to hire","Other"];
-function isWaiting(c){ return c.storeCheck?.status==="waiting"; }
+function isWaiting(c){ return false; } // "Check with store" removed; Store portal replaces it
 function waitDays(c){ return Math.floor((Date.now()-(c.storeCheck?.askedAt||Date.now()))/864e5); }
 function waitLabel(c){ const d=waitDays(c); return d<1?"today":d===1?"1 day":d+" days"; }
 function waitPill(c){ if(!isWaiting(c)) return ""; const d=waitDays(c);
@@ -1261,7 +1280,7 @@ function renderDrawer(){
   const c=candidates.find(x=>x.id===openId); const host=$("#drawerHost");
   if(!c){ host.innerHTML=""; openId=null; return; }
   const active=document.activeElement, keepId=active&&active.id;
-  const typing=["dOTime","dFutureFor","dWhen","dOStart","ckNote","dNote","pNote","pDecide","pReadyNote","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
+  const typing=["dOTime","dFutureFor","dWhen","dOStart","ckNote","dNote","pNote","pDecide","pReadyNote","pIvOther","dRate","dHours","dHireFor","cName","cPhone","cEmail","cAddr"].includes(keepId);
   if(typing && host.querySelector(".drawer")) { refreshMail(c); return; }
   const scrollTop=host.querySelector(".drawer")?.scrollTop||0;
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
@@ -1281,12 +1300,14 @@ function renderDrawer(){
       <label>Screen / interview time<input id="dWhen" type="datetime-local" value="${esc(c.interviewDate||"")}"></label>
       <label>Handled by<select id="dWho">${people.map(s=>`<option ${c.interviewer===s?"selected":""}>${esc(s)}</option>`).join("")}</select></label>
     </div>
+    ${c.stage==="declined"?`<div class="d-sec checkbox"><h3>Why not moving forward</h3>
+      <div class="d-grid"><label>Reason<select id="dCloseReason">${[""].concat(CLOSE_REASONS,c.closeReason&&!CLOSE_REASONS.includes(c.closeReason)?[c.closeReason]:[]).map(v=>`<option value="${esc(v)}" ${(c.closeReason||"")===v?"selected":""}>${esc(v)||"Pick a reason"}</option>`).join("")}</select></label></div>
+      <div class="small">Saved with a timestamp in their notes. Add details in the notes below if needed.</div></div>`:""}
     ${c.stage==="future"?`<div class="d-sec checkbox" style="border-color:var(--s-future)"><h3>Future opportunity</h3>
       <label class="field">Good fit for (positions, stores, shifts)<input id="dFutureFor" value="${esc(c.futureFor||"")}" placeholder="e.g. Bakery or cashier at Montana/Horizon, weekends" autocomplete="off"></label>
       <div class="small">They show on the Future pool tab and next to matching openings on the dashboard.</div></div>`:""}
     ${c.interviewDate&&!isNaN(new Date(c.interviewDate))?`<div class="d-sec"><div class="row-actions calrow"><span class="small"><b>${esc(calKind(c).label)}</b> ${esc(fmtDateTime(c.interviewDate,true))}</span>
       <span class="row-actions"><button class="btn sm primary" data-ics>Add to Outlook</button><a class="copy" href="${esc(calLinks(c).outlook)}" target="_blank" rel="noopener">Outlook on the web</a></span></div></div>`:""}
-    ${storeCheckSection(c)}
     ${portalSection(c)}
 
     ${["offer","hired"].includes(c.stage)||c.offerRate?`
@@ -1308,7 +1329,7 @@ function renderDrawer(){
 
     <div class="d-sec"><h3>Email &amp; text</h3>
       <div class="row-actions">
-        <select id="mStage" class="btn sm" aria-label="Template">${STAGES.map(s=>`<option value="${s.id}" ${ms===s.id?"selected":""}>${s.label}${s.id===c.stage?" (current)":""}</option>`).join("")}</select>
+        <select id="mStage" class="btn sm" aria-label="Template">${TPL_LIST.map(s=>`<option value="${s.id}" ${ms===s.id?"selected":""}>${s.label}${s.id===c.stage?" (current)":""}</option>`).join("")}</select>
         <div class="seg" role="group" aria-label="Language"><button data-mlang="en" aria-pressed="${ml==="en"}">EN</button><button data-mlang="es" aria-pressed="${ml==="es"}">ES</button></div>
       </div>
       <div id="mailBox"></div>
@@ -1440,6 +1461,8 @@ function renderAll(){
   const fc=candidates.filter(c=>c.stage==="future").length; $("#futureCount").textContent=fc||"";
   if(tab==="team"&&sb) renderTeam();
   if(openId) renderDrawer();
+  const svp=$("#storeViewPick"); if(svp&&portalReady&&staffRow&&!staffRow.store){ svp.hidden=false; if(svp.options.length!==STORES.length+1) svp.innerHTML=`<option value="">Store view…</option>`+STORES.map(x=>`<option>${esc(x)}</option>`).join(""); }
+  if(sPreview) renderPreview2();
 }
 /* ---------- add to calendar ---------- */
 function calKind(c){ const screen=["new","screen"].includes(c.stage); return {screen,label:screen?"Phone screen":"Interview",mins:screen?15:30}; }
@@ -1747,6 +1770,8 @@ const FIELD={dOTime:"offerStartTime",dFutureFor:"futureFor",dStore:"store",dWho:
 $("#drawerHost").addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="mStage"){ mailStage=t.value; return renderDrawer(); }
+  if(t.id==="dCloseReason"){ const c=candidates.find(x=>x.id===openId); if(!c) return; const now=Date.now(), v=t.value;
+    patch(openId,{closeReason:v,notesLog:v?[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Not moving forward: ${v}.`,at:now,by:myName()}]:(c.notesLog||[])}).then(()=>toast(v?"Reason saved to notes.":"Reason cleared.")).catch(()=>{}); return; }
   if(t.id==="mailer"){ try{ localStorage.setItem("vista-hiring-mailer",t.value); }catch{} const c=candidates.find(x=>x.id===openId); if(c) refreshMail(c); return; }
   if(["fhHave","tabcHave","fhFiled","tabcFiled"].includes(t.id)){ patch(openId,{[t.id]:t.checked}).catch(()=>{}); return; }
   if(FIELD[t.id]){ let v=t.value; if(t.id==="dRate") v=v.replace(/[^0-9.]/g,""); patch(openId,{[FIELD[t.id]]:v}).catch(()=>{}); if(["dRate","dHours"].includes(t.id)){ t.blur(); renderDrawer(); } }
@@ -1877,7 +1902,7 @@ async function enterApp(){
 function startData(){
   $("#status").textContent="Loading…";
   db.collection("candidates").onSnapshot(snap=>{
-    candidates=snap.docs.map(d=>{ const x=d.data(); return {id:d.id,...x,history:[...(x.history||[])],availDays:[...(x.availDays||[])]}; });
+    candidates=snap.docs.map(d=>{ const x=d.data(); if(x.stage==="noshow"){ x.stage="declined"; x.closeReason=x.closeReason||"Didn’t reply / no answer"; } return {id:d.id,...x,history:[...(x.history||[])],availDays:[...(x.availDays||[])]}; });
     $("#status").textContent=`${candidates.length} applicant${candidates.length===1?"":"s"} · synced`;
     renderAll();
   },()=>{ $("#status").textContent="Couldn’t load. Reload the page."; });
@@ -1931,22 +1956,26 @@ $("#v-team").addEventListener("click",async e=>{
 });
 
 /* ---------- store portal: office side ---------- */
-let portalReady=true, shares=[], storeNotes=[], hireReqs=[], portalStarted=false;
+let portalReady=true, shares=[], storeNotes=[], hireReqs=[], ivReqs=[], portalStarted=false;
 async function loadPortal(){
-  const [a,b,c]=await Promise.all([
+  const [a,b,c,iv]=await Promise.all([
     sb.from("shares").select("*"),
     sb.from("store_notes").select("*").order("created_at"),
-    sb.from("hire_requests").select("*").order("created_at",{ascending:false})]);
+    sb.from("hire_requests").select("*").order("created_at",{ascending:false}),
+    sb.from("interview_requests").select("*").order("created_at",{ascending:false})]);
   if(a.error){ portalReady=false; renderAll(); return; }
-  shares=a.data||[]; storeNotes=b.data||[]; hireReqs=c.data||[];
+  shares=a.data||[]; storeNotes=b.data||[]; hireReqs=c.data||[]; ivReqs=iv.error?[]:(iv.data||[]);
   renderAll();
 }
 let portalT; function portalSoon(){ clearTimeout(portalT); portalT=setTimeout(loadPortal,250); }
 function startPortal(){
   if(portalStarted) return; portalStarted=true; loadPortal();
-  ["shares","store_notes","hire_requests"].forEach(t=>sb.channel("rt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},portalSoon).subscribe());
+  ["shares","store_notes","hire_requests","interview_requests"].forEach(t=>sb.channel("rt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},portalSoon).subscribe());
 }
-const sharesFor=id=>shares.filter(x=>x.candidate_id===id);
+const sharesFor=id=>shares.filter(x=>x.candidate_id===id&&!x.declined_at);
+const passedFor=id=>shares.filter(x=>x.candidate_id===id&&x.declined_at);
+const ivFor=id=>ivReqs.filter(x=>x.candidate_id===id&&x.status!=="cancelled");
+function slotLabel(v){ return fmtDateTime(v,true); }
 const reqsFor=id=>hireReqs.filter(x=>x.candidate_id===id);
 function payFmt(p){ p=String(p||"").trim(); return /^\$?\d+(\.\d+)?$/.test(p)?`$${p.replace("$","")}/hr`:p; }
 function reqLine(r){ return [r.position,payFmt(r.pay),r.start_date?"start "+fmtDate(r.start_date):""].filter(Boolean).join(" · "); }
@@ -1954,13 +1983,15 @@ function portalBadge(c){
   if(!portalReady) return "";
   const p=reqsFor(c.id).find(r=>r.status==="pending");
   if(p) return `<div><span class="portalpill ask">Hire request · ${esc(p.store)}</span></div>`;
+  const ivp=ivFor(c.id).find(r=>r.status==="pending"); if(ivp) return `<div><span class="portalpill ask">Interview request · ${esc(ivp.store)}</span></div>`;
   const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at);
   if(cl) return `<div><span class="portalpill">Claimed · ${esc(cl.store)}</span></div>`;
   if(sh.length) return `<div><span class="portalpill">Shared · ${sh.length===1?esc(sh[0].store):sh.length+" stores"}</span></div>`;
+  const pa=passedFor(c.id); if(pa.length) return `<div><span class="portalpill pass">Passed · ${esc(pa.map(x=>x.store).join(", "))}</span></div>`;
   return "";
 }
 let readyForm=false;
-function fmtTime(t){ return t?new Date("2000-01-01T"+t).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}):""; }
+function fmtTime(t){ return t?new Date("2000-01-01T"+t).toLocaleTimeString(UI_LOC||"en-US",{hour:"numeric",minute:"2-digit"}):""; }
 function certSummary(c){ return Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>`${CERTS[k].short} ${certDone(c,k)&&certFiled(c,k)?"✓":"missing"}`).join(" · "); }
 function storeMgrs(store){ return team.filter(t=>t.store===store); }
 function mgrMail(c,store){
@@ -1993,25 +2024,40 @@ function renderApprovals(){
   const waiting=R.filter(r=>r.status==="approved"&&r.ready_at&&!r.confirmed_at);
   const confirmed=R.filter(r=>r.status==="approved"&&r.confirmed_at&&nm(r.candidate_id)&&nm(r.candidate_id).stage!=="hired");
   const newOpen=openings.filter(o=>o.fromStore&&(o.createdAt||0)>Date.now()-7*864e5).sort((a,b)=>b.createdAt-a.createdAt);
-  $("#approvalPanel").hidden=!(pend.length||waiting.length||confirmed.length||newOpen.length);
+  const passedRecent=portalReady?shares.filter(x=>x.declined_at&&new Date(x.declined_at).getTime()>Date.now()-7*864e5).sort((a,b)=>new Date(b.declined_at)-new Date(a.declined_at)):[];
+  const ivPend=portalReady?ivReqs.filter(r=>r.status==="pending"):[];
+  $("#approvalPanel").hidden=!(pend.length||waiting.length||confirmed.length||newOpen.length||passedRecent.length||ivPend.length);
   const row=(r,right,sub)=>`<div class="li" data-open="${esc(r.candidate_id)}"><div><b>${esc(nm(r.candidate_id)?.name||"Applicant")}</b><div class="small">${sub}</div></div><div class="r">${right}</div></div>`;
   const sec=(title,list)=>list.length?`<h3 style="margin:10px 0 2px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">${title}</h3><div class="list">${list.join("")}</div>`:"";
   $("#approvals").innerHTML=
+    sec("Stores asking for an interview",ivPend.map(r=>row(r,`<div>${esc((r.slots||[]).length)} time${(r.slots||[]).length===1?"":"s"} offered</div><div class="small">Open to schedule</div>`,`${esc(r.store)} · ${esc(r.requested_by||"")} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
     sec("Stores asking to hire",pend.map(r=>row(r,`<div>${esc(reqLine(r))}</div><div class="small">Open to approve</div>`,`${esc(r.store)} · ${esc(r.requested_by||r.requested_email)} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
     sec("First day confirmed: move to Hired",confirmed.map(r=>row(r,`<div class="mono">${esc(fmtDate(r.start_date_confirmed))} · ${esc(fmtTime(r.start_time))}</div><div class="small">Send the first-day email</div>`,`${esc(r.store)} · ${esc(r.confirmed_by||"")}`)))+
     sec("New openings from stores (last 7 days)",newOpen.map(o=>`<div class="li" data-go="dashboard"><div><b>${esc(o.store)}: ${esc(o.position)}</b><div class="small">${esc([o.type,o.shift,o.notes].filter(Boolean).join(" · "))}</div></div><div class="r"><div>${esc(o.needed||1)} needed</div><div class="small">${esc(o.requestedBy||"")} · ${esc(ago(o.createdAt))}</div></div></div>`))+
+    sec("Stores passed (last 7 days)",passedRecent.map(x=>`<div class="li" data-open="${esc(x.candidate_id)}"><div><b>${esc(nm(x.candidate_id)?.name||"Applicant")}</b><div class="small">${esc(x.store)} · ${esc(x.declined_by||"")}${x.decline_reason?` · “${esc(x.decline_reason)}”`:""}</div></div><div class="r"><div class="small">${esc(ago(new Date(x.declined_at).getTime()))}</div><div class="small">Share elsewhere</div></div></div>`))+
     sec("Waiting on the store to pick a first day",waiting.map(r=>row(r,`<div class="small">sent ${esc(ago(new Date(r.ready_at).getTime()))}</div>`,esc(r.store))));
+}
+function ivBlock(c){
+  return ivFor(c.id).map(r=>{
+    if(r.status==="pending") return `<div class="hreq pending"><div><b>${esc(r.store)} wants an in-person interview</b> <span class="small">${esc(r.requested_by||"")} · ${esc(fmtDateTime(r.created_at))}</span></div>
+      ${r.ask_for?`<div class="small">Ask for: <b style="color:var(--fg)">${esc(r.ask_for)}</b></div>`:""}${r.note?`<div class="pre">${esc(r.note)}</div>`:""}
+      <div class="small">Times that work for the store. Confirm one with ${esc(c.name||"the applicant")}, then tap it:</div>
+      <div class="row-actions">${(r.slots||[]).map(sl=>`<button type="button" class="btn sm" data-ivpick="${esc(r.id)}" data-slot="${esc(sl)}">${esc(slotLabel(sl))}</button>`).join("")}</div>
+      <div class="row-actions"><input id="pIvOther" type="datetime-local" style="border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);color:var(--fg)"><button type="button" class="btn sm ghost" data-ivpick="${esc(r.id)}" data-slot="__other">Use a different time</button></div></div>`;
+    const done=r.outcome==="showed"?` · <b style="color:var(--s-hired)">Interviewed</b>`:r.outcome==="noshow"?` · <b style="color:var(--s-out)">No show</b>`:"";
+    return `<div class="small"><b style="color:var(--fg)">Interview at ${esc(r.store)}</b> · ${esc(slotLabel(r.scheduled_at))}${r.ask_for?` · ask for ${esc(r.ask_for)}`:""} · ${r.self_scheduled?`booked by ${esc(r.scheduled_by||"the store")}`:`set by ${esc(r.scheduled_by||"the office")}`}${done}</div>`;
+  }).join("");
 }
 function portalTargets(c){ const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at); return cl?[cl.store]:sh.map(x=>x.store); }
 function portalSection(c){
   if(!portalReady) return "";
   const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at), reqs=reqsFor(c.id), notes=storeNotes.filter(n=>n.candidate_id===c.id);
-  const on=new Set(sh.map(x=>x.store)), targets=portalTargets(c);
+  const on=new Set(sh.map(x=>x.store)), targets=portalTargets(c), passed=passedFor(c.id);
   const top=cl
     ?`<div><b>Claimed by ${esc(cl.store)}</b>${cl.claimed_by?` · ${esc(cl.claimed_by)}`:""} <span class="small">${esc(fmtDateTime(cl.claimed_at))}</span></div>
       <div class="row-actions"><button type="button" class="btn sm ghost danger" data-unshare="${esc(cl.store)}">Take back from ${esc(cl.store)}</button></div>`
     :`<div class="small">${sh.length?"Managers at the highlighted stores can see this applicant and claim them.":"Share with a store so its manager can see this applicant and claim them."} They only see contact info, position, availability and store notes.</div>
-      <div class="sharechips">${STORES.map(st=>`<button type="button" data-share="${esc(st)}" aria-pressed="${on.has(st)}">${on.has(st)?"✓ ":""}${esc(st)}</button>`).join("")}</div>`;
+      <div class="sharechips">${STORES.map(st=>{ const pz=passed.find(x=>x.store===st); return `<button type="button" data-share="${esc(st)}" aria-pressed="${on.has(st)}" ${pz?`class="passed" title="${esc(st)} passed. Tap to share again."`:""}>${on.has(st)?"✓ ":pz?"✕ ":""}${esc(st)}</button>`; }).join("")}</div>`;
   const reqHtml=reqs.map(r=>r.status==="pending"
     ?`<div class="hreq pending"><div><b>${esc(r.store)} wants to hire</b> <span class="small">${esc(r.requested_by||r.requested_email)} · ${esc(fmtDateTime(r.created_at))}</span></div>
       <div class="mono">${esc(reqLine(r))}</div>${r.note?`<div class="pre">${esc(r.note)}</div>`:""}
@@ -2022,11 +2068,23 @@ function portalSection(c){
       ${notes.length?`<div>${notes.map(n=>`<div class="snote">${esc(n.body)}<span class="small">${esc(n.store)} · ${esc(n.author||n.author_email)} · ${esc(fmtDateTime(n.created_at))}</span></div>`).join("")}</div>`:`<div class="none">No store notes yet.</div>`}
       ${targets.length?`<textarea id="pNote" rows="2" placeholder="Message the store about this applicant…"></textarea>
       <div class="row-actions">${targets.length>1?`<select id="pNoteStore" aria-label="Store" style="border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--fg)">${targets.map(x=>`<option>${esc(x)}</option>`).join("")}</select>`:""}<button type="button" class="btn sm" data-snote>Send to ${targets.length>1?"store":esc(targets[0])}</button></div>`:""}</div>`:"";
-  return `<div class="d-sec portalbox"><h3>Store portal</h3>${top}${reqHtml}${schedBlock(c)}${noteHtml}</div>`;
+  return `<div class="d-sec portalbox"><h3>Store portal</h3>${top}${ivBlock(c)}${passed.map(x=>`<div class="small"><b style="color:var(--fg)">${esc(x.store)} passed</b> · ${esc(x.declined_by||"")} · ${esc(fmtDateTime(x.declined_at))}${x.decline_reason?` · “${esc(x.decline_reason)}”`:""}</div>`).join("")}${reqHtml}${schedBlock(c)}${noteHtml}</div>`;
 }
 $("#drawerHost").addEventListener("click",async e=>{
   const t=e.target; if(!sb||!portalReady) return;
   const c=candidates.find(x=>x.id===openId); if(!c) return;
+  const ivp=t.closest("[data-ivpick]");
+  if(ivp){ const r=ivReqs.find(x=>x.id===ivp.dataset.rid||x.id===ivp.dataset.ivpick); if(!r) return;
+    const slot=ivp.dataset.slot==="__other"?($("#pIvOther")?.value||""):ivp.dataset.slot;
+    if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(slot)){ toast("Pick the date and time first."); return; }
+    ivp.disabled=true; document.activeElement?.blur();
+    const {error}=await sb.from("interview_requests").update({status:"scheduled",scheduled_at:slot.slice(0,16),scheduled_by:myName(),scheduled_on:new Date().toISOString()}).eq("id",r.id);
+    if(error){ ivp.disabled=false; toast("Couldn’t save. Try again."); return; }
+    const now=Date.now(), ch={interviewDate:slot.slice(0,16),store:r.store,interviewAskFor:r.ask_for||"",
+      notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`In-person interview set at ${r.store}: ${slotLabel(slot)}${r.ask_for?` (ask for ${r.ask_for})`:""}. Requested by ${r.requested_by||"the store"}.`,at:now,by:myName()}]};
+    if(["new","screen"].includes(c.stage)){ ch.stage="interview"; ch.history=[...(c.history||[]),{stage:"interview",at:now}]; }
+    mailStage="interview"; await patch(c.id,ch).catch(()=>{});
+    toast("Interview set. The store sees it now. Send the interview email or text below."); loadPortal(); return; }
   const rd=t.closest("[data-ready]");
   if(rd){ const a=rd.dataset.ready;
     if(a==="open"){ readyForm=true; renderDrawer(); $("#pReadyNote")?.focus(); return; }
@@ -2038,9 +2096,9 @@ $("#drawerHost").addEventListener("click",async e=>{
     let error;
     if(r){ ({error}=await sb.from("hire_requests").update({ready_at:iso,ready_by:who,ready_note}).eq("id",r.id)); }
     else {
-      const sh=sharesFor(c.id).find(x=>x.store===store);
+      const sh=shares.find(x=>x.candidate_id===c.id&&x.store===store);
       if(!sh) ({error}=await sb.from("shares").insert({candidate_id:c.id,store,shared_by:who,claimed_at:iso,claimed_by:"Office"}));
-      else if(!sh.claimed_at) ({error}=await sb.from("shares").update({claimed_at:iso,claimed_by:"Office"}).eq("candidate_id",c.id).eq("store",store));
+      else if(!sh.claimed_at||sh.declined_at) ({error}=await sb.from("shares").update({claimed_at:iso,claimed_by:"Office",declined_at:null,declined_by:null,decline_reason:null}).eq("candidate_id",c.id).eq("store",store));
       if(!error) ({error}=await sb.from("hire_requests").insert({candidate_id:c.id,store,requested_by:who,position:c.hireFor||c.position||null,pay:c.offerRate||null,start_date:c.offerStart||null,
         status:"approved",decided_by:who,decided_at:iso,ready_at:iso,ready_by:who,ready_note}));
     }
@@ -2052,8 +2110,9 @@ $("#drawerHost").addEventListener("click",async e=>{
     await patch(c.id,{stage:"hired",offerResponse:"Accepted",history:[...(c.history||[]),{stage:"hired",at:now}]}).catch(()=>{});
     toast("Moved to Hired. The first-day email below has their start date and time."); return; }
   const sh=t.closest("[data-share]");
-  if(sh){ const st=sh.dataset.share, has=sharesFor(c.id).some(x=>x.store===st);
+  if(sh){ const st=sh.dataset.share, has=sharesFor(c.id).some(x=>x.store===st), wasPassed=passedFor(c.id).some(x=>x.store===st);
     const {error}=has?await sb.from("shares").delete().eq("candidate_id",c.id).eq("store",st)
+                 :wasPassed?await sb.from("shares").update({declined_at:null,declined_by:null,decline_reason:null,shared_at:new Date().toISOString(),shared_by:myName()}).eq("candidate_id",c.id).eq("store",st)
                      :await sb.from("shares").insert({candidate_id:c.id,store:st,shared_by:myName()});
     if(error){ toast("Couldn’t update sharing. Try again."); return; }
     toast(has?`No longer shared with ${st}.`:`Shared with ${st}. Their manager can now see and claim ${c.name||"this applicant"}.`); loadPortal(); return; }
@@ -2093,73 +2152,156 @@ $("#drawerHost").addEventListener("click",async e=>{
 });
 
 /* ---------- store manager view ---------- */
-let sApps=[], sNotes=[], sReqs=[], sFilter="new", sOpen=null, sReqForm=false, sStartEdit=false, sFirstLoad=true;
+let sIvs=[], sIvForm=false, sNoShowAsk=false;
+let sApps=[], sNotes=[], sReqs=[], sFilter="new", sOpen=null, sReqForm=false, sStartEdit=false, sFirstLoad=true, sPassing=false;
+const PASS_REASONS=["Not a fit for the position","Availability doesn’t work","Couldn’t reach them","No longer hiring for this","Other"];
+function sPassSection(a){
+  if(a.is_hired) return "";
+  const r=sLatest(a); if(r&&["pending","approved"].includes(r.status)) return "";
+  if(!sPassing) return `<div class="d-sec"><div class="row-actions"><button type="button" class="btn sm ghost danger" data-spass="open">Pass on this applicant</button><span class="small">${a.claimed_at?"Releases them so the office can place them elsewhere.":"Or leave them here to keep for later."}</span></div></div>`;
+  return `<div class="d-sec checkbox"><h3>Pass on ${esc(a.name||"this applicant")}</h3>
+    <div class="small">They leave your list. The office sees that ${esc(sStore())} passed and why, and can send them to another store.</div>
+    <div class="d-grid"><label>Reason<select id="spReason">${PASS_REASONS.map(x=>`<option value="${esc(x)}">${x}</option>`).join("")}</select></label>
+    <label>Note (optional)<input id="spNote" placeholder="e.g. Needs weekends off" autocomplete="off"></label></div>
+    <div class="row-actions"><button type="button" class="btn sm danger" data-spass="send">Pass</button><button type="button" class="btn sm ghost" data-spass="close">Cancel</button></div></div>`;
+}
 function enterStore(row){
   $("#authGate").hidden=true; $("#app").hidden=true; $("#storeApp").hidden=false;
-  $("#sTitle").textContent=`${row.store} hiring`;
+  $("#sTitle").textContent=`${row.store} hiring`; setTimeout(applyStoreLang,0);
   $("#sWho").textContent=row.name||me.email;
   document.title=`${row.store} · Vista Hiring`;
   if(started) return; started=true;
   loadStore(); loadStoreOpenings();
-  ["shares","store_notes","hire_requests"].forEach(t=>sb.channel("srt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},storeSoon).subscribe());
+  ["shares","store_notes","hire_requests","interview_requests"].forEach(t=>sb.channel("srt-"+t).on("postgres_changes",{event:"*",schema:"public",table:t},storeSoon).subscribe());
   setInterval(()=>{ if(!document.hidden){ loadStore(); loadStoreOpenings(); } },120000);
 }
 let storeT; function storeSoon(){ clearTimeout(storeT); storeT=setTimeout(loadStore,250); }
 async function loadStore(){
-  const [a,b,c]=await Promise.all([
+  const [a,b,c,iv]=await Promise.all([
     sb.rpc("store_applicants"),
     sb.from("store_notes").select("*").order("created_at"),
-    sb.from("hire_requests").select("*").order("created_at",{ascending:false})]);
+    sb.from("hire_requests").select("*").order("created_at",{ascending:false}),
+    sb.from("interview_requests").select("*").order("created_at",{ascending:false})]);
   if(a.error){ $("#sStatus").textContent="Couldn’t load. Reload the page."; return; }
-  sApps=a.data||[]; sNotes=b.data||[]; sReqs=c.data||[];
+  sApps=a.data||[]; sNotes=b.data||[]; sReqs=c.data||[]; sIvs=iv.error?[]:(iv.data||[]);
   $("#sStatus").textContent=`${sApps.length} applicant${sApps.length===1?"":"s"} · synced`;
   if(sFirstLoad){ sFirstLoad=false; if(sApps.some(a=>sStatus(a)==="ready")) sFilter="ready"; }
   renderStoreApp();
 }
-let sOpenings=[], sOpenFormOn=false;
+let sOpenings=[], sOpenFormOn=false, sOpenDel=null;
 async function loadStoreOpenings(){
   const {data,error}=await sb.rpc("store_openings");
-  sOpenings=error?null:(data||[]); renderStoreOpenings();
+  sOpenings=error?null:(data||[]); renderStoreOpenings(); if(sApps) renderStoreApp();
 }
 function renderStoreOpenings(){
   const f=$("#sOpenForm");
+  const o=sOpenFormOn&&sOpenFormOn!=="new"?(sOpenings||[]).find(x=>x.id===sOpenFormOn)||{}:{needed:1};
+  const opt=(list,v)=>list.map(x=>`<option value="${x}" ${(v||"")===x?"selected":""}>${x||"—"}</option>`).join("");
   if(!f.contains(document.activeElement)) f.innerHTML=sOpenFormOn?`<form class="openform" id="sOForm" style="margin-bottom:12px">
-      <label class="field wide">Position<input id="soPos" list="sDeptList" required placeholder="e.g. Cashier" autocomplete="off"></label>
-      <label class="field">How many<input id="soNeed" type="number" min="1" max="50" value="1"></label>
-      <label class="field">Full / part-time<select id="soType">${["","Full-time","Part-time","Either"].map(v=>`<option value="${v}">${v||"—"}</option>`).join("")}</select></label>
-      <label class="field">Shift<select id="soShift">${["","AM","Mid","PM","Closing","Any shift"].map(v=>`<option value="${v}">${v||"—"}</option>`).join("")}</select></label>
-      <label class="field wide" style="grid-column:1/-1">Notes<input id="soNotes" placeholder="e.g. weekends needed, bilingual preferred" autocomplete="off"></label>
-      <div class="row-actions"><button class="btn primary sm" type="submit">Send to the office</button><button class="btn ghost sm" type="button" id="soCancel">Cancel</button></div>
+      <label class="field wide">Position<input id="soPos" list="sDeptList" required value="${esc(o.pos_name||"")}" placeholder="e.g. Cashier" autocomplete="off"></label>
+      <label class="field">How many<input id="soNeed" type="number" min="1" max="50" value="${esc(o.needed||1)}"></label>
+      <label class="field">Full / part-time<select id="soType">${opt(["","Full-time","Part-time","Either"],o.otype)}</select></label>
+      <label class="field">Shift<select id="soShift">${opt(["","AM","Mid","PM","Closing","Any shift"],o.oshift)}</select></label>
+      <label class="field wide" style="grid-column:1/-1">Notes<input id="soNotes" value="${esc(o.notes||"")}" placeholder="e.g. weekends needed, bilingual preferred" autocomplete="off"></label>
+      <div class="row-actions"><button class="btn primary sm" type="submit">${sOpenFormOn==="new"?"Send to the office":"Save changes"}</button><button class="btn ghost sm" type="button" id="soCancel">Cancel</button></div>
     </form><datalist id="sDeptList">${DEPTS.map(d=>`<option value="${d}">`).join("")}</datalist>`:"";
-  $("#sOpenAdd").hidden=sOpenFormOn;
+  $("#sOpenAdd").hidden=!!sOpenFormOn;
   const L=$("#sOpenList");
   if(sOpenings===null){ L.innerHTML=`<div class="none">Openings aren’t set up yet. Ask Miguel to finish the setup.</div>`; $("#sOpenAdd").hidden=true; return; }
-  L.innerHTML=sOpenings.length?sOpenings.map(o=>`<div class="li" style="cursor:default"><div><b>${esc(o.pos_name)}</b><div class="small">${esc([o.otype,o.oshift,o.notes].filter(Boolean).join(" · "))}</div></div><div class="r"><div>${esc(o.needed)} needed</div><div class="small">${o.requested_by?esc(o.requested_by)+" · ":""}${esc(o.created_ms?ago(Number(o.created_ms)):"")}</div></div></div>`).join("")
-    :`<div class="none">No open positions listed for ${esc(staffRow.store)}. Tap “Request a position” when you need someone.</div>`;
+  L.innerHTML=sOpenings.length?sOpenings.map(o=>{ const mine=o.from_store!==false;
+    const acts=!mine?`<div class="small">Added by the office</div>`
+      :sOpenDel===o.id?`<div class="row-actions" style="justify-content:flex-end"><button type="button" class="btn sm danger" data-sodelyes="${esc(o.id)}">Remove</button><button type="button" class="btn sm ghost" data-sodelno>Keep</button></div>`
+      :`<div class="row-actions" style="justify-content:flex-end"><button type="button" class="btn sm ghost" data-soedit="${esc(o.id)}">Edit</button><button type="button" class="btn sm ghost danger" data-sodel="${esc(o.id)}">Remove</button></div>`;
+    return `<div class="li" style="cursor:default;align-items:flex-start"><div><b>${esc(o.pos_name)}</b> <span class="small">· ${esc(o.needed)} needed</span><div class="small">${esc([o.otype,o.oshift,o.notes].filter(Boolean).join(" · "))}</div>${mine&&o.requested_by?`<div class="small">Requested by ${esc(o.requested_by)}${o.created_ms?" · "+esc(ago(Number(o.created_ms))):""}</div>`:""}</div><div class="r">${acts}</div></div>`; }).join("")
+    :`<div class="none">No open positions listed for ${esc(sStore())}. Tap “Request a position” when you need someone.</div>`;
 }
-$("#sOpenAdd").addEventListener("click",()=>{ sOpenFormOn=true; renderStoreOpenings(); $("#soPos")?.focus(); });
+$("#sOpenAdd").addEventListener("click",()=>{ if(sPreview) return previewBlock(); sOpenFormOn="new"; sOpenDel=null; renderStoreOpenings(); $("#soPos")?.focus(); });
 $("#sOpenForm").addEventListener("click",e=>{ if(e.target.id==="soCancel"){ sOpenFormOn=false; document.activeElement?.blur(); renderStoreOpenings(); } });
+$("#sOpenList").addEventListener("click",async e=>{ const t=e.target; if(sPreview&&t.closest("button")) return previewBlock();
+  const ed=t.closest("[data-soedit]"); if(ed){ sOpenFormOn=ed.dataset.soedit; sOpenDel=null; document.activeElement?.blur(); renderStoreOpenings(); $("#soPos")?.focus(); $("#sOpenPanel").scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  const d=t.closest("[data-sodel]"); if(d){ sOpenDel=d.dataset.sodel; renderStoreOpenings(); return; }
+  if(t.closest("[data-sodelno]")){ sOpenDel=null; renderStoreOpenings(); return; }
+  const y=t.closest("[data-sodelyes]"); if(y){ y.disabled=true;
+    const {error}=await sb.rpc("remove_store_opening",{oid:y.dataset.sodelyes});
+    sOpenDel=null; toast(error?"Couldn’t remove it. Try again.":"Removed. The office won’t see it anymore."); loadStoreOpenings(); }
+});
 $("#sOpenForm").addEventListener("submit",async e=>{ e.preventDefault();
   const pos=$("#soPos").value.trim(); if(!pos){ toast("Enter the position."); return; }
   const btn=e.target.querySelector('[type="submit"]'); btn.disabled=true;
-  const {error}=await sb.rpc("submit_opening",{pos,need:parseInt($("#soNeed").value)||1,otype:$("#soType").value||null,oshift:$("#soShift").value||null,onote:$("#soNotes").value.trim()||null,who:staffRow.name||me.email});
-  if(error){ btn.disabled=false; toast("Couldn’t send it. Try again."); return; }
-  sOpenFormOn=false; document.activeElement?.blur(); toast(`Sent. The office sees “${pos}” on its open positions list.`); loadStoreOpenings(); });
+  const args={pos,need:parseInt($("#soNeed").value)||1,otype:$("#soType").value||null,oshift:$("#soShift").value||null,onote:$("#soNotes").value.trim()||null,who:staffRow.name||me.email};
+  const editing=sOpenFormOn!=="new";
+  const {error}=editing?await sb.rpc("update_store_opening",{oid:sOpenFormOn,...args}):await sb.rpc("submit_opening",args);
+  if(error){ btn.disabled=false; toast(editing?"Couldn’t save the changes. Try again.":"Couldn’t send it. Try again."); return; }
+  sOpenFormOn=false; document.activeElement?.blur(); toast(editing?"Saved. The office sees the update.":`Sent. The office sees “${pos}” on its open positions list.`); loadStoreOpenings(); });
+/* ---------- store view preview (office) ---------- */
+let sPreview=null;
+function sStore(){ return sPreview||staffRow?.store||""; }
+function previewBlock(){ toast("This is a preview of the store’s page. Go back to the office view to make changes."); }
+function buildPreview(){
+  const st=sPreview, byId=Object.fromEntries(candidates.map(c=>[c.id,c]));
+  sApps=shares.filter(x=>x.store===st&&!x.declined_at&&byId[x.candidate_id]).map(sh=>{ const c=byId[sh.candidate_id];
+    return {id:c.id,name:c.name,phone:c.phone,email:c.email,position_wanted:c.position,hire_for:c.hireFor,employment_type:c.employmentType,shift:c.shift,can_start:c.startDate,
+      availability:c.availability,avail_days:c.availDays||[],form_language:c.formLanguage,shared_at:sh.shared_at,claimed_at:sh.claimed_at,claimed_by:sh.claimed_by,
+      is_hired:c.stage==="hired",first_day:["offer","hired"].includes(c.stage)?c.offerStart||null:null,first_time:["offer","hired"].includes(c.stage)?c.offerStartTime||null:null}; })
+    .sort((a,b)=>new Date(b.shared_at)-new Date(a.shared_at));
+  sNotes=storeNotes.filter(n=>n.store===st); sReqs=hireReqs.filter(r=>r.store===st); sIvs=ivReqs.filter(r=>r.store===st);
+  sOpenings=openings.filter(o=>o.store===st).map(o=>({id:o.id,pos_name:o.position,needed:o.needed||1,otype:o.type,oshift:o.shift,notes:o.notes,requested_by:o.requestedBy,created_ms:o.createdAt,from_store:!!o.fromStore}))
+    .sort((a,b)=>(b.created_ms||0)-(a.created_ms||0));
+  const mgr=team.filter(t=>t.store===st).map(t=>t.name||t.email);
+  $("#sPreviewText").textContent=`Store view: ${st} · preview only${mgr.length?` · manager: ${mgr.join(", ")}`:" · no manager added yet"}`;
+  $("#sStatus").textContent=`${sApps.length} applicant${sApps.length===1?"":"s"}`;
+}
+function renderPreview2(){ if(!sPreview) return; buildPreview(); renderStoreApp(); renderStoreOpenings(); }
+function enterPreview(st){
+  sPreview=st; sOpen=null; sReqForm=false; sStartEdit=false; sOpenFormOn=false; sOpenDel=null; sFilter="all"; closeDrawer(); $("#sDrawerHost").innerHTML="";
+  $("#app").hidden=true; $("#storeApp").hidden=false; $("#sPreviewBar").hidden=false; $("#sSignOut").hidden=true;
+  $("#sTitle").textContent=`${st} hiring`; $("#sWho").textContent="";
+  $("#sPreviewPick").innerHTML=STORES.map(x=>`<option ${x===st?"selected":""}>${esc(x)}</option>`).join("");
+  renderPreview2(); applyStoreLang(); window.scrollTo(0,0);
+}
+function exitPreview(){ UI_LOC=undefined; untrRoot($("#storeApp")); document.documentElement.lang="en";
+  sPreview=null; sOpen=null; $("#sDrawerHost").innerHTML=""; $("#storeApp").hidden=true; $("#sPreviewBar").hidden=true; $("#sSignOut").hidden=false;
+  $("#app").hidden=false; $("#storeViewPick").value=""; renderAll();
+}
+$("#storeViewPick").addEventListener("change",e=>{ if(e.target.value) enterPreview(e.target.value); });
+$("#sPreviewPick").addEventListener("change",e=>enterPreview(e.target.value));
+$("#sPreviewExit").addEventListener("click",exitPreview);
+function sFirst(a){ const r=sLatest(a); return {day:a.first_day||r?.start_date_confirmed||"",time:a.first_time||r?.start_time||""}; }
+function sHiredOld(a){ const d=sFirst(a).day; return !!(a.is_hired&&d&&new Date(d+"T00:00").getTime()<Date.now()-30*864e5); }
 function sStatus(a){
+  if(a.is_hired) return "hired";
   if(!a.claimed_at) return "new";
   const latest=sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
   if(latest?.status==="pending") return "waiting";
   if(latest?.status==="approved") return latest.confirmed_at?"scheduled":latest.ready_at?"ready":"approved";
+  const iv=sIv(a); if(iv&&(iv.status==="pending"||(iv.status==="scheduled"&&!iv.outcome))) return "interview";
   return "claimed";
 }
-const S_FILTERS=[["new","New to you"],["claimed","Claimed"],["waiting","Waiting approval"],["approved","Approved"],["ready","Ready to schedule"],["scheduled","Scheduled"],["all","All"]];
+const sIv=a=>sIvs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
+const S_FILTERS=[["new","New to you"],["claimed","Claimed"],["interview","Interviews"],["waiting","Waiting approval"],["approved","Approved"],["ready","Ready to schedule"],["scheduled","Scheduled"],["hired","Hired"],["all","All"]];
 const sLatest=a=>sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
-function sBadge(st,a){ return {new:`<span class="portalpill">New</span>`,claimed:`<span class="portalpill">Claimed${a.claimed_by?" · "+esc(a.claimed_by):""}</span>`,waiting:`<span class="portalpill ask">Waiting approval</span>`,approved:`<span class="pill" style="color:var(--s-hired)">Approved</span>`,ready:`<span class="portalpill ask">Ready to schedule</span>`,scheduled:`<span class="pill" style="color:var(--s-hired)">Starts ${esc(fmtDate(sLatest(a)?.start_date_confirmed))} · ${esc(fmtTime(sLatest(a)?.start_time))}</span>`}[st]||""; }
+function sBadge(st,a){ return {interview:(()=>{ const iv=sIv(a); return iv?.status==="pending"?`<span class="portalpill">Interview requested</span>`:`<span class="portalpill ask">Interview ${esc(fmtDateTime(iv?.scheduled_at))}</span>`; })(),new:`<span class="portalpill">New</span>`,claimed:`<span class="portalpill">Claimed${a.claimed_by?" · "+esc(a.claimed_by):""}</span>`,waiting:`<span class="portalpill ask">Waiting approval</span>`,approved:`<span class="pill" style="color:var(--s-hired)">Approved</span>`,ready:`<span class="portalpill ask">Ready to schedule</span>`,scheduled:`<span class="pill" style="color:var(--s-hired)">Starts ${esc(fmtDate(sFirst(a).day))}${sFirst(a).time?" · "+esc(fmtTime(sFirst(a).time)):""}</span>`,hired:(()=>{ const f=sFirst(a), past=f.day&&new Date(f.day+"T23:59").getTime()<Date.now(); return `<span class="pill" style="color:#fff;background:var(--s-hired);border-color:var(--s-hired)">Hired${f.day?` · ${past?"started":"starts"} ${esc(fmtDate(f.day))}${!past&&f.time?" · "+esc(fmtTime(f.time)):""}`:""}</span>`; })()}[st]||""; }
 function sDays(a){ return daysHtml({availDays:Array.isArray(a.avail_days)?a.avail_days:[],availability:a.availability}); }
+function renderStoreDash(cnt){
+  const today=new Date(); today.setHours(0,0,0,0); const tISO=today.toISOString().slice(0,10);
+  const upcoming=sApps.filter(a=>["scheduled","hired"].includes(sStatus(a))).map(a=>({a,f:sFirst(a),r:sLatest(a)})).filter(x=>x.f.day&&x.f.day>=tISO).sort((x,y)=>(x.f.day+x.f.time).localeCompare(y.f.day+y.f.time));
+  const posOpen=(sOpenings||[]).reduce((n,o)=>n+(Number(o.needed)||1),0);
+  const tiles=[["New to review","waiting for you",cnt.new||0,"new"],["Claimed","next: request an interview",cnt.claimed||0,"claimed"],["Interviews","requested or scheduled",cnt.interview||0,"interview"],
+    ["Waiting approval","hire requests with the office",cnt.waiting||0,"waiting"],["Ready to schedule","pick a first day",cnt.ready||0,"ready"],["Starting soon","first days ahead",upcoming.length,"scheduled"]];
+  $("#sPosCount").textContent=posOpen?` · ${posOpen} needed`:"";
+  $("#sKpis").innerHTML=tiles.map(([l,e,n,f])=>`<button type="button" class="kpi" data-skpi="${f}"${(f==="new"||f==="ready")&&n?` style="border-color:var(--s-offer)"`:""}><span>${l}</span><b>${n}</b><em>${e}</em></button>`).join("");
+  const ivList=sApps.map(a=>({a,iv:sIv(a)})).filter(x=>x.iv&&x.iv.status==="scheduled"&&!x.iv.outcome).sort((x,y)=>x.iv.scheduled_at.localeCompare(y.iv.scheduled_at));
+  const ivItems=ivList.map(({a,iv})=>{ const past=new Date(iv.scheduled_at).getTime()<Date.now(); return `<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">${past?"Interview time passed · tell us how it went":"In-person interview"}</div></div><div class="r"><div class="mono">${esc(fmtDateTime(iv.scheduled_at))}</div>${past?`<span class="portalpill ask">Report</span>`:""}</div></div>`; });
+  const todo=sApps.filter(a=>sStatus(a)==="ready");
+  const items=ivItems.concat(todo.map(a=>`<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">Onboarding done · pick their first day</div></div><div class="r"><span class="portalpill ask">Ready to schedule</span></div></div>`))
+    .concat(upcoming.slice(0,6).map(({a,f,r})=>`<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">First day${a.is_hired?" · hired":""}${(r?.position||a.hire_for)?" · "+esc(r?.position||a.hire_for):""}</div></div><div class="r"><div class="mono">${esc(fmtDate(f.day,true))}</div><div class="small">${esc(f.time?fmtTime(f.time):"time not set")}</div></div></div>`));
+  $("#sSoon").hidden=!items.length; $("#sSoonList").innerHTML=items.join("");
+}
 function renderStoreApp(){
-  const cnt={all:sApps.length}; sApps.forEach(a=>{ const s=sStatus(a); cnt[s]=(cnt[s]||0)+1; });
+  const cnt={all:sApps.filter(a=>!sHiredOld(a)).length}; sApps.forEach(a=>{ const s=sStatus(a); cnt[s]=(cnt[s]||0)+1; });
+  renderStoreDash(cnt);
   $("#sPipe").innerHTML=S_FILTERS.map(([k,l])=>`<button class="chip" data-sf="${k}" aria-pressed="${sFilter===k}"><span>${l}</span><span class="n">${cnt[k]||0}</span></button>`).join("");
-  const list=sApps.filter(a=>sFilter==="all"||sStatus(a)===sFilter);
+  const list=sApps.filter(a=>sFilter==="all"?!sHiredOld(a):sStatus(a)===sFilter);
   $("#sList").innerHTML=list.length?list.map(a=>{ const st=sStatus(a);
     return `<button type="button" class="s-card" data-sopen="${esc(a.id)}">
       <div style="min-width:0"><div class="nm">${esc(a.name||"(no name)")}${/span|espa/i.test(a.form_language||"")?`<span class="lang">ES</span>`:""}</div>
@@ -2169,7 +2311,39 @@ function renderStoreApp(){
     :`<div class="emptystate">${sApps.length?"Nobody in this list right now.":"No applicants shared with your store yet. The office shares them here as they come in."}</div>`;
   if(sOpen) renderStoreDrawer();
 }
+function sIvSection(a){
+  const iv=sIv(a), me0=staffRow?.name||"";
+  const inp=(id,type,ph,val)=>`<input id="${id}" type="${type}" ${ph?`placeholder="${esc(ph)}"`:""} value="${esc(val||"")}" autocomplete="off">`;
+  let body;
+  if(sIvForm==="req") body=`<div class="checkbox" style="display:flex;flex-direction:column;gap:8px"><b>Request an in-person interview</b>
+      <div class="small">Give the office 1–3 times that work for you. They’ll call ${esc(a.name||"the applicant")}, confirm one and send the details with your store’s address.</div>
+      <div class="d-grid"><label>Option 1${inp("ivS1","datetime-local")}</label><label>Option 2 (optional)${inp("ivS2","datetime-local")}</label>
+      <label>Option 3 (optional)${inp("ivS3","datetime-local")}</label><label>Who should they ask for?${inp("ivAsk","text","e.g. Gustavo at customer service",me0)}</label></div>
+      <div class="d-grid"><label style="grid-column:1/-1">Note for the office (optional)${inp("ivNote","text","e.g. Mornings only this week")}</label></div>
+      <div class="row-actions"><button type="button" class="btn sm primary" data-ivsend>Send to the office</button><button type="button" class="btn sm ghost" data-ivform="close">Cancel</button></div></div>`;
+  else if(sIvForm==="self") body=`<div class="checkbox" style="display:flex;flex-direction:column;gap:8px"><b>We’ll schedule it ourselves</b>
+      <div class="small">Call ${esc(a.name||"the applicant")} yourself, then enter the time you agreed on so it shows on the office calendar.</div>
+      <div class="d-grid"><label>Interview date &amp; time${inp("ivAt","datetime-local")}</label><label>Who should they ask for?${inp("ivAsk","text","e.g. Gustavo",me0)}</label></div>
+      <div class="d-grid"><label style="grid-column:1/-1">Note (optional)${inp("ivNote","text","e.g. Confirmed by phone")}</label></div>
+      <div class="row-actions"><button type="button" class="btn sm primary" data-ivself>Save interview</button><button type="button" class="btn sm ghost" data-ivform="close">Cancel</button></div></div>`;
+  else if(iv?.status==="pending") body=`<div class="hreq pending"><div><b>Waiting on the office to confirm a time</b> <span class="small">sent ${esc(fmtDateTime(iv.created_at))}</span></div>
+      <div class="small">${(iv.slots||[]).map(x=>esc(fmtDateTime(x,true))).join("<br>")}</div>${iv.note?`<div class="pre">${esc(iv.note)}</div>`:""}
+      <div class="row-actions"><button type="button" class="btn sm ghost" data-ivcancel="${esc(iv.id)}">Cancel request</button></div></div>`;
+  else if(iv?.status==="scheduled"&&!iv.outcome){ const past=new Date(iv.scheduled_at).getTime()<Date.now();
+    body=`<div class="hreq ${past?"pending":""}"><div><b>Interview ${esc(fmtDateTime(iv.scheduled_at,true))}</b> <span class="small">${iv.self_scheduled?"booked by your store":"confirmed by the office"}</span></div>
+      ${iv.ask_for?`<div class="small">They’ll ask for ${esc(iv.ask_for)}</div>`:""}
+      <div class="small"><b style="color:var(--fg)">How did it go?</b> ${past?"":"Tap after the interview."}</div>
+      ${sNoShowAsk?`<div class="row-actions"><span class="small">Mark as no show? They’ll leave your list and the office will close them out.</span><button type="button" class="btn sm danger" data-ivout="noshow">Yes, no show</button><button type="button" class="btn sm ghost" data-ivout="back">Cancel</button></div>`
+        :`<div class="row-actions"><button type="button" class="btn sm primary" data-ivout="showed">They came in</button><button type="button" class="btn sm" data-ivout="ask">No show</button></div>`}</div>`; }
+  else if(iv?.outcome==="showed") body=`<div class="small"><b style="color:var(--s-hired)">Interviewed</b> ${esc(fmtDateTime(iv.scheduled_at))}. Next: request approval to hire, or pass below.</div>`;
+  else body=`<div class="row-actions"><button type="button" class="btn primary" data-ivform="req">Request interview</button><button type="button" class="btn ghost" data-ivform="self">We’ll schedule it ourselves</button></div>`;
+  return `<div class="d-sec"><h3>Interview</h3>${body}</div>`;
+}
 function sHireSection(a){
+  if(a.is_hired){ const f=sFirst(a), past=f.day&&new Date(f.day+"T23:59").getTime()<Date.now();
+    return `<div class="d-sec"><h3>Hired</h3><div class="hreq" style="border-color:var(--s-hired)"><div><b style="color:var(--s-hired)">Hired for ${esc(sStore())}</b></div>
+      ${f.day?`<div class="mono">${past?"Started":"First day"}: ${esc(fmtDate(f.day,true))}${f.time?` at ${esc(fmtTime(f.time))}`:""}</div>`:`<div class="small">The office hasn’t set the first day yet.</div>`}
+      ${past?"":`<div class="small">The office sent their first-day details: where to report, dress code and what to bring.</div>`}</div></div>`; }
   if(!a.claimed_at) return `<div class="d-sec"><h3>Hire</h3><div class="small">Claim this applicant first. Then you can ask the office for approval to hire.</div></div>`;
   const reqs=sReqs.filter(r=>r.candidate_id===a.id), pend=reqs.find(r=>r.status==="pending"), latest=reqs.find(r=>r.status!=="cancelled");
   if(pend) return `<div class="d-sec"><h3>Hire</h3><div class="hreq pending"><div><b>Waiting on the office</b> <span class="small">sent ${esc(fmtDateTime(pend.created_at))}</span></div>
@@ -2195,8 +2369,9 @@ function sHireSection(a){
       <div class="mono">${esc(reqLine(L))}</div>${L.decision_note?`<div class="pre">${esc(L.decision_note)}</div>`:""}
       <div class="small">The office is sending the offer and onboarding. When they finish, this changes to “Ready to schedule” and you pick their first day.</div></div></div>`;
   }
+  const ivSec=sIvSection(a);
   const declined=latest?.status==="declined"?`<div class="hreq"><div><b>Not approved</b>${latest.decided_by?` by ${esc(latest.decided_by)}`:""} <span class="small">${esc(fmtDateTime(latest.decided_at))}</span></div><div class="mono">${esc(reqLine(latest))}</div>${latest.decision_note?`<div class="pre">${esc(latest.decision_note)}</div>`:""}</div>`:"";
-  if(!sReqForm) return `<div class="d-sec"><h3>Hire</h3>${declined}<div class="row-actions"><button type="button" class="btn primary" data-sreq>Request approval to hire</button></div></div>`;
+  if(!sReqForm) return `${ivSec}<div class="d-sec"><h3>Hire</h3>${declined}<div class="row-actions"><button type="button" class="${sIv(a)?.outcome==="showed"?"btn primary":"btn"}" data-sreq>Request approval to hire</button>${sIv(a)?.outcome==="showed"?"":`<span class="small">Usually after the interview.</span>`}</div></div>`;
   const pos=/open to anything/i.test(a.position_wanted||"")?(a.hire_for||""):(a.hire_for||a.position_wanted||"");
   return `<div class="d-sec checkbox"><h3>Request approval to hire</h3>
     <div class="d-grid">
@@ -2210,14 +2385,14 @@ function sHireSection(a){
 function renderStoreDrawer(){
   const a=sApps.find(x=>x.id===sOpen), host=$("#sDrawerHost");
   if(!a){ host.innerHTML=""; sOpen=null; return; }
-  if(["sNote","rPos","rPay","rStart","rNote","sdDate","sdTime","sdNote"].includes(document.activeElement?.id)&&host.querySelector(".drawer")) return;
+  if(["sNote","rPos","rPay","rStart","rNote","sdDate","sdTime","sdNote","spNote","ivS1","ivS2","ivS3","ivAsk","ivNote","ivAt"].includes(document.activeElement?.id)&&host.querySelector(".drawer")) return;
   const scroll=host.querySelector(".drawer")?.scrollTop||0;
   const st=sStatus(a), notes=sNotes.filter(n=>n.candidate_id===a.id), tel=(a.phone||"").replace(/[^\d+]/g,"");
   host.innerHTML=`<div class="scrim" data-sclose></div>
   <aside class="drawer" role="dialog" aria-label="${esc(a.name||"Applicant")}">
-    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2><div class="small">Shared with ${esc(staffRow.store)} ${esc(fmtDateTime(a.shared_at))}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
+    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2><div class="small">Shared with ${esc(sStore())} ${esc(fmtDateTime(a.shared_at))}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
     <div class="d-sec">${a.claimed_at?`<div>${sBadge(st,a)} <span class="small">Claimed ${esc(fmtDateTime(a.claimed_at))}</span></div>`
-      :`<div class="row-actions"><button type="button" class="btn primary" data-sclaim>Claim for ${esc(staffRow.store)}</button><span class="small">Takes them for your store so other stores can’t.</span></div>`}</div>
+      :`<div class="row-actions"><button type="button" class="btn primary" data-sclaim>Claim for ${esc(sStore())}</button><span class="small">Takes them for your store so other stores can’t.</span></div>`}</div>
     <div class="d-sec"><h3>Contact</h3>
       <div class="contactrow">${a.phone?`<span class="mono">${esc(a.phone)}</span><a class="btn sm" href="tel:${esc(tel)}">Call</a><a class="btn sm" href="sms:${esc(tel)}">Text</a><button type="button" class="btn sm ghost" data-scopy="${esc(a.phone)}">Copy</button>`:`<span class="small">No phone on file</span>`}</div>
       <div class="contactrow">${a.email?`<span style="overflow-wrap:anywhere">${esc(a.email)}</span><a class="btn sm" href="mailto:${esc(a.email)}">Email</a><button type="button" class="btn sm ghost" data-scopy="${esc(a.email)}">Copy</button>`:`<span class="small">No email on file</span>`}</div></div>
@@ -2227,6 +2402,7 @@ function renderStoreDrawer(){
         <div><b>Can start</b><span>${esc(fmtDate(a.can_start)||"—")}</span></div><div><b>Language</b><span>${esc(a.form_language||"—")}</span></div></div>
       <div>${sDays(a)}</div>${a.availability?`<div class="pre">${esc(a.availability)}</div>`:""}</div>
     ${sHireSection(a)}
+    ${sPassSection(a)}
     <div class="d-sec"><h3>Store notes <span style="text-transform:none;letter-spacing:0;font-weight:400">· the office sees these too</span></h3>
       ${notes.length?`<div>${notes.map(n=>`<div class="snote">${esc(n.body)}<span class="small">${esc(n.author||n.author_email)} · ${esc(fmtDateTime(n.created_at))}</span></div>`).join("")}</div>`:`<div class="none">No notes yet.</div>`}
       <textarea id="sNote" rows="2" placeholder="Add a note: called, left voicemail, interviewed…"></textarea>
@@ -2234,13 +2410,19 @@ function renderStoreDrawer(){
   </aside>`;
   host.querySelector(".drawer").scrollTop=scroll;
 }
+$("#sKpis").addEventListener("click",e=>{ const k=e.target.closest("[data-skpi]"); if(!k) return;
+  if(k.dataset.skpi==="__open"){ $("#sOpenPanel").scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  sFilter=k.dataset.skpi; renderStoreApp(); $("#sAppsHead").scrollIntoView({behavior:"smooth",block:"start"}); });
+$("#sSoonList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sReqForm=false; sStartEdit=false; sPassing=false; sIvForm=false; sNoShowAsk=false; renderStoreDrawer(); } });
 $("#sPipe").addEventListener("click",e=>{ const b=e.target.closest("[data-sf]"); if(b){ sFilter=b.dataset.sf; renderStoreApp(); } });
-$("#sList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sReqForm=false; sStartEdit=false; renderStoreDrawer(); } });
+$("#sList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sReqForm=false; sStartEdit=false; sPassing=false; sIvForm=false; sNoShowAsk=false; renderStoreDrawer(); } });
 $("#sSignOut").addEventListener("click",()=>sb.auth.signOut());
 $("#sDrawerHost").addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest("[data-sclose]")){ sOpen=null; $("#sDrawerHost").innerHTML=""; return; }
   const a=sApps.find(x=>x.id===sOpen); if(!a) return;
+  const cp0=t.closest("[data-scopy]"); if(cp0) return copyText(cp0.dataset.scopy);
+  if(sPreview&&t.closest("button:not([data-sclose])")){ previewBlock(); return; }
   const who=staffRow.name||me.email;
   const cp=t.closest("[data-scopy]"); if(cp) return copyText(cp.dataset.scopy);
   const cl=t.closest("[data-sclaim]");
@@ -2261,6 +2443,32 @@ $("#sDrawerHost").addEventListener("click",async e=>{
     const {error}=await sb.from("hire_requests").insert({candidate_id:a.id,store:staffRow.store,requested_by:who,position,pay:pay||null,start_date:start||null,note:note||null});
     if(error){ send.disabled=false; toast("Couldn’t send the request. Try again."); return; }
     sReqForm=false; document.activeElement?.blur(); toast("Sent. The office will review it and send the offer."); loadStore(); return; }
+  const ivf=t.closest("[data-ivform]"); if(ivf){ sIvForm=ivf.dataset.ivform==="close"?false:ivf.dataset.ivform; document.activeElement?.blur(); renderStoreDrawer(); return; }
+  const ivs=t.closest("[data-ivsend],[data-ivself]");
+  if(ivs){ const self=ivs.hasAttribute("data-ivself"), ask=$("#ivAsk").value.trim(), inote=$("#ivNote").value.trim();
+    let error;
+    if(self){ const at=$("#ivAt").value; if(!at){ toast("Pick the interview date and time."); return; } ivs.disabled=true;
+      ({error}=await sb.rpc("store_schedule_interview",{cid:a.id,at:at.slice(0,16),ask:ask||null,inote:inote||null,who})); }
+    else { const slots=["#ivS1","#ivS2","#ivS3"].map(x=>$(x).value).filter(Boolean).map(v=>v.slice(0,16)); if(!slots.length){ toast("Add at least one time that works."); return; } ivs.disabled=true;
+      ({error}=await sb.rpc("request_interview",{cid:a.id,slots,ask:ask||null,inote:inote||null,who})); }
+    if(error){ ivs.disabled=false; toast("Couldn’t save. Try again."); return; }
+    sIvForm=false; document.activeElement?.blur(); toast(self?"Interview saved. It’s on the office calendar too.":"Sent. The office will confirm a time with the applicant."); loadStore(); return; }
+  const ivc=t.closest("[data-ivcancel]"); if(ivc){ const {error}=await sb.from("interview_requests").update({status:"cancelled"}).eq("id",ivc.dataset.ivcancel); toast(error?"Couldn’t cancel.":"Interview request cancelled."); loadStore(); return; }
+  const ivo=t.closest("[data-ivout]");
+  if(ivo){ const m=ivo.dataset.ivout; if(m==="ask"||m==="back"){ sNoShowAsk=m==="ask"; renderStoreDrawer(); return; }
+    const iv=sIv(a); if(!iv) return; ivo.disabled=true;
+    const {error}=await sb.rpc("interview_outcome",{rid:iv.id,res:m,who});
+    if(error){ ivo.disabled=false; toast("Couldn’t save. Try again."); return; }
+    sNoShowAsk=false; if(m==="noshow"){ sOpen=null; $("#sDrawerHost").innerHTML=""; toast("Marked as no show. The office has been notified."); } else toast("Great. Next: request approval to hire, or pass.");
+    loadStore(); return; }
+  const sp=t.closest("[data-spass]");
+  if(sp){ const m=sp.dataset.spass;
+    if(m!=="send"){ sPassing=m==="open"; document.activeElement?.blur(); renderStoreDrawer(); return; }
+    const reason=[$("#spReason").value,$("#spNote").value.trim()].filter(Boolean).join(" — ");
+    sp.disabled=true;
+    const {error}=await sb.rpc("decline_applicant",{cid:a.id,reason,who});
+    if(error){ sp.disabled=false; toast(/hire request/i.test(error.message)?"Cancel the hire request first.":"Couldn’t save. Try again."); return; }
+    sPassing=false; sOpen=null; $("#sDrawerHost").innerHTML=""; toast(`Passed on ${a.name||"applicant"}. The office has been notified.`); loadStore(); return; }
   const se=t.closest("[data-sdedit]"); if(se){ sStartEdit=se.dataset.sdedit==="open"; document.activeElement?.blur(); renderStoreDrawer(); return; }
   const sc=t.closest("[data-sdconfirm]");
   if(sc){ const sdate=$("#sdDate").value, stime=$("#sdTime").value, snote=$("#sdNote").value.trim();
@@ -2274,6 +2482,137 @@ $("#sDrawerHost").addEventListener("click",async e=>{
     toast(error?"Couldn’t cancel.":"Request cancelled."); loadStore(); return; }
 });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&sOpen){ sOpen=null; $("#sDrawerHost").innerHTML=""; } });
+
+/* ---------- store page: English / Español ---------- */
+let sLang=(()=>{ let v=null; try{ v=localStorage.getItem("vista-store-lang"); }catch{} return v||(/^es/i.test(navigator.language||"")?"es":"en"); })();
+const ES={
+ "Applicants":"Solicitantes","Applicants the office has shared with your store.":"Solicitantes que la oficina compartió con su tienda.",
+ "Sign out":"Cerrar sesión","Loading…":"Cargando…","Coming up":"Próximamente",
+ "Positions to fill":"Puestos por cubrir","tell the office what your store needs":"dígale a la oficina qué necesita su tienda",
+ "Request a position":"Pedir un puesto","Added by the office":"Agregado por la oficina","Edit":"Editar","Remove":"Quitar","Keep":"Dejar",
+ "Position":"Puesto","How many":"Cuántos","Full / part-time":"Tiempo completo / medio","Shift":"Turno","Notes":"Notas",
+ "Send to the office":"Enviar a la oficina","Save changes":"Guardar cambios","Cancel":"Cancelar","Close":"Cerrar",
+ "New to review":"Nuevos por revisar","waiting for you":"esperándole","Claimed":"Reclamados","next: request an interview":"siguiente: pedir entrevista",
+ "Interviews":"Entrevistas","requested or scheduled":"pedidas o programadas","Waiting approval":"Esperando aprobación","hire requests with the office":"solicitudes en la oficina",
+ "Ready to schedule":"Listos para programar","pick a first day":"elija el primer día","Starting soon":"Empiezan pronto","first days ahead":"primeros días por venir",
+ "New to you":"Nuevos","Approved":"Aprobados","Scheduled":"Programados","Hired":"Contratados","All":"Todos","New":"Nuevo",
+ "Claim an applicant to take them for your store. Then use":"Reclame a un solicitante para su tienda. Luego use","Request approval to hire":"Pedir aprobación para contratar",
+ "and the office will send the offer.":"y la oficina enviará la oferta.",
+ "Nobody in this list right now.":"No hay nadie en esta lista por ahora.","No applicants shared with your store yet. The office shares them here as they come in.":"Todavía no hay solicitantes compartidos con su tienda. La oficina los comparte aquí conforme llegan.",
+ "Takes them for your store so other stores can’t.":"Lo aparta para su tienda para que otras tiendas no puedan.",
+ "Contact":"Contacto","Call":"Llamar","Text":"Mensaje","Email":"Correo","Copy":"Copiar","No phone on file":"Sin teléfono","No email on file":"Sin correo",
+ "Position & availability":"Puesto y disponibilidad","Applied for":"Solicitó","Office suggests":"La oficina sugiere","Can start":"Puede empezar","Language":"Idioma",
+ "English":"Inglés","Spanish":"Español",
+ "Interview":"Entrevista","Hire":"Contratar","Store notes":"Notas de la tienda","· the office sees these too":"· la oficina también las ve",
+ "No notes yet.":"Todavía no hay notas.","Add note":"Agregar nota",
+ "Request interview":"Pedir entrevista","We’ll schedule it ourselves":"Nosotros la programamos",
+ "Request an in-person interview":"Pedir una entrevista en persona","Option 1":"Opción 1","Option 2 (optional)":"Opción 2 (opcional)","Option 3 (optional)":"Opción 3 (opcional)",
+ "Who should they ask for?":"¿Por quién debe preguntar?","Note for the office (optional)":"Nota para la oficina (opcional)","Note (optional)":"Nota (opcional)",
+ "Interview date & time":"Fecha y hora de la entrevista","Save interview":"Guardar entrevista",
+ "Waiting on the office to confirm a time":"Esperando que la oficina confirme la hora","Cancel request":"Cancelar solicitud",
+ "booked by your store":"programada por su tienda","confirmed by the office":"confirmada por la oficina","How did it go?":"¿Cómo le fue?",
+ "Tap after the interview.":"Toque después de la entrevista.","They came in":"Sí se presentó","No show":"No se presentó","Yes, no show":"Sí, no se presentó",
+ "Mark as no show? They’ll leave your list and the office will close them out.":"¿Marcar que no se presentó? Saldrá de su lista y la oficina cerrará su solicitud.",
+ "Interviewed":"Entrevistado","Usually after the interview.":"Normalmente después de la entrevista.",
+ "Claim this applicant first. Then you can ask the office for approval to hire.":"Primero reclame a este solicitante. Luego puede pedir a la oficina aprobación para contratar.",
+ "Waiting on the office":"Esperando a la oficina","Not approved":"No aprobado","Pay ($ per hour)":"Pago ($ por hora)","Start date":"Fecha de inicio",
+ "Note to the office":"Nota para la oficina","Send request":"Enviar solicitud",
+ "The office is sending the offer and onboarding. When they finish, this changes to “Ready to schedule” and you pick their first day.":"La oficina está enviando la oferta y el registro. Al terminar, esto cambia a “Listo para programar” y usted elige su primer día.",
+ "First day":"Primer día","Onboarding complete: ready to schedule":"Registro completo: listo para programar","Start time":"Hora de inicio","Confirm first day":"Confirmar primer día",
+ "Scheduled":"Programados","The office sends them the first-day details.":"La oficina le envía los detalles del primer día.","Change day or time":"Cambiar día u hora",
+ "Hired":"Contratados","The office sent their first-day details: where to report, dress code and what to bring.":"La oficina le envió los detalles del primer día: a dónde presentarse, código de vestimenta y qué traer.",
+ "The office hasn’t set the first day yet.":"La oficina aún no fija el primer día.",
+ "Pass on this applicant":"Rechazar a este solicitante","Or leave them here to keep for later.":"O déjelo aquí para más adelante.",
+ "Releases them so the office can place them elsewhere.":"Lo libera para que la oficina lo ubique en otra tienda.","Reason":"Motivo","Pass":"Rechazar",
+ "Not a fit for the position":"No es adecuado para el puesto","Availability doesn’t work":"Su disponibilidad no funciona","Couldn’t reach them":"No logramos contactarle",
+ "No longer hiring for this":"Ya no estamos contratando para esto","Other":"Otro",
+ "Interview requested":"Entrevista pedida","Report":"Reportar","Interview time passed · tell us how it went":"Ya pasó la entrevista · díganos cómo le fue",
+ "In-person interview":"Entrevista en persona","Onboarding done · pick their first day":"Registro listo · elija su primer día",
+ "Full-time":"Tiempo completo","Part-time":"Medio tiempo","Either":"Cualquiera","Any shift":"Cualquier turno","Mornings":"Mañanas","Afternoons":"Tardes","Evenings":"Noches",
+ "Closing":"Cierre","Mid":"Intermedio","Open to anything":"Cualquier puesto","Any position":"Cualquier puesto",
+ "Great. Next: request approval to hire, or pass.":"Muy bien. Siguiente: pida aprobación para contratar o rechácelo.",
+ "Interview saved. It’s on the office calendar too.":"Entrevista guardada. También está en el calendario de la oficina.",
+ "Sent. The office will confirm a time with the applicant.":"Enviado. La oficina confirmará la hora con el solicitante.",
+ "Sent. The office will review it and send the offer.":"Enviado. La oficina lo revisará y enviará la oferta.",
+ "Interview request cancelled.":"Solicitud de entrevista cancelada.","Request cancelled.":"Solicitud cancelada.","Note added.":"Nota agregada.",
+ "Write a note first.":"Primero escriba una nota.","Enter the position.":"Escriba el puesto.","Pick the first day and the start time.":"Elija el primer día y la hora de inicio.",
+ "Add at least one time that works.":"Agregue por lo menos una hora que le funcione.","Pick the interview date and time.":"Elija la fecha y hora de la entrevista.",
+ "Couldn’t save. Try again.":"No se pudo guardar. Intente de nuevo.","Couldn’t claim. Try again.":"No se pudo reclamar. Intente de nuevo.",
+ "Another store already claimed this applicant.":"Otra tienda ya reclamó a este solicitante.","Cancel the hire request first.":"Primero cancele la solicitud de contratación.",
+ "Marked as no show. The office has been notified.":"Marcado como no se presentó. Se avisó a la oficina.",
+ "Saved. The office sees the update.":"Guardado. La oficina ve el cambio.","Removed. The office won’t see it anymore.":"Quitado. La oficina ya no lo verá.",
+ "Couldn’t send it. Try again.":"No se pudo enviar. Intente de nuevo.","Couldn’t send the request. Try again.":"No se pudo enviar la solicitud. Intente de nuevo.",
+ "Couldn’t save the note.":"No se pudo guardar la nota.","Couldn’t save the first day. Try again.":"No se pudo guardar el primer día. Intente de nuevo.",
+ "Copied.":"Copiado.","Couldn’t load. Reload the page.":"No se pudo cargar. Vuelva a cargar la página.",
+ "Openings aren’t set up yet. Ask Miguel to finish the setup.":"Los puestos aún no están configurados. Pídale a Miguel que termine la configuración.",
+ "Onboarding complete.":"Registro completo.","hired":"contratado","e.g. Cashier":"ej. Cajero","e.g. weekends needed, bilingual preferred":"ej. se necesitan fines de semana, de preferencia bilingüe",
+ "Add a note: called, left voicemail, interviewed…":"Agregue una nota: llamé, dejé mensaje, entrevisté…","e.g. 13.50":"ej. 13.50",
+ "e.g. Interviewed Tuesday, great fit for mornings":"ej. Entrevistado el martes, ideal para las mañanas","e.g. Ask for Rosa at the deli":"ej. Preguntar por Rosa en la salchichonería",
+ "e.g. Gustavo at customer service":"ej. Gustavo en servicio al cliente","e.g. Gustavo":"ej. Gustavo","e.g. Mornings only this week":"ej. Solo mañanas esta semana",
+ "e.g. Confirmed by phone":"ej. Confirmado por teléfono","e.g. Needs weekends off":"ej. Necesita fines de semana libres","Store view":"Vista de tienda","Back to office view":"Volver a la oficina",
+ "This is a preview of the store’s page. Go back to the office view to make changes.":"Esta es una vista previa de la página de la tienda. Vuelva a la oficina para hacer cambios."
+};
+const ES_PREFIX=[["Approved by ","Aprobado por "],["Claimed · ","Reclamado · "],["Claimed ","Reclamado "],["Requested by ","Solicitado por "],["Shared with ","Compartido con "],["Shared ","Compartido "],
+ ["confirmed by ","confirmado por "],["sent ","enviado "],["by ","por "],["Hired for ","Contratado para "],["Hired · starts ","Contratado · empieza "],["Hired · started ","Contratado · empezó "],
+ ["Starts ","Empieza "],["First day: ","Primer día: "],["Started: ","Empezó: "],["First day · ","Primer día · "],["They’ll ask for ","Preguntará por "],["Interview ","Entrevista "],
+ ["Claim for ","Reclamar para "],["Pass on ","Rechazar a "],["Store view: ","Vista de tienda: "]];
+const ES_RX=[
+ [/^(\d+) applicants? · synced$/,(m,n)=>`${n} solicitante${n==="1"?"":"s"} · sincronizado`],[/^(\d+) applicants?$/,(m,n)=>`${n} solicitante${n==="1"?"":"s"}`],
+ [/^(.+) hiring$/,"Contratación · $1"],[/^· (\d+) needed$/,(m,n)=>n==="1"?"· se necesita 1":`· se necesitan ${n}`],[/^(\d+) needed$/,(m,n)=>n==="1"?"se necesita 1":`se necesitan ${n}`],
+ [/^((Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)(, | and |, and )?)+$/,m=>m.replace(/Sunday/g,"domingo").replace(/Monday/g,"lunes").replace(/Tuesday/g,"martes").replace(/Wednesday/g,"miércoles").replace(/Thursday/g,"jueves").replace(/Friday/g,"viernes").replace(/Saturday/g,"sábado").replace(/ and /g," y ")],
+ [/^(.+) is claimed for (.+)\.$/,"$1 quedó reclamado para $2."],[/^Passed on (.+)\. The office has been notified\.$/,"Rechazó a $1. Se avisó a la oficina."],
+ [/^Give the office 1–3 times that work for you\. They’ll call (.+), confirm one and send the details with your store’s address\.$/,"Dele a la oficina de 1 a 3 horarios que le funcionen. Llamarán a $1, confirmarán uno y le mandarán los detalles con la dirección de su tienda."],
+ [/^Call (.+) yourself, then enter the time you agreed on so it shows on the office calendar\.$/,"Llame usted a $1 y luego escriba la hora acordada para que aparezca en el calendario de la oficina."],
+ [/^They leave your list\. The office sees that (.+) passed and why, and can send them to another store\.$/,"Sale de su lista. La oficina ve que $1 lo rechazó y por qué, y puede enviarlo a otra tienda."],
+ [/^First day set: (.+)\. The office has it\.$/,"Primer día fijado: $1. La oficina ya lo tiene."],[/^Sent\. The office sees “(.+)” on its open positions list\.$/,"Enviado. La oficina ve “$1” en su lista de puestos."],
+ [/^No open positions listed for (.+)\. Tap “Request a position” when you need someone\.$/,"No hay puestos para $1. Toque “Pedir un puesto” cuando necesite a alguien."],
+ [/^(.+)\. Next: request approval to hire, or pass below\.$/,"$1. Siguiente: pida aprobación para contratar o rechácelo abajo."],
+ [/^Pass on (.+)$/,"Rechazar a $1"],[/^· preview only/,"· solo vista previa"]
+];
+function esAgo(t){ return t.replace(/\b(\d+)m ago\b/g,"hace $1 min").replace(/\b(\d+)h ago\b/g,"hace $1 h").replace(/\b(\d+)d ago\b/g,(m,n)=>`hace ${n} día${n==="1"?"":"s"}`)
+  .replace(/ at (\d{1,2}:\d{2})/g," a las $1").replace(/\/hr\b/g,"/h").replace(/ · preview only · manager: /," · solo vista previa · gerente: ").replace(/ · preview only · no manager added yet/," · solo vista previa · sin gerente todavía"); }
+function trES(t){
+  const k=t.trim(); if(!k) return t;
+  let out=null;
+  if(ES[k]) out=ES[k];
+  else { let x=esAgo(k);
+    for(const [rx,r] of ES_RX){ if(rx.test(x)){ x=x.replace(rx,r); out=x; break; } }
+    if(out===null){ for(const [a,b] of ES_PREFIX){ if(x.startsWith(a)){ const rest=x.slice(a.length); out=b+(ES[rest]||rest); break; } } }
+    if(out===null&&x.includes(" · ")){ const parts=x.split(" · "); if(parts.some(p=>ES[p])) out=parts.map(p=>ES[p]||p).join(" · "); }
+    if(out===null&&x!==k) out=x; }
+  if(out!==null) out=out.replace(/\.\.(\s|$)/g,".$1");
+  return out===null?t:t.replace(k,out);
+}
+const _orig=new WeakMap();
+function trRoot(root){
+  if(!root) return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let n; const list=[];
+  while(n=w.nextNode()) list.push(n);
+  for(const n of list){ const p=n.parentElement; if(!p||p.closest("script,style,.nm,.d-name,#sLangBtn")) continue;
+    if(p.closest(".days")&&/^[SMTWF]$/.test(n.nodeValue)){ const i=[...p.parentElement.children].indexOf(p); if(!_orig.has(n)) _orig.set(n,n.nodeValue); n.nodeValue="DLMMJVS"[i]||n.nodeValue; continue; }
+    const v=trES(n.nodeValue); if(v!==n.nodeValue){ if(!_orig.has(n)) _orig.set(n,n.nodeValue); n.nodeValue=v; } }
+  root.querySelectorAll?.("[placeholder]").forEach(e=>{ const v=trES(e.placeholder); if(v!==e.placeholder){ if(!e.dataset.enPh) e.dataset.enPh=e.placeholder; e.placeholder=v; } });
+}
+function untrRoot(root){
+  if(!root) return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let n; while(n=w.nextNode()){ if(_orig.has(n)){ n.nodeValue=_orig.get(n); _orig.delete(n); } }
+  root.querySelectorAll?.("[data-en-ph]").forEach(e=>{ e.placeholder=e.dataset.enPh; delete e.dataset.enPh; });
+}
+const storeMode=()=>!$("#storeApp").hidden;
+const trObs=new MutationObserver(muts=>{ if(sLang!=="es"||!storeMode()) return;
+  for(const m of muts) m.addedNodes.forEach(n=>{ if(n.nodeType===3){ if(n.parentElement?.closest("#sLangBtn,.nm,.d-name")) return; const v=trES(n.nodeValue); if(v!==n.nodeValue){ _orig.set(n,n.nodeValue); n.nodeValue=v; } } else if(n.nodeType===1) trRoot(n); }); });
+["#storeApp","#sDrawerHost","#toastHost"].forEach(s=>trObs.observe($(s),{childList:true,subtree:true}));
+function applyStoreLang(){
+  UI_LOC=sLang==="es"?"es-MX":undefined;
+  document.documentElement.lang=sLang==="es"?"es":"en";
+  $("#sLangBtn").textContent=sLang==="es"?"English":"Español";
+  if(!storeMode()) return;
+  untrRoot($("#storeApp")); untrRoot($("#sDrawerHost"));
+  renderStoreApp(); renderStoreOpenings(); if(sOpen) renderStoreDrawer();
+  if(sPreview) buildPreview();
+  if(sLang==="es"){ trRoot($("#storeApp")); trRoot($("#sDrawerHost")); }
+}
+$("#sLangBtn").addEventListener("click",()=>{ sLang=sLang==="es"?"en":"es"; try{ localStorage.setItem("vista-store-lang",sLang); }catch{} applyStoreLang(); });
 
 /* ---------- boot ---------- */
 setTab(["#applicants","#add","#calendar","#future","#templates","#stores","#team"].includes(location.hash)?location.hash.slice(1):"dashboard");

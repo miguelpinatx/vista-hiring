@@ -23,13 +23,15 @@ Applicant tracker for Vista Markets: paste or enter applications, move people th
 
 ## Store managers
 
-Store managers sign in to the same site and see a simpler page with only the applicants the office shares with their store: contact info, position, availability and store notes. They can claim an applicant, add notes, and request approval to hire. Approving a request moves the applicant to Offer. Store managers can also request a position to fill; it appears on the office's Open positions list marked “From <name>”.
+Store managers sign in to the same site and see a simpler page with only the applicants the office shares with their store: contact info, position, availability and store notes. They can claim an applicant, add notes, and request approval to hire. Approving a request moves the applicant to Offer. Store managers can also request a position to fill, and edit or remove the ones their store requested; it appears on the office's Open positions list marked “From [name]”.
 
 1. One time: run `store-access.sql`, then `store-openings.sql`, in the SQL Editor (after `schema.sql`).
-2. Team tab → name and email → pick **Store manager – <store>** → **Add to team**.
+2. Team tab → name and email → pick **Store manager – [store]** → **Add to team**.
 3. They create their account from the site link the same way office staff do.
 4. In an applicant's card, use **Store portal** to share them with one or more stores.
-5. When a new hire finishes onboarding, click **Onboarding complete: send to <store> to schedule** in their card. The store manager enters the first day and start time, which fill in on the offer. Then click **Move to Hired** to send the first-day email.
+   - The store claims them and taps **Request interview** with 1–3 times that work (or **We'll schedule it ourselves**). Confirm a time in the applicant's card; the interview email/text fills in the store address and who to ask for.
+   - After the interview the store taps **They came in** or **No show** (no show moves the applicant to Not moving forward), then requests approval to hire or passes.
+5. When a new hire finishes onboarding, click **Onboarding complete: send to [store] to schedule** in their card. The store manager enters the first day and start time, which fill in on the offer. Then click **Move to Hired** to send the first-day email.
 
 ## Backups
 
