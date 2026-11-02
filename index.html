@@ -514,8 +514,8 @@ img{max-width:100%}
     </section>
     <section class="panel paste" id="pastePanel" aria-label="Add applicants">
       <div>
-        <h2>Paste an application email</h2>
-        <p class="hint">Copy the whole email body and paste it here. Several applications in one paste work too.</p>
+        <div class="ph" style="margin-bottom:6px"><h2>Paste an application email</h2><span class="row-actions"><button class="btn sm primary" id="pdfBtn" type="button">Upload PDF</button><input type="file" id="pdfInput" accept="application/pdf,.pdf" hidden></span></div>
+        <p class="hint">Copy the whole email body and paste it here, or upload a PDF of the application emails (printed from Outlook). Several applications at once work too. People already in the tracker get updated, not duplicated.</p>
         <textarea id="pasteBox" placeholder="name&#10;Jane Doe&#10;email&#10;jane@example.com&#10;phone&#10;9155551234&#10;store-location&#10;Montana&#10;…"></textarea>
         <div class="paste-actions">
           <button class="btn primary" id="addBtn" disabled>Add to tracker</button>
@@ -922,11 +922,15 @@ function matchStore(raw){ const r=(raw||"").toLowerCase();
   const hit=STORES.find(s=>r.includes(s.toLowerCase())); if(hit) return hit;
   if(/prep foods|commissary|comisar/.test(r)) return STORES.find(s=>/commissary/i.test(s))||"";
   return ""; }
+const MONTHS={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};
+const JUNK_LINE=/^(\d+ of \d+|(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), .+ (Standard|Daylight) Time|Formspree logo|Mark as spam|You are receiving this because.*|Don’t want these emails anymore\?.*|Don't want these emails anymore\?.*|Simply remove the form.*|New form submission on .*|Someone just submitted a form on .*|(Subject|Date|From|To):.*)$/i;
 function parseApplications(text){
-  const lines=text.replace(/\r/g,"").split("\n");
+  const lines=text.replace(/\r/g,"").split("\n").filter(l=>!JUNK_LINE.test(l.trim()));
   const apps=[]; let cur={}, key=null, buf=[];
   const flush=()=>{ if(key){ const v=clean(buf.join("\n")); if(v) cur[key]=v; } key=null; buf=[]; };
   for(const raw of lines){
+    const sm=raw.trim().match(/^Submitted (\d{1,2}):(\d{2}) ?([AP]M) - (\d{1,2}) ([A-Za-z]+) (\d{4})$/i);
+    if(sm){ flush(); const mo=MONTHS[sm[5].toLowerCase()]; if(mo!==undefined){ let h=+sm[1]%12; if(/pm/i.test(sm[3])) h+=12; cur.submittedAt=new Date(+sm[6],mo,+sm[4],h,+sm[2]).getTime(); } continue; }
     const t=raw.trim(), m=t.toLowerCase().match(/^([a-z_][a-z-]*)(\s*:?\s*)(.*)$/);
     let k=null, rest="";
     if(m && (KEYMAP[m[1]]!==undefined || m[1].startsWith("_")) && (m[3]==="" || m[2].includes(":"))){ k=m[1]; rest=t.slice(m[1].length+m[2].length); }
@@ -1426,10 +1430,11 @@ async function addParsed(){
   for(const a of parsed){
     const dup=dupOf(a), now=Date.now();
     if(dup){
-      const merged={...dup}; for(const [k,v] of Object.entries(a)) if(v!=="" && v!=null && !(Array.isArray(v)&&!v.length) && k!=="interviewer") merged[k]=v;
+      const merged={...dup}; for(const [k,v] of Object.entries(a)) if(v!=="" && v!=null && !(Array.isArray(v)&&!v.length) && !["interviewer","submittedAt"].includes(k)) merged[k]=v;
       merged.updatedAt=now; await saveDoc(merged).catch(()=>{}); updated++;
     } else {
-      await saveDoc({...a,id:newId(),stage:"new",notes:"",createdAt:now,updatedAt:now,history:[{stage:"new",at:now}]}).catch(()=>{}); added++;
+      const at=a.submittedAt&&a.submittedAt<=now?a.submittedAt:now; const {submittedAt,...rest}=a;
+      await saveDoc({...rest,id:newId(),stage:"new",notes:"",createdAt:at,updatedAt:now,history:[{stage:"new",at}]}).catch(()=>{}); added++;
     }
   }
   $("#pasteBox").value=""; parsed=[]; renderPreview();
@@ -1654,6 +1659,33 @@ $("#v-dashboard").addEventListener("submit",async e=>{
   if(db){ const i=openings.findIndex(x=>x.id===o.id); if(i>=0) openings[i]=o; else openings.push(o); renderOpenings(); }
   await saveOpening(o).then(()=>toast(prev?"Opening updated.":"Opening added.")).catch(()=>{});
 });
+/* ---------- PDF upload (application emails printed to PDF) ---------- */
+let pdfjsReady=null;
+function loadPdfJs(){
+  if(pdfjsReady) return pdfjsReady;
+  pdfjsReady=new Promise((res,rej)=>{ const sc=document.createElement("script");
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    sc.onload=()=>{ window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(window.pdfjsLib); };
+    sc.onerror=()=>{ pdfjsReady=null; rej(new Error("load")); }; document.head.appendChild(sc); });
+  return pdfjsReady;
+}
+async function pdfToText(file){
+  const lib=await loadPdfJs(); const doc=await lib.getDocument({data:await file.arrayBuffer()}).promise; const out=[];
+  for(let i=1;i<=doc.numPages;i++){ const tc=await (await doc.getPage(i)).getTextContent(); let line="", lastY=null;
+    for(const it of tc.items){ const y=it.transform?it.transform[5]:null;
+      if(lastY!==null&&y!==null&&Math.abs(y-lastY)>2&&line){ out.push(line); line=""; }
+      line+=it.str; if(it.hasEOL){ out.push(line); line=""; } lastY=y; }
+    if(line) out.push(line); out.push(""); }
+  return out.join("\n");
+}
+$("#pdfBtn").addEventListener("click",()=>$("#pdfInput").click());
+$("#pdfInput").addEventListener("change",async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  const btn=$("#pdfBtn"); btn.disabled=true; btn.textContent="Reading PDF…";
+  try{ const text=await pdfToText(f); parsed=parseApplications(text);
+    $("#pasteBox").value=`From PDF: ${f.name}\n${parsed.length} application${parsed.length===1?"":"s"} found. They are listed on the right. Click Add to tracker, or Clear to start over.`; renderPreview();
+    toast(parsed.length?`Found ${parsed.length} application${parsed.length===1?"":"s"} in ${f.name}. Check them, then Add to tracker.`:"No applications found in that PDF. Is it the Formspree application emails?"); }
+  catch(err){ toast("Couldn’t read that PDF. Try again, or copy and paste the email text instead."); }
+  finally{ btn.disabled=false; btn.textContent="Upload PDF"; } });
 let pt; $("#pasteBox").addEventListener("input",()=>{ clearTimeout(pt); pt=setTimeout(()=>{ parsed=parseApplications($("#pasteBox").value); renderPreview(); },120); });
 $("#clearBtn").onclick=()=>{ $("#pasteBox").value=""; parsed=[]; renderPreview(); };
 $("#addBtn").onclick=addParsed;
