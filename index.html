@@ -12,9 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="Vista Hiring">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#834B9E">
+<meta name="theme-color" content="#8551A3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: tab bar (Dashboard / Applicants / Email templates); applicant drawer slides in from the right. */
 :root{
@@ -395,6 +395,55 @@ img{max-width:100%}
 .auth-links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .auth-err{color:var(--danger);font-weight:600}
 .who{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+
+/* ---------- Vista Markets brand layer (colors from the logo) ---------- */
+:root{
+  --purple:#8551A3; --purple-deep:#5B3175; --purple-soft:#F3EAF8;
+  --yellow:#FDC93A; --yellow-soft:#FFF6DA; --orange:#F37B20; --green:#5DB54A; --blue:#0B7CC3;
+  --bg:#FAF7F2; --line:#E7E1EC; --sunk:#F3EFF5;
+  --display:"Baloo 2","Figtree",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --purple:#C59BE0; --purple-deep:#3E2252; --purple-soft:#2E2338; --bg:#15121A; --line:#342C3E; --sunk:#191520; }}
+:root[data-theme="dark"]{ --purple:#C59BE0; --purple-deep:#3E2252; --purple-soft:#2E2338; --bg:#15121A; --line:#342C3E; --sunk:#191520; }
+h1,.d-name,.kpi b,.panel h2,.section-h,.pv-name,.auth-card h2{font-family:var(--display);letter-spacing:0}
+h1{font-weight:800}
+.wrap>header{position:relative;overflow:hidden;align-items:center;color:#fff;border-radius:18px;padding:14px 20px 20px;
+  background:radial-gradient(120% 140% at 100% 0%,#9B66BA 0%,transparent 55%),linear-gradient(135deg,#8551A3 0%,#5B3175 100%);
+  box-shadow:0 8px 22px rgba(91,49,117,.20)}
+.wrap>header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;
+  background:linear-gradient(90deg,var(--yellow) 0 25%,var(--orange) 25% 50%,var(--green) 50% 75%,#0B7CC3 75% 100%)}
+.wrap>header h1{color:#fff}
+.wrap>header .sub,.wrap>header .status,.wrap>header .who{color:#EADCF3}
+.wrap>header .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.38);color:#fff}
+.wrap>header .btn:hover{background:rgba(255,255,255,.22);border-color:#fff}
+.wrap>header select.btn option{color:#221B2B;background:#fff}
+.wrap>header .brandrow .logo{height:54px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.22))}
+.tabs{border-bottom:2px solid var(--line)}
+.tabs button{border-radius:10px 10px 0 0}
+.tabs button:hover{color:var(--purple)}
+.tabs button[aria-selected="true"]{color:var(--purple);border-bottom:4px solid var(--yellow);background:linear-gradient(180deg,transparent,var(--yellow-soft))}
+:root[data-theme="dark"] .tabs button[aria-selected="true"]{background:none}
+.panel{border-radius:14px}
+.panel h2{color:var(--purple-deep)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .panel h2{color:var(--purple)}}
+:root[data-theme="dark"] .panel h2{color:var(--purple)}
+.kpi{border-top:5px solid var(--yellow);border-radius:14px}
+.kpi:nth-child(6n+2){border-top-color:var(--orange)} .kpi:nth-child(6n+3){border-top-color:var(--green)}
+.kpi:nth-child(6n+4){border-top-color:var(--blue)} .kpi:nth-child(6n+5){border-top-color:var(--purple)} .kpi:nth-child(6n+6){border-top-color:#E5484D}
+.kpi b{color:var(--purple-deep)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kpi b{color:var(--fg)}}
+:root[data-theme="dark"] .kpi b{color:var(--fg)}
+.btn{border-radius:10px}
+.btn.primary{background:var(--purple);border-color:var(--purple)}
+.btn.primary:hover{background:var(--purple-deep);border-color:var(--purple-deep);filter:none}
+.chip[aria-pressed="true"]{border-color:var(--purple);box-shadow:inset 0 0 0 1px var(--purple);background:var(--purple-soft)}
+.s-card{border-radius:14px;border-left:5px solid var(--yellow)}
+.auth{background:radial-gradient(90% 70% at 50% 0%,#9B66BA 0%,transparent 60%),linear-gradient(160deg,#8551A3 0%,#5B3175 100%)}
+.auth-card{border:none;box-shadow:0 18px 40px rgba(40,16,58,.35);position:relative;overflow:hidden;padding-top:34px}
+.auth-card::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,var(--yellow) 0 25%,var(--orange) 25% 50%,var(--green) 50% 75%,#0B7CC3 75% 100%)}
+.auth-card .brandrow .logo{height:72px}
+.auth-card h1{color:var(--purple-deep)}
+@media (max-width:640px){ .wrap>header{padding:12px 14px 18px;border-radius:14px} .wrap>header .brandrow .logo{height:40px} }
 </style>
 </head>
 <body>
@@ -1296,7 +1345,7 @@ function renderDrawer(){
       <div><h2 class="d-name">${esc(c.name||"(no name)")}</h2><div class="small">Applied ${esc(new Date(c.createdAt||Date.now()).toLocaleDateString())} · ${esc(c.referralDetail||c.referralSource||"source unknown")}</div></div>
       <button class="btn ghost" data-close aria-label="Close">Close</button>
     </div>
-    <div class="d-sec"><h3>Stage</h3><div class="stagebar">${STAGES.map(s=>`<button data-setstage="${s.id}" aria-pressed="${c.stage===s.id}" style="${c.stage===s.id?`background:var(${s.c})`:""}">${s.label}</button>`).join("")}</div></div>
+    <div class="d-sec"><h3>Stage</h3><div class="stagebar">${STAGES.map(s=>`<button data-setstage="${s.id}" aria-pressed="${c.stage===s.id}" style="${c.stage===s.id?`background:var(${s.c})`:""}">${s.label}</button>`).join("")}</div>${stageConfirmBox(c)}</div>
     <div class="d-grid">
       <label>Store<select id="dStore">${storeOpts}</select>${c.store&&storeInfo(c.store).address?`<span class="small" style="font-weight:400">${esc(storeInfo(c.store).address)}</span>`:""}</label>
       <datalist id="hireList">${[...new Set(openings.filter(o=>o.store===c.store&&openingStats(o).left).map(o=>o.position).concat(DEPTS))].map(p=>`<option value="${esc(p)}">`).join("")}</datalist>
@@ -1401,7 +1450,7 @@ function refreshMail(c){
       <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
     ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
 }
-function openDrawer(id){ openId=id; readyForm=false; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
+function openDrawer(id){ openId=id; readyForm=false; stageConfirm=null; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
 function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; }
 
 /* ---------- storage ---------- */
@@ -1745,7 +1794,10 @@ $("#drawerHost").addEventListener("click",async e=>{
   if(t.closest("[data-close]")) return closeDrawer();
   const c=candidates.find(x=>x.id===openId); if(!c) return;
   const st=t.closest("[data-setstage]");
-  if(st){ const ns=st.dataset.setstage; if(c.stage!==ns){ mailStage=null; const ch={stage:ns,history:[...(c.history||[]),{stage:ns,at:Date.now()}]};
+  if(st){ const ns=st.dataset.setstage;
+    if(c.stage!==ns&&["offer","hired"].includes(c.stage)&&!["offer","hired"].includes(ns)&&typeof hireReqs!=="undefined"&&portalReady){
+      const req=hireReqs.find(r=>r.candidate_id===c.id&&r.status==="approved"); if(req){ stageConfirm={ns,req}; renderDrawer(); return; } }
+    if(c.stage!==ns){ mailStage=null; const ch={stage:ns,history:[...(c.history||[]),{stage:ns,at:Date.now()}]};
       if(ns==="offer"&&!c.offerResponse) ch.offerResponse="Waiting"; if(ns==="hired") ch.offerResponse="Accepted";
       if(ns==="offer"&&!c.offerType) ch.offerType=c.employmentType||""; patch(openId,ch).catch(()=>{}); } return; }
   const ml=t.closest("[data-mlang]"); if(ml){ mailLang=ml.dataset.mlang; return renderDrawer(); }
@@ -2022,7 +2074,7 @@ function portalBadge(c){
   const pa=passedFor(c.id); if(pa.length) return `<div><span class="portalpill pass">Passed · ${esc(pa.map(x=>x.store).join(", "))}</span></div>`;
   return "";
 }
-let readyForm=false;
+let readyForm=false, stageConfirm=null;
 function fmtTime(t){ return t?new Date("2000-01-01T"+t).toLocaleTimeString(UI_LOC||"en-US",{hour:"numeric",minute:"2-digit"}):""; }
 function certSummary(c){ return Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>`${CERTS[k].short} ${certDone(c,k)&&certFiled(c,k)?"✓":"missing"}`).join(" · "); }
 function storeMgrs(store){ return team.filter(t=>t.store===store); }
@@ -2080,6 +2132,26 @@ function ivBlock(c){
     return `<div class="small"><b style="color:var(--fg)">Interview at ${esc(r.store)}</b> · ${esc(slotLabel(r.scheduled_at))}${r.ask_for?` · ask for ${esc(r.ask_for)}`:""} · ${r.self_scheduled?`booked by ${esc(r.scheduled_by||"the store")}`:`set by ${esc(r.scheduled_by||"the office")}`}${done}</div>`;
   }).join("");
 }
+async function cancelStoreWork(c,store,why){
+  // Close out a store's open requests for this applicant so a later re-share starts fresh.
+  const who=myName(), iso=new Date().toISOString();
+  let q=sb.from("hire_requests").update({status:"cancelled",decided_by:who,decided_at:iso,decision_note:why}).eq("candidate_id",c.id).in("status",["pending","approved"]);
+  if(store) q=q.eq("store",store);
+  const a=await q;
+  let q2=sb.from("interview_requests").update({status:"cancelled"}).eq("candidate_id",c.id).in("status",["pending","scheduled"]);
+  if(store) q2=q2.eq("store",store);
+  const b=await q2;
+  return a.error||b.error;
+}
+function stageConfirmBox(c){
+  if(!stageConfirm) return "";
+  const ns=stageConfirm.ns, lbl=STAGE[ns]?.label||ns, r=stageConfirm.req;
+  const fd=r.start_date_confirmed?` and set the first day for ${fmtDate(r.start_date_confirmed)}${r.start_time?" at "+fmtTime(r.start_time):""}`:"";
+  return `<div class="hreq pending" style="margin-top:8px"><div><b>${esc(r.store)} has an approved hire for ${esc(c.name||"this applicant")}</b></div>
+    <div class="small">${esc(r.store)} asked to hire them${esc(fd)}. Moving to <b style="color:var(--fg)">${esc(lbl)}</b> can cancel that approval so the store's page matches.
+    ${ns==="declined"?` They will also leave ${esc(r.store)}'s list.`:` The store will see them as Claimed again.`}</div>
+    <div class="row-actions"><button type="button" class="btn sm primary" data-stgo="cancel">Move to ${esc(lbl)} and cancel the approval</button><button type="button" class="btn sm ghost" data-stgo="keep">Move, keep the approval</button><button type="button" class="btn sm ghost" data-stgo="back">Don't move</button></div></div>`;
+}
 function portalTargets(c){ const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at); return cl?[cl.store]:sh.map(x=>x.store); }
 function portalSection(c){
   if(!portalReady) return "";
@@ -2105,6 +2177,19 @@ function portalSection(c){
 $("#drawerHost").addEventListener("click",async e=>{
   const t=e.target; if(!sb||!portalReady) return;
   const c=candidates.find(x=>x.id===openId); if(!c) return;
+  const sg=t.closest("[data-stgo]");
+  if(sg){ const m=sg.dataset.stgo, sc=stageConfirm; if(!sc) return;
+    if(m==="back"){ stageConfirm=null; renderDrawer(); return; }
+    sg.disabled=true; const now=Date.now(), ns=sc.ns, store=sc.req.store, lbl=STAGE[ns]?.label||ns; let note=`Moved to ${lbl}.`;
+    if(m==="cancel"){
+      const err=await cancelStoreWork(c,store,`Office moved them to ${lbl}`);
+      if(err){ sg.disabled=false; toast("Couldn’t cancel the store’s approval. Try again."); return; }
+      note+=` Cancelled ${store}’s hire approval.`;
+      if(ns==="declined"){ await sb.from("shares").delete().eq("candidate_id",c.id).eq("store",store); note+=` Removed from ${store}’s list.`; }
+    }
+    stageConfirm=null; mailStage=null;
+    await patch(c.id,{stage:ns,history:[...(c.history||[]),{stage:ns,at:now}],notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:note,at:now,by:myName()}]}).catch(()=>{});
+    toast(m==="cancel"?`Moved to ${lbl}. ${store}’s page is updated.`:`Moved to ${lbl}.`); loadPortal(); return; }
   const ivp=t.closest("[data-ivpick]");
   if(ivp){ const r=ivReqs.find(x=>x.id===ivp.dataset.rid||x.id===ivp.dataset.ivpick); if(!r) return;
     const slot=ivp.dataset.slot==="__other"?($("#pIvOther")?.value||""):ivp.dataset.slot;
@@ -2143,16 +2228,20 @@ $("#drawerHost").addEventListener("click",async e=>{
     toast("Moved to Hired. The first-day email below has their start date and time."); return; }
   const sh=t.closest("[data-share]");
   if(sh){ const st=sh.dataset.share, has=sharesFor(c.id).some(x=>x.store===st), wasPassed=passedFor(c.id).some(x=>x.store===st);
+    if(has) await cancelStoreWork(c,st,"Office unshared the applicant");
     const {error}=has?await sb.from("shares").delete().eq("candidate_id",c.id).eq("store",st)
                  :wasPassed?await sb.from("shares").update({declined_at:null,declined_by:null,decline_reason:null,shared_at:new Date().toISOString(),shared_by:myName()}).eq("candidate_id",c.id).eq("store",st)
                      :await sb.from("shares").insert({candidate_id:c.id,store:st,shared_by:myName()});
     if(error){ toast("Couldn’t update sharing. Try again."); return; }
     toast(has?`No longer shared with ${st}.`:`Shared with ${st}. Their manager can now see and claim ${c.name||"this applicant"}.`); loadPortal(); return; }
   const us=t.closest("[data-unshare]");
-  if(us){ const st=us.dataset.unshare;
+  if(us){ const st=us.dataset.unshare; us.disabled=true;
+    const err=await cancelStoreWork(c,st,"Office took the applicant back");
     const {error}=await sb.from("shares").delete().eq("candidate_id",c.id).eq("store",st);
-    if(error){ toast("Couldn’t take them back."); return; }
-    toast(`${st} can no longer see ${c.name||"this applicant"}.`); loadPortal(); return; }
+    if(error||err){ us.disabled=false; toast("Couldn’t take them back."); return; }
+    const now=Date.now();
+    await patch(c.id,{notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Took back from ${st}. Their open interview and hire requests were cancelled.`,at:now,by:myName()}]}).catch(()=>{});
+    toast(`${st} can no longer see ${c.name||"this applicant"}. If you share them again, they start fresh.`); loadPortal(); return; }
   if(t.closest("[data-snote]")){ const body=($("#pNote")?.value||"").trim(); if(!body){ toast("Write a note first."); return; }
     const store=$("#pNoteStore")?.value||portalTargets(c)[0];
     const {error}=await sb.from("store_notes").insert({candidate_id:c.id,store,author:myName(),body});
