@@ -177,6 +177,7 @@ table.main tr:last-child td{border-bottom:none}
 
 /* templates */
 .tpl-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px}
+.tpl-group{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:10px 6px 4px}
 .tpl-nav{display:flex;flex-direction:column;gap:4px}
 .tpl-nav button{text-align:left;border:1px solid transparent;background:none;border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:600;font-size:.88rem;display:flex;gap:8px;align-items:center}
 .tpl-nav button[aria-pressed="true"]{background:var(--surface);border-color:var(--line)}
@@ -488,7 +489,7 @@ h1{font-weight:800}
   <!-- DASHBOARD -->
   <section class="view" id="v-dashboard">
     <div class="kpis" id="kpis"></div>
-    <div class="panel" id="approvalPanel" hidden style="border-color:var(--s-offer)"><h2>Store portal <span class="small">hire requests and first-day scheduling</span></h2><div id="approvals"></div></div>
+    <div class="panel" id="approvalPanel" hidden style="border-color:var(--s-offer)"><h2>From the stores <span class="small">new position requests</span></h2><div id="approvals"></div></div>
     <div class="panel" id="openPanel">
       <div class="ph"><h2>Open positions <span class="small">what each store needs filled</span></h2><button class="btn sm primary" id="addOpening">Add opening</button></div>
       <div id="openForm"></div>
@@ -600,6 +601,11 @@ h1{font-weight:800}
         <button class="btn primary" type="submit">Add store</button>
       </form>
     </div>
+    <div class="panel" style="max-width:640px" id="reqLinkPanel">
+      <h2>Position request link <span class="small">for store managers · no sign-in</span></h2>
+      <p class="small" style="margin:0 0 12px">Text or email this link to your store managers. They pick their store and the position they need, and it shows up on your dashboard under Open positions, marked “From” their name. Only people with the link can use it, and it can’t show any applicant information.</p>
+      <div id="reqLinkBox"></div>
+    </div>
   </section>
 
   <section class="view" id="v-calendar" hidden>
@@ -682,6 +688,11 @@ const STAGES=[
 // Email/text templates that aren't stages (the old "No show / no reply" stage is now a follow-up template + a reason under Not moving forward)
 const TPL_EXTRA=[{id:"noshow",label:"Follow-up: couldn’t reach",c:"--s-out"}];
 const TPL_LIST=STAGES.concat(TPL_EXTRA);
+// Emails sent to the store manager (not the applicant)
+const STORE_TPL=[{id:"st_candidate",label:"Candidate & interview",c:"--blue"},{id:"st_onboarded",label:"Onboarding done · confirm start",c:"--s-offer"},{id:"st_firstday",label:"First day · store + new hire",c:"--s-hired"}];
+const STORE_TPL_MAP=Object.fromEntries(STORE_TPL.map(x=>[x.id,x]));
+const tplLabel=id=>(STAGE[id]||STORE_TPL_MAP[id]||{label:id}).label;
+const OPTIONAL_TOKENS=new Set(["cert_reminder"]);
 const STAGE=Object.fromEntries(TPL_LIST.map(s=>[s.id,s]));
 const CLOSE_REASONS=["Didn’t reply / no answer","No show","Not a fit","Turned down the offer","Took another job","Other"];
 const ACTIVE=["new","screen","interview","offer"];
@@ -697,6 +708,144 @@ const DEPTS=["Cashier","Head Cashier","Stocker","Pricing","Office","Hot Deli","C
 
 /* ---------- default email templates ---------- */
 const DEFAULT_TPL={
+ st_candidate:{en:{s:"Candidate for {store}: {name} – interview {interview_time}",b:`Hi {manager_first},
+
+We have a candidate for {store_name} and set up an in-person interview with you.
+
+Candidate
+• Name: {name}
+• Phone: {phone}
+• Email: {candidate_email}
+• Applied for: {position}
+• Full / part-time: {employment_type}
+• Availability: {availability}
+
+Interview
+• When: {interview_time}
+• Where: {store_name}
+• They will ask for: {ask_for}
+
+After the interview, please reply to this email:
+• Want to hire them? Reply with the position and their preferred start date. We'll send {first_name} the job offer with next steps: onboarding with T&T Staff Management, plus the Food Handler card and TABC if the position needs it. We'll email you when onboarding is done so you can confirm the start date.
+• Not a fit, or they didn't show up? Reply and let us know, and we'll close it out.
+
+Thank you,
+{sender_name}
+Vista Markets
+{sender_phone}`},
+  es:{s:"Candidato para {store}: {name} – entrevista {interview_time}",b:`Hola {manager_first},
+
+Tenemos un candidato para {store_name} y le programamos una entrevista en persona con usted.
+
+Candidato
+• Nombre: {name}
+• Teléfono: {phone}
+• Correo: {candidate_email}
+• Solicitó: {position}
+• Tiempo completo / medio tiempo: {employment_type}
+• Disponibilidad: {availability}
+
+Entrevista
+• Cuándo: {interview_time}
+• Dónde: {store_name}
+• Preguntará por: {ask_for}
+
+Después de la entrevista, por favor responda a este correo:
+• ¿Lo quiere contratar? Responda con el puesto y la fecha de inicio preferida. Le enviaremos a {first_name} la oferta de trabajo con los siguientes pasos: el registro con T&T Staff Management, y la tarjeta de Manejo de Alimentos y TABC si el puesto lo requiere. Le avisaremos cuando termine el registro para que confirme la fecha de inicio.
+• ¿No es adecuado o no se presentó? Responda y avísenos, y cerraremos su solicitud.
+
+Gracias,
+{sender_name}
+Vista Markets
+{sender_phone}`}},
+ st_onboarded:{en:{s:"{name} finished onboarding – please confirm start date",b:`Hi {manager_first},
+
+Good news: {name} completed onboarding with T&T Staff Management and is ready to start at {store_name} as {position}.
+
+Certifications
+{cert_status}
+
+Planned start
+• Date: {offer_start}
+• Time: {start_time}
+
+Please reply to confirm this start date and time, or send a different one that works for your schedule. Once you confirm, we'll send one email to {first_name} and you with all the first-day details.
+
+Thank you,
+{sender_name}
+Vista Markets
+{sender_phone}`},
+  es:{s:"{name} terminó su registro – por favor confirme la fecha de inicio",b:`Hola {manager_first},
+
+Buenas noticias: {name} terminó su registro con T&T Staff Management y está listo(a) para empezar en {store_name} como {position}.
+
+Certificaciones
+{cert_status}
+
+Inicio planeado
+• Fecha: {offer_start}
+• Hora: {start_time}
+
+Por favor responda para confirmar esta fecha y hora, o mándenos otra que le funcione mejor. En cuanto confirme, le enviaremos un solo correo a {first_name} y a usted con todos los detalles del primer día.
+
+Gracias,
+{sender_name}
+Vista Markets
+{sender_phone}`}},
+ st_firstday:{en:{s:"Welcome to {store_name}, {first_name}! First day {offer_start}",b:`Hi {first_name} and {manager_first},
+
+{first_name}, welcome to the Vista Markets team! I'm including {store_manager}, your manager at {store_name}, so everyone has the same details.
+
+First day
+• Date: {offer_start}
+• Time: {start_time}
+• Report to: {store_name}, {store_address}
+• Ask for: {store_manager}
+• Position: {position}
+
+What to bring
+• Your Food Handler card, and your TABC card if your position needs it
+{cert_reminder}
+Dress code
+• Black or white polo or shirt
+• Black or khaki pants
+• Non-slip shoes
+Hairnets and gloves are provided in each department.
+
+{manager_first}, please reply to everyone if anything changes on your end.
+
+Questions before then? Call or text me at {sender_phone}.
+
+Welcome aboard!
+{sender_name}
+Vista Markets`},
+  es:{s:"¡Bienvenido(a) a {store_name}, {first_name}! Primer día {offer_start}",b:`Hola {first_name} y {manager_first},
+
+{first_name}, ¡bienvenido(a) al equipo de Vista Markets! Incluyo a {store_manager}, su gerente en {store_name}, para que todos tengamos la misma información.
+
+Primer día
+• Fecha: {offer_start}
+• Hora: {start_time}
+• Presentarse en: {store_name}, {store_address}
+• Preguntar por: {store_manager}
+• Puesto: {position}
+
+Qué traer
+• Su tarjeta de Manejo de Alimentos, y su tarjeta TABC si su puesto la requiere
+{cert_reminder}
+Código de vestimenta
+• Camisa o polo negro o blanco
+• Pantalón negro o caqui
+• Zapatos antiderrapantes
+En cada departamento se proporcionan redecillas y guantes.
+
+{manager_first}, por favor responda a todos si algo cambia de su lado.
+
+¿Preguntas antes de esa fecha? Llámeme o mándeme mensaje al {sender_phone}.
+
+¡Bienvenido(a)!
+{sender_name}
+Vista Markets`}},
  new:{en:{s:"We received your application – Vista Markets",b:`Hi {first_name},
 
 Thank you for applying to Vista Markets! We received your application for {position} at {store_name}.
@@ -925,6 +1074,12 @@ Gracias,
 Vista Markets`}}
 };
 const DEFAULT_SMS={
+ st_candidate:{en:"Hi {manager_first}, it's {sender_name} from Vista Markets. I just emailed you about {name}, in-person interview {interview_time} at {store}. Please check your email and reply after the interview. Thanks!",
+      es:"Hola {manager_first}, soy {sender_name} de Vista Markets. Le acabo de enviar un correo sobre {name}, entrevista en persona {interview_time} en {store}. Por favor revise su correo y responda después de la entrevista. ¡Gracias!"},
+ st_onboarded:{en:"Hi {manager_first}, it's {sender_name}. {name} finished onboarding. I emailed you to confirm the start date ({offer_start} at {start_time}). Please check your email and reply. Thanks!",
+      es:"Hola {manager_first}, soy {sender_name}. {name} terminó su registro. Le envié un correo para confirmar la fecha de inicio ({offer_start} a las {start_time}). Por favor revise su correo y responda. ¡Gracias!"},
+ st_firstday:{en:"Hi {manager_first}, it's {sender_name}. I just emailed you and {first_name} the first-day details: {offer_start} at {start_time}. Please check your email. Thanks!",
+      es:"Hola {manager_first}, soy {sender_name}. Le acabo de enviar a usted y a {first_name} los detalles del primer día: {offer_start} a las {start_time}. Por favor revise su correo. ¡Gracias!"},
  new:{en:"Hi {first_name}, this is {sender_name} with Vista Markets. We got your application for {store_name}. We'll call you in the next few days to set up a quick phone screen.",
       es:"Hola {first_name}, le habla {sender_name} de Vista Markets. Recibimos su solicitud para {store_name}. Le llamaremos en los próximos días para una breve entrevista por teléfono."},
  screen:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. Can we do a quick 10-minute phone call on {interview_time}? Reply YES or let me know a better time.",
@@ -954,7 +1109,7 @@ const DEFAULT_STORE_INFO={
 };
 let storeInfoOverrides={}, editingStore=null;
 function storeInfo(name){ const o={...(DEFAULT_STORE_INFO[name]||{}),...(storeInfoOverrides[name]||{})}; if(!o.name&&name) o.name="Vista Markets "+name; return o; }
-const TOKENS=["first_name","name","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
+const TOKENS=["first_name","name","store_manager","manager_first","candidate_email","availability","cert_status","cert_reminder","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
 
 var UI_LOC;
 let db=null, downloads=null, candidates=[], parsed=[], filterStage="", openId=null;
@@ -1041,11 +1196,26 @@ function tokenValues(c,lang){
     interview_time:c.interviewDate?(es?fmtDateTimeES(c.interviewDate):fmtDateTime(c.interviewDate,true)):"",
     pay:payText(c,lang), hours:c.offerHours||"", offer_start:c.offerStart?(es?fmtDateES(c.offerStart):fmtDate(c.offerStart,true)):"",
     respond_by:es?respond.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"}):respond.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}),
-    sender_name:snd.name, sender_phone:snd.phone, sender_email:snd.email
+    sender_name:snd.name, sender_phone:snd.phone, sender_email:snd.email,
+    store_manager:c.store?(storeInfo(c.store).manager||(es?`equipo de ${c.store}`:`${c.store} team`)):"",
+    manager_first:c.store?(firstName(storeInfo(c.store).manager)||(es?`equipo de ${c.store}`:`${c.store} team`)):"",
+    candidate_email:c.email||"", availability:[ (c.availDays||[]).length?(c.availDays||[]).join(", "):"", c.shift||"" ].filter(Boolean).join(" · ")||c.availability||"",
+    cert_status:certStatusText(c,es), cert_reminder:certReminderText(c,es)
   };
 }
+function certStatusText(c,es){
+  return Object.keys(CERTS).map(k=>{ const name=es?(k==="fh"?"Tarjeta de Manejo de Alimentos":"TABC"):(k==="fh"?"Food Handler card":"TABC");
+    if(!certReq(c,k)) return `• ${name}: ${es?"no se requiere para este puesto":"not required for this position"}`;
+    return `• ${name}: ${certDone(c,k)?(es?"recibida ✓":"received ✓"):(es?"pendiente. Está terminando el curso en línea.":"pending. They're finishing the online course.")}`; }).join("\n");
+}
+function certReminderText(c,es){
+  const v=tokenValuesLinks(es), pend=Object.keys(CERTS).filter(k=>certReq(c,k)&&!certDone(c,k));
+  if(!pend.length) return "";
+  return "\n"+(es?"Pendiente antes de su primer día":"Still needed before your first day")+"\n"+pend.map(k=>k==="fh"?`• ${es?"Tarjeta de Manejo de Alimentos":"Food Handler card"}: ${v.fh}`:`• TABC: ${v.tabc}`).join("\n")+"\n";
+}
+function tokenValuesLinks(es){ return {fh:es?"https://www.360training.com/course/curso-de-capacitacion-para-manipuladores-de-alimentos-de-texas":"https://www.360training.com/course/texas-food-handler-training",tabc:"https://www.360training.com/course/tabc-seller-server-training"}; }
 function fill(str,vals,mark){
-  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; });
+  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; if(OPTIONAL_TOKENS.has(k)) return ""; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; });
 }
 function emailFor(c,stage,lang){ const t=tplFor(stage,lang), v=tokenValues(c,lang); return {s:fill(t.s,v), b:fill(t.b,v), sHtml:fill(esc(t.s),v,true), bHtml:fill(esc(t.b),v,true), missing:/\{|\[[a-z ]+\]/.test(fill(t.s+t.b,v))}; }
 
@@ -1258,18 +1428,19 @@ function renderRows(){
 /* ---------- templates editor ---------- */
 function renderTemplates(){
   const sms=tplSel.ch==="sms", key=tplSel.lang+(sms?"_sms":"");
-  $("#tplNav").innerHTML=TPL_LIST.map(s=>`<button data-tpl="${s.id}" aria-pressed="${tplSel.stage===s.id}"><span class="sw" style="background:var(${s.c})"></span>${s.label}${tplOverrides[s.id]?.[key]?` <span class="small">· edited</span>`:""}</button>`).join("");
+  const isStore=!!STORE_TPL_MAP[tplSel.stage], navBtn=s=>`<button data-tpl="${s.id}" aria-pressed="${tplSel.stage===s.id}"><span class="sw" style="background:var(${s.c})"></span>${s.label}${tplOverrides[s.id]?.[key]?` <span class="small">· edited</span>`:""}</button>`;
+  $("#tplNav").innerHTML=`<div class="tpl-group">To the applicant</div>`+TPL_LIST.map(navBtn).join("")+`<div class="tpl-group">To the store</div>`+STORE_TPL.map(navBtn).join("");
   const t=tplFor(tplSel.stage,tplSel.lang,tplSel.ch), edited=!!tplOverrides[tplSel.stage]?.[key];
   const ed=$("#tplEdit"); const keep=document.activeElement?.id;
   if(keep==="tplS"||keep==="tplB") return; // don't clobber typing
   ed.innerHTML=`<div class="row-actions" style="justify-content:space-between">
-      <h2 style="margin:0">${STAGE[tplSel.stage].label} ${sms?"text":"email"}</h2>
+      <h2 style="margin:0">${tplLabel(tplSel.stage)} ${sms?"text":"email"}${isStore?` <span class="small">to the store</span>`:""}</h2>
       <div class="row-actions">
         <div class="seg" role="group" aria-label="Email or text"><button data-ch="email" aria-pressed="${!sms}">Email</button><button data-ch="sms" aria-pressed="${sms}">Text</button></div>
         <div class="seg" role="group" aria-label="Language"><button data-lang="en" aria-pressed="${tplSel.lang==="en"}">English</button><button data-lang="es" aria-pressed="${tplSel.lang==="es"}">Español</button></div>
       </div>
     </div>
-    <p class="small" style="margin:0">Used when an applicant is in this stage. Words in {braces} fill in from the applicant’s card. Applicants who filled out the Spanish form get the Español version by default.${sms?" Keep texts short; one text is about 160 characters, so longer ones may arrive as two or three.":""}</p>
+    <p class="small" style="margin:0">${isStore?(sms?"Texted to the store manager’s cell so they know to check their email. The cell number comes from the Stores tab.":"Sent to the store manager from the applicant’s card (Emails to the store). The manager’s name and email come from the Stores tab.")+" Words in {braces} fill in from the applicant’s card.":"Used when an applicant is in this stage."}${isStore?"<span hidden>":""} Words in {braces} fill in from the applicant’s card. Applicants who filled out the Spanish form get the Español version by default.${sms?" Keep texts short; one text is about 160 characters, so longer ones may arrive as two or three.":""}${isStore?"</span>":""}</p>
     ${sms?"":`<label class="field">Subject<input id="tplS" value="${esc(t.s)}"></label>`}
     <label class="field">Message<textarea id="tplB" ${sms?'style="min-height:120px"':""}>${esc(t.b)}</textarea></label>
     <div><div class="small" style="margin-bottom:4px">Click to insert at the cursor:</div><div class="tokens">${TOKENS.map(k=>`<button data-token="${k}">{${k}}</button>`).join("")}</div></div>
@@ -1388,6 +1559,14 @@ function renderDrawer(){
       <div id="mailBox"></div>
     </div>
 
+    <div class="d-sec" id="storeMailSec"><h3>Emails &amp; texts to the store</h3>
+      <div class="row-actions">
+        <select id="sMailTpl" class="btn sm" aria-label="Store email">${STORE_TPL.map(x=>`<option value="${x.id}" ${storeTplFor(c)===x.id?"selected":""}>${x.label}</option>`).join("")}</select>
+        <div class="seg" role="group" aria-label="Language"><button data-smlang="en" aria-pressed="${storeLangFor(c)==="en"}">EN</button><button data-smlang="es" aria-pressed="${storeLangFor(c)==="es"}">ES</button></div>
+      </div>
+      <div id="storeMailBox"></div>
+    </div>
+
     <div class="d-sec" id="notesSec"><h3>Notes</h3>
       <div class="note-add"><textarea id="dNote" placeholder="Add a note: phone screen, follow-up, reference check…"></textarea>
         <div><button class="btn sm primary" id="addNote">Add note</button></div></div>
@@ -1433,7 +1612,30 @@ function hoursFlag(c){
   if(t==="Full-time"&&h<30) return `<div class="warn">Full-time needs 30+ hrs/week scheduled for ACA.</div>`;
   return "";
 }
+let storeMailTpl=null, storeMailLang=null;
+function storeTplFor(c){ return storeMailTpl||({offer:"st_onboarded",hired:"st_firstday"}[c.stage]||"st_candidate"); }
+function storeLangFor(c){ const t=storeTplFor(c); return storeMailLang||(t==="st_firstday"&&isSpanish(c)?"es":"en"); }
+function storeRecipients(c,tpl){ const se=(c.store?storeInfo(c.store).email:"")||""; const list=se.split(/[;,\s]+/).filter(Boolean);
+  if(tpl==="st_firstday"&&c.email) list.unshift(c.email); return list; }
+function refreshStoreMail(c){
+  const box=document.getElementById("storeMailBox"); if(!box) return;
+  const tpl=storeTplFor(c), lang=storeLangFor(c), m=emailFor(c,tpl,lang), to=storeRecipients(c,tpl), hasStoreEmail=!!(c.store&&storeInfo(c.store).email);
+  const toStr=to.join(","), mailer=getMailer(), cell=c.store?(storeInfo(c.store).cell||""):"", tx=textFor(c,tpl,lang), sms=smsUrl(cell,tx.b)||`sms:&body=${encodeURIComponent(tx.b)}`;
+  const app=toStr?`mailto:${to.map(encodeURIComponent).join(",")}?subject=${encodeURIComponent(m.s)}&body=${encodeURIComponent(m.b.replace(/\n/g,"\r\n"))}`:"";
+  const web=toStr?composeUrl(mailer,toStr,m.s,m.b):"";
+  const warn=!c.store?`<div class="warn">Set the store on this card first.</div>`:!hasStoreEmail?`<div class="warn">No manager email for ${esc(c.store)} yet. Add it on the <a href="#" data-gostores>Stores tab</a>.</div>`:"";
+  box.innerHTML=`${warn}<div class="mail">
+    <div class="mh"><span class="small">To: ${esc(to.join(", ")||"—")}${tpl==="st_firstday"?" (new hire + store)":""}</span>
+      <span class="row-actions">${app?`<a class="btn sm primary" href="${esc(app)}" style="text-decoration:none">Open in Outlook app</a><a class="btn sm" href="${esc(web)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(MAILERS[mailer].label)} on the web</a>`:""}<button class="btn sm" data-copystore="s">Copy subject</button><button class="btn sm" data-copystore="b">Copy message</button></span></div>
+    <div class="subj">${m.sHtml}</div><div class="bdy">${m.bHtml}</div></div>
+    <div class="mail" style="margin-top:4px">
+      <div class="mh"><span class="small">Text to ${esc(c.store?(storeInfo(c.store).manager||"the store manager"):"the store manager")}${cell?`: <span class="mono">${esc(cell)}</span>`:" · pick their contact in Messages"} · tells them to check their email</span>
+        <span class="row-actions">${sms?`<a class="btn sm primary" href="${esc(sms)}" style="text-decoration:none">Open in Messages</a>`:""}<button class="btn sm" data-copystoretext>Copy text</button></span></div>
+      <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
+    ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in (interview time, start date and time, store manager on the Stores tab…) and the email and text update.</div>`:""}`;
+}
 function refreshMail(c){
+  refreshStoreMail(c);
   const box=document.getElementById("mailBox"); if(!box) return;
   const ms=mailStage||c.stage, ml=mailLang||(isSpanish(c)?"es":"en"), m=emailFor(c,ms,ml);
   const mailer=getMailer(), web=c.email?composeUrl(mailer,c.email,m.s,m.b):"";
@@ -1450,7 +1652,7 @@ function refreshMail(c){
       <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
     ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
 }
-function openDrawer(id){ openId=id; readyForm=false; stageConfirm=null; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
+function openDrawer(id){ openId=id; storeMailTpl=null; storeMailLang=null; readyForm=false; stageConfirm=null; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
 function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; }
 
 /* ---------- storage ---------- */
@@ -1515,7 +1717,7 @@ function renderAll(){
   const fc=candidates.filter(c=>c.stage==="future").length; $("#futureCount").textContent=fc||"";
   if(tab==="team"&&sb) renderTeam();
   if(openId) renderDrawer();
-  const svp=$("#storeViewPick"); if(svp&&portalReady&&staffRow&&!staffRow.store){ svp.hidden=false; if(svp.options.length!==STORES.length+1) svp.innerHTML=`<option value="">Store view…</option>`+STORES.map(x=>`<option>${esc(x)}</option>`).join(""); }
+  const svp=$("#storeViewPick"); if(svp&&PORTAL_ON&&portalReady&&staffRow&&!staffRow.store){ svp.hidden=false; if(svp.options.length!==STORES.length+1) svp.innerHTML=`<option value="">Store view…</option>`+STORES.map(x=>`<option>${esc(x)}</option>`).join(""); }
   if(sPreview) renderPreview2();
 }
 /* ---------- add to calendar ---------- */
@@ -1637,7 +1839,31 @@ function renderStoreFilter(){
   sel.innerHTML=`<option value="">All stores</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join("")+`<option value="none">No store set</option>`;
   sel.value=[...sel.options].some(o=>o.value===v)?v:"";
 }
+let requestCode="", confirmNewLink=false;
+function requestLink(){ return requestCode?location.origin+location.pathname.replace(/index\.html$/,"")+"request.html?c="+requestCode:""; }
+function renderReqLink(){
+  const box=$("#reqLinkBox"); if(!box) return; const url=requestLink();
+  if(!url){ box.innerHTML=`<button class="btn primary" type="button" data-newlink>Create the link</button>`; return; }
+  box.innerHTML=`<div class="row-actions"><input readonly value="${esc(url)}" id="reqLinkUrl" aria-label="Position request link" style="flex:1 1 280px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);font-family:var(--mono);font-size:.8rem">
+    <button class="btn sm primary" type="button" data-copylink>Copy link</button><a class="btn sm" href="${esc(url)}" target="_blank" rel="noopener" style="text-decoration:none">Open</a>
+    <a class="btn sm" href="sms:&body=${encodeURIComponent("Vista Markets: use this link to request a position for your store: "+url)}" style="text-decoration:none">Text it</a></div>
+    <div class="row-actions" style="margin-top:8px">${confirmNewLink?`<span class="small">The current link stops working for everyone. Send the new one to all managers.</span><button class="btn sm danger" type="button" data-newlink>Make a new link</button><button class="btn sm ghost" type="button" data-newlinkno>Keep current</button>`
+      :`<button class="btn sm ghost" type="button" data-newlinkask>Make a new link (stops the old one)</button>`}</div>`;
+}
+async function newRequestCode(){
+  const a=new Uint8Array(12); crypto.getRandomValues(a); const code=[...a].map(x=>"abcdefghjkmnpqrstuvwxyz23456789"[x%31]).join("");
+  if(!db){ requestCode=code; renderReqLink(); return; }
+  try{ await db.doc("settings/request_code").set({code}); requestCode=code; confirmNewLink=false; renderReqLink(); toast("Link ready. Copy it and send it to your store managers."); }
+  catch{ toast("Couldn’t save the link. Try again."); }
+}
+$("#reqLinkPanel").addEventListener("click",e=>{ const t=e.target;
+  if(t.closest("[data-copylink]")) return copyText(requestLink(),"Link copied. Paste it in a text or email to your managers.");
+  if(t.closest("[data-newlinkask]")){ confirmNewLink=true; return renderReqLink(); }
+  if(t.closest("[data-newlinkno]")){ confirmNewLink=false; return renderReqLink(); }
+  if(t.closest("[data-newlink]")) newRequestCode();
+});
 function renderStores(){
+  renderReqLink();
   $("#storeList").innerHTML=STORES.map((s,i)=>{
     const n=candidates.filter(c=>c.store===s).length, o=openings.filter(x=>x.store===s).length;
     const info=storeInfo(s);
@@ -1645,10 +1871,15 @@ function renderStores(){
       <b>${esc(s)}</b>
       <div class="d-grid"><label class="field">Name in emails<input id="siName" value="${esc(info.name||"")}" autocomplete="off"></label>
       <label class="field">Phone<input id="siPhone" value="${esc(info.phone||"")}" autocomplete="off"></label>
-      <label class="field" style="grid-column:1/-1">Address<input id="siAddr" value="${esc(info.address||"")}" placeholder="Street, City, TX ZIP" autocomplete="off"></label></div>
+      <label class="field" style="grid-column:1/-1">Address<input id="siAddr" value="${esc(info.address||"")}" placeholder="Street, City, TX ZIP" autocomplete="off"></label>
+      <label class="field">Store manager<input id="siMgr" value="${esc(info.manager||"")}" placeholder="e.g. Gustavo Ruiz" autocomplete="off"></label>
+      <label class="field">Manager email(s)<input id="siEmail" type="text" value="${esc(info.email||"")}" placeholder="name@vistasupermarkets.com" autocomplete="off"></label>
+      <label class="field">Manager cell (optional)<input id="siCell" type="tel" value="${esc(info.cell||"")}" placeholder="(915) 555-0123" autocomplete="off"></label></div>
+      <div class="small">Separate more than one email with a comma. Store emails go to these addresses; the heads-up text opens in Messages (to the cell if you add one, or you pick the contact).</div>
       <div class="row-actions"><button class="btn sm primary" type="submit">Save</button><button class="btn sm ghost" type="button" data-scancel>Cancel</button></div></form>`;
     return `<div class="li" style="cursor:default;align-items:center"><div style="min-width:0"><b>${esc(info.name||s)}</b>${info.name&&info.name!==s?` <span class="small">(${esc(s)})</span>`:""}
       <div class="small">${info.address?esc(info.address):`<span class="auth-err">No address yet</span>`}${info.phone?` · <span class="mono">${esc(info.phone)}</span>`:""}</div>
+      <div class="small">${info.manager?`Manager: ${esc(info.manager)}`:"Manager: —"}${info.email?` · ${esc(info.email)}`:` · <span class="auth-err">no email yet</span>`}${info.cell?` · <span class="mono">${esc(info.cell)}</span>`:""}</div>
       <div class="small">${n} applicant${n===1?"":"s"}${o?` · ${o} opening${o===1?"":"s"}`:""}</div></div>
       <div class="row-actions">${confirmStoreDel===s?`<span class="small">${n||o?"Their applicants and openings keep this name.":""}</span><button class="btn sm danger" data-sdelyes="${i}">Remove</button><button class="btn sm ghost" data-sdelno>Keep</button>`:
       `<button class="btn sm ghost" data-sedit="${i}">Edit</button><button class="btn sm ghost" data-sup="${i}" ${i===0?"disabled":""} aria-label="Move up">↑</button><button class="btn sm ghost" data-sdown="${i}" ${i===STORES.length-1?"disabled":""} aria-label="Move down">↓</button><button class="btn sm ghost danger" data-sdel="${i}">Remove</button>`}</div></div>`; }).join("");
@@ -1667,7 +1898,7 @@ $("#storeForm").addEventListener("submit",e=>{ e.preventDefault();
 $("#v-stores").addEventListener("submit",async e=>{
   if(!e.target.matches("[data-sform]")) return; e.preventDefault();
   const name=STORES[+e.target.dataset.sform];
-  const entry={name:$("#siName").value.trim(),address:$("#siAddr").value.trim(),phone:$("#siPhone").value.trim()};
+  const entry={name:$("#siName").value.trim(),address:$("#siAddr").value.trim(),phone:$("#siPhone").value.trim(),manager:$("#siMgr").value.trim(),email:$("#siEmail").value.trim(),cell:$("#siCell").value.trim()};
   storeInfoOverrides={...storeInfoOverrides,[name]:entry}; editingStore=null; renderStores();
   if(db){ try{ await db.doc("settings/storeinfo").set({map:storeInfoOverrides}); toast(`${name} saved.`); }catch{ toast("Couldn’t save the store details."); } }
 });
@@ -1802,6 +2033,10 @@ $("#drawerHost").addEventListener("click",async e=>{
       if(ns==="offer"&&!c.offerType) ch.offerType=c.employmentType||""; patch(openId,ch).catch(()=>{}); } return; }
   const ml=t.closest("[data-mlang]"); if(ml){ mailLang=ml.dataset.mlang; return renderDrawer(); }
   if(t.closest("[data-copytext]")){ const x=textFor(c,mailStage||c.stage,mailLang||(isSpanish(c)?"es":"en")); return copyText(x.b,"Text copied. Paste it into Messages."); }
+  if(t.closest("[data-copystoretext]")){ const x=textFor(c,storeTplFor(c),storeLangFor(c)); return copyText(x.b,"Text copied. Paste it into Messages."); }
+  const cs=t.closest("[data-copystore]"); if(cs){ const m=emailFor(c,storeTplFor(c),storeLangFor(c)); return copyText(cs.dataset.copystore==="s"?m.s:m.b, cs.dataset.copystore==="s"?"Subject copied.":"Message copied. Paste it into your email."); }
+  const sl=t.closest("[data-smlang]"); if(sl){ storeMailLang=sl.dataset.smlang; return renderDrawer(); }
+  if(t.closest("[data-gostores]")){ e.preventDefault(); closeDrawer(); setTab("stores"); return; }
   const cm=t.closest("[data-copymail]"); if(cm){ const m=emailFor(c,mailStage||c.stage,mailLang||(isSpanish(c)?"es":"en")); return copyText(cm.dataset.copymail==="s"?m.s:m.b, cm.dataset.copymail==="s"?"Subject copied.":"Message copied. Paste it into Outlook."); }
   const cp=t.closest("[data-copy]"); if(cp) return copyText(cp.dataset.copy);
   if(t.id==="addOffer"){ patch(openId,{offerType:c.employmentType||"",offerPer:"hour"}).catch(()=>{}); return; }
@@ -1856,6 +2091,7 @@ $("#drawerHost").addEventListener("change",e=>{
   if(t.id==="mStage"){ mailStage=t.value; return renderDrawer(); }
   if(t.id==="dCloseReason"){ const c=candidates.find(x=>x.id===openId); if(!c) return; const now=Date.now(), v=t.value;
     patch(openId,{closeReason:v,notesLog:v?[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Not moving forward: ${v}.`,at:now,by:myName()}]:(c.notesLog||[])}).then(()=>toast(v?"Reason saved to notes.":"Reason cleared.")).catch(()=>{}); return; }
+  if(t.id==="sMailTpl"){ storeMailTpl=t.value; storeMailLang=null; const c=candidates.find(x=>x.id===openId); if(c){ renderDrawer(); } return; }
   if(t.id==="mailer"){ try{ localStorage.setItem("vista-hiring-mailer",t.value); }catch{} const c=candidates.find(x=>x.id===openId); if(c) refreshMail(c); return; }
   if(["fhHave","tabcHave","fhFiled","tabcFiled"].includes(t.id)){ patch(openId,{[t.id]:t.checked}).catch(()=>{}); return; }
   if(FIELD[t.id]){ let v=t.value; if(t.id==="dRate") v=v.replace(/[^0-9.]/g,""); patch(openId,{[FIELD[t.id]]:v}).catch(()=>{}); if(["dRate","dHours"].includes(t.id)){ t.blur(); renderDrawer(); } }
@@ -1991,6 +2227,7 @@ function startData(){
     renderAll();
   },()=>{ $("#status").textContent="Couldn’t load. Reload the page."; });
   db.collection("openings").onSnapshot(snap=>{ openings=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{});
+  db.doc("settings/request_code").onSnapshot(s=>{ requestCode=s.exists?(s.data().code||""):""; renderReqLink(); },()=>{});
   db.doc("settings/storeinfo").onSnapshot(s=>{
     storeInfoOverrides=s.exists?JSON.parse(JSON.stringify(s.data().map||{})):{};
     if(tab==="stores"&&!editingStore) renderStores();
@@ -2016,7 +2253,7 @@ async function loadTeam(){
 function renderTeam(){
   const admin=!!staffRow?.is_admin;
   $("#teamForm").hidden=!admin;
-  const rs=$("#tRole"); if(rs&&!rs.options.length||rs&&rs.options.length!==STORES.length+1){ const keep=rs.value; rs.innerHTML=`<option value="">Office (sees everything)</option>`+(portalReady?STORES.map(x=>`<option value="${esc(x)}">Store manager – ${esc(x)}</option>`).join(""):""); if(keep) rs.value=keep; }
+  const rs=$("#tRole"); if(rs&&!rs.options.length||rs&&rs.options.length!==STORES.length+1){ const keep=rs.value; rs.innerHTML=`<option value="">Office (sees everything)</option>`+(portalReady&&PORTAL_ON?STORES.map(x=>`<option value="${esc(x)}">Store manager – ${esc(x)}</option>`).join(""):""); if(keep) rs.value=keep; }
   $("#teamNote").textContent=admin?"Add someone’s email here, then send them this site’s link. They click “First time? Create your account”, pick a password, and confirm the email Supabase sends them.":"Only Miguel can add or remove people.";
   $("#teamList").innerHTML=team.map(t=>{ const self=t.email===(me?.email||"").toLowerCase();
     return `<div class="li" style="cursor:default;align-items:center"><div><b>${esc(t.name||t.email)}</b>${t.is_admin?` <span class="lang">Admin</span>`:""}${t.store?` <span class="portalpill">Store · ${esc(t.store)}</span>`:""}<div class="small">${esc(t.name?t.email:"")}${self?" · you":""}</div></div>
@@ -2040,6 +2277,7 @@ $("#v-team").addEventListener("click",async e=>{
 });
 
 /* ---------- store portal: office side ---------- */
+const PORTAL_ON=false; // store logins / portal paused; data stays in Supabase
 let portalReady=true, shares=[], storeNotes=[], hireReqs=[], ivReqs=[], portalStarted=false;
 async function loadPortal(){
   const [a,b,c,iv]=await Promise.all([
@@ -2064,7 +2302,7 @@ const reqsFor=id=>hireReqs.filter(x=>x.candidate_id===id);
 function payFmt(p){ p=String(p||"").trim(); return /^\$?\d+(\.\d+)?$/.test(p)?`$${p.replace("$","")}/hr`:p; }
 function reqLine(r){ return [r.position,payFmt(r.pay),r.start_date?"start "+fmtDate(r.start_date):""].filter(Boolean).join(" · "); }
 function portalBadge(c){
-  if(!portalReady) return "";
+  if(!portalReady||!PORTAL_ON) return "";
   const p=reqsFor(c.id).find(r=>r.status==="pending");
   if(p) return `<div><span class="portalpill ask">Hire request · ${esc(p.store)}</span></div>`;
   const ivp=ivFor(c.id).find(r=>r.status==="pending"); if(ivp) return `<div><span class="portalpill ask">Interview request · ${esc(ivp.store)}</span></div>`;
@@ -2103,13 +2341,13 @@ function schedBlock(c){
       <div class="row-actions"><button type="button" class="btn sm primary" data-ready="send">Send to ${esc(store)}</button><button type="button" class="btn sm ghost" data-ready="close">Cancel</button></div></div>`;
 }
 function renderApprovals(){
-  const R=portalReady?hireReqs:[], nm=id=>candidates.find(x=>x.id===id);
+  const R=portalReady&&PORTAL_ON?hireReqs:[], nm=id=>candidates.find(x=>x.id===id);
   const pend=R.filter(r=>r.status==="pending");
   const waiting=R.filter(r=>r.status==="approved"&&r.ready_at&&!r.confirmed_at);
   const confirmed=R.filter(r=>r.status==="approved"&&r.confirmed_at&&nm(r.candidate_id)&&nm(r.candidate_id).stage!=="hired");
   const newOpen=openings.filter(o=>o.fromStore&&(o.createdAt||0)>Date.now()-7*864e5).sort((a,b)=>b.createdAt-a.createdAt);
-  const passedRecent=portalReady?shares.filter(x=>x.declined_at&&new Date(x.declined_at).getTime()>Date.now()-7*864e5).sort((a,b)=>new Date(b.declined_at)-new Date(a.declined_at)):[];
-  const ivPend=portalReady?ivReqs.filter(r=>r.status==="pending"):[];
+  const passedRecent=portalReady&&PORTAL_ON?shares.filter(x=>x.declined_at&&new Date(x.declined_at).getTime()>Date.now()-7*864e5).sort((a,b)=>new Date(b.declined_at)-new Date(a.declined_at)):[];
+  const ivPend=portalReady&&PORTAL_ON?ivReqs.filter(r=>r.status==="pending"):[];
   $("#approvalPanel").hidden=!(pend.length||waiting.length||confirmed.length||newOpen.length||passedRecent.length||ivPend.length);
   const row=(r,right,sub)=>`<div class="li" data-open="${esc(r.candidate_id)}"><div><b>${esc(nm(r.candidate_id)?.name||"Applicant")}</b><div class="small">${sub}</div></div><div class="r">${right}</div></div>`;
   const sec=(title,list)=>list.length?`<h3 style="margin:10px 0 2px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">${title}</h3><div class="list">${list.join("")}</div>`:"";
@@ -2154,7 +2392,7 @@ function stageConfirmBox(c){
 }
 function portalTargets(c){ const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at); return cl?[cl.store]:sh.map(x=>x.store); }
 function portalSection(c){
-  if(!portalReady) return "";
+  if(!portalReady||!PORTAL_ON) return "";
   const sh=sharesFor(c.id), cl=sh.find(x=>x.claimed_at), reqs=reqsFor(c.id), notes=storeNotes.filter(n=>n.candidate_id===c.id);
   const on=new Set(sh.map(x=>x.store)), targets=portalTargets(c), passed=passedFor(c.id);
   const top=cl

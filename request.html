@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Request a Position</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vista Positions">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#8551A3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#FAF7F2;--surface:#fff;--fg:#221B2B;--muted:#6B6377;--line:#E7E1EC;--purple:#8551A3;--purple-deep:#5B3175;--purple-soft:#F3EAF8;
+  --yellow:#FDC93A;--orange:#F37B20;--green:#5DB54A;--blue:#0B7CC3;--danger:#B42318;--ok:#2F8A3B;
+  --display:"Baloo 2","Figtree",system-ui,sans-serif;--body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15121A;--surface:#1F1A26;--fg:#EEEAF3;--muted:#A79EB3;--line:#342C3E;--purple:#C59BE0;--purple-soft:#2E2338;--danger:#F07D72;--ok:#5CC26A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15121A;--surface:#1F1A26;--fg:#EEEAF3;--muted:#A79EB3;--line:#342C3E;--purple:#C59BE0;--purple-soft:#2E2338;--danger:#F07D72;--ok:#5CC26A;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:560px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 40px max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+header{position:relative;overflow:hidden;border-radius:18px;padding:16px 18px 22px;color:#fff;
+  background:radial-gradient(120% 140% at 100% 0%,#9B66BA 0%,transparent 55%),linear-gradient(135deg,#8551A3 0%,#5B3175 100%);box-shadow:0 8px 22px rgba(91,49,117,.2)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--yellow) 0 25%,var(--orange) 25% 50%,var(--green) 50% 75%,var(--blue) 75% 100%)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.logo{height:46px;display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,.22))}
+h1{font-family:var(--display);font-weight:800;font-size:1.6rem;margin:10px 0 2px;line-height:1.1}
+header p{margin:0;color:#EADCF3;font-size:.95rem}
+.lang{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:6px 12px;font:inherit;font-weight:600;font-size:.85rem;cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.9rem}
+label .hint{font-weight:400;color:var(--muted);font-size:.8rem}
+input,select,textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-width:0}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.row{grid-template-columns:1fr}}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font:inherit;font-weight:600;cursor:pointer;color:var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--purple);border-color:var(--purple);color:#fff}
+.btn{border:none;border-radius:12px;padding:14px;font:inherit;font-weight:700;font-size:1rem;cursor:pointer;background:var(--purple);color:#fff}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.ghost{background:transparent;color:var(--purple);border:1px solid var(--line)}
+.err{color:var(--danger);font-size:.9rem;min-height:1.2em}
+.done{text-align:center;align-items:center}
+.done .big{font-family:var(--display);font-size:1.5rem;font-weight:800;color:var(--ok)}
+.sum{background:var(--purple-soft);border-radius:12px;padding:12px 14px;text-align:left;width:100%}
+.foot{color:var(--muted);font-size:.8rem;text-align:center}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top"><img src="logo.png" alt="Vista Markets" class="logo"><button class="lang" id="langBtn" type="button">Español</button></div>
+    <h1 data-t="title">Request a position</h1>
+    <p data-t="sub">Tell the office which position your store needs filled. It goes straight to the hiring tracker.</p>
+  </header>
+
+  <div class="card" id="bad" hidden><b data-t="badT">This link isn’t working.</b><span data-t="badB">Ask Miguel for the current position request link.</span></div>
+
+  <form class="card" id="form" novalidate hidden>
+    <label><span data-t="store">Your store</span><select id="fStore" required><option value="" data-t="pick">Pick your store</option></select></label>
+    <label><span data-t="name">Your name</span><input id="fWho" autocomplete="name" required></label>
+    <label><span data-t="pos">Position needed</span><input id="fPos" list="depts" required placeholder="e.g. Cashier" autocomplete="off"><datalist id="depts"></datalist></label>
+    <div class="row">
+      <label><span data-t="need">How many people</span><input id="fNeed" type="number" min="1" max="50" value="1" inputmode="numeric"></label>
+      <label><span data-t="shift">Shift</span><select id="fShift"><option value="" data-t="any">Any</option><option value="AM" data-t="am">Morning (AM)</option><option value="Mid" data-t="mid">Mid</option><option value="PM" data-t="pm">Evening (PM)</option><option value="Closing" data-t="close">Closing</option></select></label>
+    </div>
+    <div><div style="font-weight:600;font-size:.9rem;margin-bottom:6px" data-t="type">Full or part-time</div>
+      <div class="seg" id="fType"><button type="button" data-v="Full-time" data-t="ft">Full-time</button><button type="button" data-v="Part-time" data-t="pt">Part-time</button><button type="button" data-v="Either" aria-pressed="true" data-t="either">Either</button></div></div>
+    <label><span data-t="notes">Notes <span class="hint">(optional)</span></span><textarea id="fNotes" data-tph="notesPh" placeholder="e.g. Weekends needed, bilingual preferred, replacing someone who left"></textarea></label>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="send" type="submit" data-t="send">Send to the office</button>
+  </form>
+
+  <div class="card done" id="done" hidden>
+    <div class="big" data-t="thanks">Sent! Thank you.</div>
+    <div data-t="thanksB">The office has your request and will start sending candidates. You’ll get an email about each candidate and their interview.</div>
+    <div class="sum" id="sum"></div>
+    <button class="btn ghost" id="again" type="button" data-t="again">Request another position</button>
+  </div>
+  <div class="foot" data-t="foot">Vista Markets · Hiring office · (915) 538-8942</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+const SUPABASE_URL="https://uplaxcwnhicggztytppt.supabase.co";
+const $=s=>document.querySelector(s);
+const DEPTS=["Cashier","Head Cashier","Stocker","Pricing","Office","Hot Deli","Cold Deli","Meat Market","Bakery","Cakes","Produce","Tortilleria","Maintenance","Department Supervisor"];
+const T={es:{title:"Pedir un puesto",sub:"Dígale a la oficina qué puesto necesita cubrir su tienda. Llega directo al sistema de contratación.",
+  badT:"Este enlace no funciona.",badB:"Pídale a Miguel el enlace actual para pedir puestos.",store:"Su tienda",pick:"Elija su tienda",name:"Su nombre",
+  pos:"Puesto que necesita",need:"Cuántas personas",shift:"Turno",any:"Cualquiera",am:"Mañana (AM)",mid:"Intermedio",pm:"Tarde (PM)",close:"Cierre",
+  type:"Tiempo completo o medio tiempo",ft:"Tiempo completo",pt:"Medio tiempo",either:"Cualquiera",notes:"Notas <span class=\"hint\">(opcional)</span>",
+  notesPh:"ej. Se necesitan fines de semana, de preferencia bilingüe, reemplazo de alguien que se fue",send:"Enviar a la oficina",
+  thanks:"¡Enviado! Gracias.",thanksB:"La oficina recibió su solicitud y empezará a mandarle candidatos. Recibirá un correo sobre cada candidato y su entrevista.",
+  again:"Pedir otro puesto",foot:"Vista Markets · Oficina de contratación · (915) 538-8942"}};
+const EN={}; document.querySelectorAll("[data-t]").forEach(e=>EN[e.dataset.t]=e.innerHTML); document.querySelectorAll("[data-tph]").forEach(e=>EN[e.dataset.tph]=e.placeholder);
+let lang=(()=>{ try{ return localStorage.getItem("vista-req-lang")||(/^es/i.test(navigator.language||"")?"es":"en"); }catch{ return "en"; } })();
+const L=k=>lang==="es"?(T.es[k]||EN[k]):EN[k];
+function applyLang(){ document.documentElement.lang=lang; $("#langBtn").textContent=lang==="es"?"English":"Español";
+  document.querySelectorAll("[data-t]").forEach(e=>{ e.innerHTML=L(e.dataset.t); }); document.querySelectorAll("[data-tph]").forEach(e=>{ e.placeholder=L(e.dataset.tph); }); }
+$("#langBtn").onclick=()=>{ lang=lang==="es"?"en":"es"; try{ localStorage.setItem("vista-req-lang",lang); }catch{} applyLang(); };
+$("#depts").innerHTML=DEPTS.map(d=>`<option value="${d}">`).join("");
+$("#fType").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; $("#fType").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)); };
+const code=new URLSearchParams(location.search).get("c")||"";
+let sb=null; try{ sb=window.supabase.createClient(SUPABASE_URL,window.VISTA_SUPABASE_KEY,{auth:{persistSession:false}}); }catch{}
+try{ const s=localStorage.getItem("vista-req-me"); if(s){ const o=JSON.parse(s); $("#fWho").value=o.who||""; window.__lastStore=o.store||""; } }catch{}
+(async()=>{
+  applyLang();
+  if(!sb||!code){ $("#bad").hidden=false; return; }
+  const {data,error}=await sb.rpc("request_link_info",{p_code:code});
+  if(error||!data?.ok){ $("#bad").hidden=false; return; }
+  $("#fStore").insertAdjacentHTML("beforeend",(data.stores||[]).map(s=>`<option>${s.replace(/[<>&"]/g,"")}</option>`).join(""));
+  if(window.__lastStore) $("#fStore").value=window.__lastStore;
+  $("#form").hidden=false; applyLang();
+})();
+$("#form").addEventListener("submit",async e=>{ e.preventDefault(); $("#err").textContent="";
+  const store=$("#fStore").value, who=$("#fWho").value.trim(), pos=$("#fPos").value.trim(), need=parseInt($("#fNeed").value)||1,
+        type=$("#fType").querySelector('[aria-pressed="true"]')?.dataset.v||"", shift=$("#fShift").value, note=$("#fNotes").value.trim();
+  if(!store){ $("#err").textContent=lang==="es"?"Elija su tienda.":"Pick your store."; return; }
+  if(!who){ $("#err").textContent=lang==="es"?"Escriba su nombre.":"Enter your name."; return; }
+  if(!pos){ $("#err").textContent=lang==="es"?"Escriba el puesto.":"Enter the position."; return; }
+  $("#send").disabled=true;
+  const {error}=await sb.rpc("submit_position_request",{p_code:code,p_store:store,p_who:who,p_pos:pos,p_need:need,p_type:type||null,p_shift:shift||null,p_note:note||null});
+  $("#send").disabled=false;
+  if(error){ $("#err").textContent=/valid/i.test(error.message)?(lang==="es"?"Este enlace ya no es válido. Pídale a Miguel el nuevo.":"This link is no longer valid. Ask Miguel for the new one."):(lang==="es"?"No se pudo enviar. Intente de nuevo.":"Couldn’t send. Try again."); return; }
+  try{ localStorage.setItem("vista-req-me",JSON.stringify({who,store})); }catch{}
+  const esc=s=>s.replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+  $("#sum").innerHTML=`<b>${esc(store)}: ${esc(pos)}</b> · ${need} ${lang==="es"?(need===1?"persona":"personas"):(need===1?"person":"people")}<br>${esc([type,shift,note].filter(Boolean).join(" · "))}`;
+  $("#form").hidden=true; $("#done").hidden=false; window.scrollTo(0,0);
+});
+$("#again").onclick=()=>{ $("#fPos").value=""; $("#fNeed").value="1"; $("#fNotes").value=""; $("#done").hidden=true; $("#form").hidden=false; };
+</script>
+</body>
+</html>
