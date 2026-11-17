@@ -644,6 +644,11 @@ body.docked .wrap{max-width:1640px}
 
 .s-certs .ccheck{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
 .s-certs .ccheck .small{flex-basis:100%;padding-left:30px}
+
+.tpicker{display:flex;flex-direction:column;gap:6px;background:var(--sunk,#F6F2EE);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.topt{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.topt b{width:18px;color:var(--purple,#8551A3)}
+.topt select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);color:var(--fg);font:inherit;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -1093,7 +1098,7 @@ Vista Markets
 
 Thanks again for applying to Vista Markets. I'd like to set up a short phone call (about 10 minutes) to learn more about you and talk about openings at {store_name}.
 
-I have you down for {interview_time}. If that time doesn't work, just reply to this email or call me at {sender_phone} and we'll find another time.
+{time_line}
 
 Talk soon,
 {sender_name}
@@ -1102,7 +1107,7 @@ Vista Markets`},
 
 Gracias otra vez por aplicar a Vista Markets. Me gustaría hacerle una llamada corta (unos 10 minutos) para conocerle mejor y hablar de las vacantes en {store_name}.
 
-Le tengo programado(a) para el {interview_time}. Si ese horario no le funciona, responda a este correo o llámeme al {sender_phone} y buscamos otro horario.
+{time_line}
 
 Saludos,
 {sender_name}
@@ -1111,7 +1116,7 @@ Vista Markets`}},
 
 We'd like to invite you to an in-person interview for the {position} position at {store_name}.
 
-When: {interview_time}
+{when_line}
 Where: {store_name}, {store_address}
 Ask for: {ask_for}
 
@@ -1124,7 +1129,7 @@ Vista Markets`},
 
 Le invitamos a una entrevista en persona para el puesto de {position} en {store_name}.
 
-Cuándo: {interview_time}
+{when_line}
 Dónde: {store_name}, {store_address}
 Pregunte por: {ask_for}
 
@@ -1305,10 +1310,10 @@ const DEFAULT_SMS={
       es:"Hola {manager_first}, soy {sender_name}. Le acabo de enviar a usted y a {first_name} los detalles del primer día: {offer_start} a las {start_time}. Por favor revise su correo. ¡Gracias!"},
  new:{en:"Hi {first_name}, this is {sender_name} with Vista Markets. We got your application for {store_name}. We'll call you in the next few days to set up a quick phone screen.",
       es:"Hola {first_name}, le habla {sender_name} de Vista Markets. Recibimos su solicitud para {store_name}. Le llamaremos en los próximos días para una breve entrevista por teléfono."},
- screen:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. Can we do a quick 10-minute phone call on {interview_time}? Reply YES or let me know a better time.",
-      es:"Hola {first_name}, soy {sender_name} de Vista Markets. ¿Podemos hacer una llamada de 10 minutos el {interview_time}? Responda SÍ o dígame qué horario le funciona mejor."},
- interview:{en:"Hi {first_name}, you're invited to interview at {store_name} ({store_address}) on {interview_time}. Ask for {ask_for}. Reply to confirm. – {sender_name}",
-      es:"Hola {first_name}, le invitamos a una entrevista en {store_name} ({store_address}) el {interview_time}. Pregunte por {ask_for}. Responda para confirmar. – {sender_name}"},
+ screen:{en:"Hi {first_name}, it's {sender_name} from Vista Markets. Can we do a quick 10-minute phone call {when_choice}? {reply_hint}",
+      es:"Hola {first_name}, soy {sender_name} de Vista Markets. ¿Podemos hacer una llamada de 10 minutos {when_choice}? {reply_hint}"},
+ interview:{en:"Hi {first_name}, you're invited to interview at {store_name} ({store_address}) {when_choice}. Ask for {ask_for}. {reply_hint} – {sender_name}",
+      es:"Hola {first_name}, le invitamos a una entrevista en {store_name} ({store_address}) {when_choice}. Pregunte por {ask_for}. {reply_hint} – {sender_name}"},
  offer:{en:"Congrats {first_name}! Vista Markets is offering you the {position} position at {store_name}, {pay}. Next step: onboarding in person at T&T Staff Management, 511 Executive Center Blvd (Mon–Fri 8–5). Bring your photo ID and Social Security card. Check your email for full details. – {sender_name}",
       es:"¡Felicidades {first_name}! Vista Markets le ofrece el puesto de {position} en {store_name}, {pay}. Siguiente paso: registro en persona en T&T Staff Management, 511 Executive Center Blvd (lun–vie 8–5). Traiga su identificación con foto y su tarjeta de Seguro Social. Revise su correo para todos los detalles. – {sender_name}"},
  hired:{en:"Welcome to Vista Markets, {first_name}! Your first day is {offer_start} at {start_time}, {store_name}, {store_address}. Ask for the manager at the front desk. Wear a black or white shirt, black or khaki pants and non-slip shoes. Hairnets and gloves provided. – {sender_name}",
@@ -1332,7 +1337,7 @@ const DEFAULT_STORE_INFO={
 };
 let storeInfoOverrides={}, editingStore=null;
 function storeInfo(name){ const o={...(DEFAULT_STORE_INFO[name]||{}),...(storeInfoOverrides[name]||{})}; if(!o.name&&name) o.name="Vista Markets "+name; return o; }
-const TOKENS=["first_name","name","store_manager","manager_first","candidate_email","availability","cert_status","cert_reminder","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
+const TOKENS=["time_line","when_line","when_choice","reply_hint","first_name","name","store_manager","manager_first","candidate_email","availability","cert_status","cert_reminder","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
 
 var UI_LOC;
 let db=null, downloads=null, candidates=[], parsed=[], filterStage="", openId=null;
@@ -1411,8 +1416,31 @@ const SOFT_TPL=new Set(["new","screen","noshow","future","declined"]);
 function tokenValues(c,lang,stage){
   const v=tokenValues0(c,lang), es=lang==="es";
   if(SOFT_TPL.has(stage)){ if(!v.store_name) v.store_name="Vista Markets"; if(!v.store) v.store="Vista Markets"; if(!v.position) v.position=es?"un puesto":"a position"; }
+  timeTokens(c,v,es,stage);
   if(stage==="st_candidate"&&!v.position) v.position=es?"cualquier puesto (abierto a lo que haya)":"any position (open to what you need)";
   return v;
+}
+const BLANK_IT="\u0001interview time\u0002";
+function timeOptsFor(c,stage){ const o=c.timeOpts; if(!o||o.kind!==stage) return []; return [o.a,o.b].filter(x=>x&&!isNaN(new Date(x))); }
+function timeTokens(c,v,es,stage){
+  const opts=timeOptsFor(c,stage), F=x=>es?fmtDateTimeES(x):fmtDateTime(x,true), ph=v.sender_phone;
+  if(opts.length===2){
+    const [A,B]=opts.map(F);
+    v.interview_time=A+(es?" o ":" or ")+B;
+    v.time_line=es?`¿Le funciona alguno de estos horarios?\n• ${A}\n• ${B}\n\nResponda con el que mejor le funcione. Si ninguno le queda, responda o llámeme al ${ph} y buscamos otro horario.`
+                  :`Do either of these times work for you?\n• ${A}\n• ${B}\n\nJust reply with the one that works best. If neither works, reply or call me at ${ph} and we'll find another time.`;
+    v.when_line=es?`Cuándo (elija uno y responda para confirmar):\n• ${A}\n• ${B}\n`:`When (pick one and reply to confirm):\n• ${A}\n• ${B}\n`;
+    v.when_choice=es?`el (1) ${A} o (2) ${B}`:`on (1) ${A} or (2) ${B}`;
+    v.reply_hint=stage==="screen"?(es?"Responda 1 o 2, o dígame qué horario le funciona mejor.":"Reply 1 or 2, or let me know a better time."):(es?"Responda 1 o 2 para confirmar.":"Reply 1 or 2 to confirm.");
+    return;
+  }
+  if(opts.length===1&&!v.interview_time) v.interview_time=F(opts[0]);
+  const IT=v.interview_time||BLANK_IT;
+  v.time_line=es?`Le tengo programado(a) para el ${IT}. Si ese horario no le funciona, responda a este correo o llámeme al ${ph} y buscamos otro horario.`
+                :`I have you down for ${IT}. If that time doesn't work, just reply to this email or call me at ${ph} and we'll find another time.`;
+  v.when_line=(es?"Cuándo: ":"When: ")+IT;
+  v.when_choice=(es?"el ":"on ")+IT;
+  v.reply_hint=stage==="screen"?(es?"Responda SÍ o dígame qué horario le funciona mejor.":"Reply YES or let me know a better time."):(es?"Responda para confirmar.":"Reply to confirm.");
 }
 function tokenValues0(c,lang){
   const snd=SENDERS[c.interviewer]||SENDERS.Miguel, es=lang==="es";
@@ -1446,7 +1474,7 @@ function certReminderText(c,es){
 }
 function tokenValuesLinks(es){ return {fh:es?"https://www.360training.com/course/curso-de-capacitacion-para-manipuladores-de-alimentos-de-texas":"https://www.360training.com/course/texas-food-handler-training",tabc:"https://www.360training.com/course/tabc-seller-server-training"}; }
 function fill(str,vals,mark){
-  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; if(OPTIONAL_TOKENS.has(k)) return ""; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; }).replace(/([ap]\.m\.)\./g,"$1");
+  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; if(OPTIONAL_TOKENS.has(k)) return ""; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; }).replace(/\u0001([a-z ]+)\u0002/g,(m,x)=>mark?`<span class="missing">[${x}]</span>`:`[${x}]`).replace(/([ap]\.m\.)\./g,"$1");
 }
 function emailFor(c,stage,lang){ const t=tplFor(stage,lang), v=tokenValues(c,lang,stage); return {s:fill(t.s,v), b:fill(t.b,v), sHtml:fill(esc(t.s),v,true), bHtml:fill(esc(t.b),v,true), missing:/\{|\[[a-z ]+\]/.test(fill(t.s+t.b,v))}; }
 
@@ -1973,6 +2001,7 @@ function renderDrawer(){
           <select id="mStage" class="btn sm" aria-label="Template">${TPL_LIST.map(s=>`<option value="${s.id}" ${ms===s.id?"selected":""}>${s.label}${s.id===c.stage?" (current)":""}</option>`).join("")}</select>
           <div class="seg" role="group" aria-label="Language"><button data-mlang="en" aria-pressed="${ml==="en"}">EN</button><button data-mlang="es" aria-pressed="${ml==="es"}">ES</button></div>
         </div>
+        ${["screen","interview"].includes(ms)?timePicker(c,ms):""}
         <div id="mailBox"></div>
       </div>
     </div>
@@ -2003,6 +2032,21 @@ function storeLangFor(c){ const t=storeTplFor(c); return storeMailLang||(t==="st
 function storeRecipients(c,tpl){ const se=(c.store?storeInfo(c.store).email:"")||""; const list=se.split(/[;,\s]+/).filter(Boolean);
   if(tpl==="st_firstday"&&c.email) list.unshift(c.email); return list; }
 
+
+function timePicker(c,kind){
+  const o=c.timeOpts&&c.timeOpts.kind===kind?c.timeOpts:{}, today=new Date(); today.setHours(0,0,0,0);
+  const days=[...Array(14)].map((_,i)=>{ const d=new Date(today); d.setDate(d.getDate()+i); return d; });
+  const times=[]; for(let m=7*60;m<=19*60;m+=30) times.push(`${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`);
+  const sel=(n,v)=>{ const d=(v||"").slice(0,10), t=(v||"").slice(11,16);
+    return `<div class="topt"><b>${n}</b>
+      <select data-topt="${n}" data-part="d" aria-label="Option ${n} day"><option value="">Day…</option>${days.map((x,i)=>{ const k=dayKey(x); return `<option value="${k}" ${k===d?"selected":""}>${i===0?"Today, ":i===1?"Tomorrow, ":""}${esc(x.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}</option>`; }).join("")}</select>
+      <select data-topt="${n}" data-part="t" aria-label="Option ${n} time"><option value="">Time…</option>${times.map(x=>`<option value="${x}" ${x===t?"selected":""}>${esc(fmtTime(x))}</option>`).join("")}</select>
+      ${v?`<button type="button" class="btn sm ${n===1?"":""}" data-tpick="${n}" title="They picked this one">✓ They picked this</button>`:""}</div>`; };
+  const any=o.a||o.b;
+  return `<div class="tpicker"><div class="small"><b>Offer two times</b> to choose from (optional). They show in the email and text.${c.interviewDate?" Leave blank to use the time set on the card.":""}</div>
+    ${sel(1,o.a)}${sel(2,o.b)}
+    ${any?`<div class="row-actions"><span class="small">When they answer, tap <b>✓ They picked this</b> to put it on the calendar.</span><button type="button" class="copy" data-tclear>Clear times</button></div>`:""}</div>`;
+}
 function blankWarn(c,tpl){
   const need=[]; if(!c.store&&!SOFT_TPL.has(tpl)) need.push("store"); if(!c.hireFor&&!SOFT_TPL.has(tpl)&&tpl!=="st_candidate") need.push("Hiring for (position)");
   if(["screen","interview","st_candidate"].includes(tpl)&&!c.interviewDate) need.push(tpl==="screen"?"Screen / interview time":"interview time");
@@ -2427,6 +2471,9 @@ $("#drawerHost").addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest("[data-close]")) return closeDrawer();
   const dp=t.closest("[data-dpane]"); if(dp){ setPane(dp.dataset.dpane); return; }
+  const tp=t.closest("[data-tpick]"); if(tp){ const c=candidates.find(x=>x.id===openId); if(!c||!c.timeOpts) return; const at=c.timeOpts[tp.dataset.tpick==="1"?"a":"b"]; if(!at) return;
+    const now=Date.now(); await patch(openId,{interviewDate:at,timeOpts:null,notesLog:[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Picked ${c.timeOpts.kind==="screen"?"phone screen":"interview"} time: ${fmtDateTime(at,true)}.`,at:now,by:myName()}]}).catch(()=>{}); toast(`Set for ${fmtDateTime(at,true)}. It's on the calendar.`); return; }
+  if(t.closest("[data-tclear]")){ patch(openId,{timeOpts:null}).catch(()=>{}); return; }
   if(t.closest("[data-msgtoggle]")){ msgOpen=!msgOpen; const d=$("#drawerHost .msgdock"); if(d){ d.dataset.open=msgOpen; d.querySelector(".md-car").textContent=msgOpen?"▾":"▴"; d.querySelector(".md-bar").setAttribute("aria-expanded",msgOpen); } return; }
   if(t.closest("[data-msgopen]")){ msgOpen=true; if(!document.body.classList.contains("docked")) setPane("steps"); renderDrawer(); requestAnimationFrame(()=>{ const d=$("#drawerHost .msgdock"); if(d&&!document.body.classList.contains("docked")) d.scrollIntoView({block:"start",behavior:"smooth"}); }); return; }
   const ee=t.closest("[data-evedit]"); if(ee){ const c=candidates.find(x=>x.id===openId); const v=(c?.evals||[]).find(x=>x.key===ee.dataset.evedit); if(v) openEval(c.id,v.kind,v.when); return; }
@@ -2498,6 +2545,11 @@ const FIELD={dOTime:"offerStartTime",dFutureFor:"futureFor",dStore:"store",dWho:
   fhReq:"fhReq",tabcReq:"tabcReq"};
 $("#drawerHost").addEventListener("change",e=>{
   const t=e.target;
+  const to=t.closest("[data-topt]"); if(to){ const c=candidates.find(x=>x.id===openId); if(!c) return; const n=to.dataset.topt, ms=mailStage||c.stage;
+    const box=to.closest(".topt"), d=box.querySelector('[data-part="d"]').value, tm=box.querySelector('[data-part="t"]').value;
+    const cur=(c.timeOpts&&c.timeOpts.kind===ms)?{...c.timeOpts}:{kind:ms,a:"",b:""};
+    if(d&&!tm){ box.querySelector('[data-part="t"]').focus(); return; }
+    cur[n==="1"?"a":"b"]=d&&tm?`${d}T${tm}`:""; patch(openId,{timeOpts:cur}).catch(()=>{}); return; }
   if(t.id==="hStage"){ const b=$("#drawerHost").querySelector(`[data-setstage="${CSS.escape(t.value)}"]`); if(b) b.click(); if(stageConfirm) setPane("steps"); return; }
   if(t.id==="mStage"){ mailStage=t.value; return renderDrawer(); }
   if(t.id==="dCloseReason"){ const c=candidates.find(x=>x.id===openId); if(!c) return; const now=Date.now(), v=t.value;
