@@ -445,6 +445,205 @@ h1{font-weight:800}
 .auth-card .brandrow .logo{height:72px}
 .auth-card h1{color:var(--purple-deep)}
 @media (max-width:640px){ .wrap>header{padding:12px 14px 18px;border-radius:14px} .wrap>header .brandrow .logo{height:40px} }
+
+/* ===== Indeed-style candidates ===== */
+.cand-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.cand-title{display:flex;align-items:baseline;gap:10px}
+.cand-title h2{margin:0;font-family:var(--display);font-size:1.5rem;color:var(--purple-deep,#5B3175)}
+#v-applicants .filters{flex:1 1 520px;justify-content:flex-end}
+#v-applicants .filters input{flex:1 1 220px;max-width:340px}
+.pipe.stabs{gap:0;flex-wrap:nowrap;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none}
+.pipe.stabs::-webkit-scrollbar{display:none}
+.stabs .chip{flex:0 0 auto;border:none;border-radius:0;background:transparent;box-shadow:none;padding:10px 14px;border-bottom:3px solid transparent;margin-bottom:-1px;color:var(--muted)}
+.stabs .chip .sw{display:none}
+.stabs .chip:hover{color:var(--fg)}
+.stabs .chip[aria-pressed="true"]{border-color:transparent;border-bottom-color:var(--purple,#8551A3);background:transparent;box-shadow:none;color:var(--fg)}
+.stabs .chip[aria-pressed="true"] .n{color:var(--purple,#8551A3);font-weight:700}
+.split{display:block}
+.clist{display:flex;flex-direction:column;gap:8px}
+.ccard{background:var(--surface);border:1px solid var(--line);border-left:4px solid transparent;border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:5px;outline:none}
+.ccard:hover{border-color:var(--purple,#8551A3);border-left-color:var(--purple,#8551A3)}
+.ccard:focus-visible{box-shadow:0 0 0 3px var(--purple-soft,#F1E9F6)}
+.ccard[aria-current="true"]{border-color:var(--purple,#8551A3);border-left-color:var(--purple,#8551A3);background:var(--purple-soft,#F6F0FA)}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.cc-top .nm{font-weight:700;font-size:1.02rem}
+.cc-sub{font-size:.88rem}
+.cc-sub b{font-weight:600}
+.cc-meta{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.cc-note{font-size:.82rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;border-top:1px dashed var(--line);padding-top:6px}
+.cc-note b{color:var(--fg);font-weight:600}
+.cc-badges{display:flex;flex-wrap:wrap;gap:4px}
+.cc-badges:empty{display:none}
+.clist .emptystate{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+/* detail header + inner tabs */
+.d-top{display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.d-line{font-size:.9rem;display:flex;flex-wrap:wrap;gap:4px 14px}
+.d-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.d-acts a.btn{text-decoration:none;color:var(--fg)}
+.d-head .row-actions{flex-wrap:nowrap}
+.d-acts .grow{flex:1}
+.d-nav{display:flex;align-items:center;gap:4px}
+.d-nav .small{min-width:56px;text-align:center}
+.d-nav button{padding:4px 10px}
+.dtabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-top:-8px;position:sticky;top:-18px;background:var(--surface);z-index:3}
+.dtabs button{border:none;background:none;padding:10px 14px;font:inherit;font-weight:600;font-size:.9rem;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer}
+.dtabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--purple,#8551A3)}
+.dtabs .n{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-left:4px}
+.dpane{display:flex;flex-direction:column;gap:18px}
+.drawer[data-pane="steps"] .dpane:not([data-pane="steps"]),
+.drawer[data-pane="profile"] .dpane:not([data-pane="profile"]),
+.drawer[data-pane="notes"] .dpane:not([data-pane="notes"]){display:none}
+#hStage{font-weight:600}
+@media (min-width:1000px){
+  .split{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:16px;align-items:start}
+  .clist{max-height:calc(100vh - 150px);overflow-y:auto;position:sticky;top:12px;padding-right:4px}
+  .detail{position:sticky;top:12px;min-width:0}
+  body.docked .detail .scrim{display:none}
+  body.docked .detail .drawer{position:static;width:auto;max-height:calc(100vh - 24px);border:1px solid var(--line);border-radius:14px;animation:none;z-index:auto;padding:18px 22px 24px}
+  body.docked .detail [data-close]{display:none}
+  body.docked .detail .dtabs{top:-18px}
+  .detail:empty::before{content:"Pick a candidate on the left to see their details.";display:block;padding:40px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:14px}
+}
+@media (max-width:640px){
+  .cand-title h2{font-size:1.25rem}
+  #v-applicants .filters input{max-width:none}
+  .dtabs{top:calc(36px - env(safe-area-inset-top,0px))}
+  .d-acts .btn{flex:1 1 auto;justify-content:center;text-align:center}
+  .d-nav .small{display:none}
+  .d-nav{gap:2px}
+}
+
+/* ===== Indeed-style detail, round 2 ===== */
+.dmain{display:flex;flex-direction:column;gap:18px;min-width:0}
+.d-title{display:flex;flex-direction:column;gap:4px;min-width:0}
+.d-name{font-size:1.75rem}
+.d-line{display:flex;align-items:center;gap:6px;font-size:.95rem}
+.d-line svg{color:var(--muted);flex:0 0 auto}
+.applied-to{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.d-acts{gap:10px}
+.d-acts .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;padding:10px 16px}
+.d-acts .btn:not(.primary){color:var(--purple,#8551A3)}
+.d-nav{gap:6px}
+.d-nav .btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;color:var(--purple,#8551A3)}
+.d-nav .small{min-width:0;white-space:nowrap}
+.rail{gap:16px}
+.rail-status{display:flex;flex-direction:column;gap:4px;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rail-status select{font-size:1rem;font-weight:700;letter-spacing:0;text-transform:none;color:var(--fg);padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+.rail .note-add h3,.rail .d-sec h3{margin:0 0 6px;font-size:.95rem;letter-spacing:0;text-transform:none;color:var(--fg)}
+.rail .note-add textarea{min-height:96px}
+.feed{display:flex;flex-direction:column;gap:8px}
+.act-day{font-size:.78rem;font-weight:700;color:var(--fg);margin-top:6px}
+.act.sys{display:flex;gap:8px;align-items:baseline;font-size:.85rem}
+.act.sys .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:0 0 auto;transform:translateY(-1px)}
+.act.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.msgdock{display:flex;flex-direction:column;gap:8px}
+.md-bar{display:flex;align-items:center;gap:10px;border:none;background:none;padding:0;font:inherit;text-align:left;cursor:default;color:var(--fg)}
+.md-bar .md-nm{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.md-bar .md-av,.md-bar .md-car{display:none}
+.md-body{display:flex;flex-direction:column;gap:8px}
+.drawer:not([data-pane="steps"]) .msgdock{display:none}
+body.docked .detail .msgdock{display:flex!important;position:fixed;right:24px;bottom:0;width:min(500px,calc(100vw - 48px));z-index:40;gap:0;background:var(--surface);border-radius:14px 14px 0 0;box-shadow:0 -6px 30px rgba(20,10,30,.22);overflow:hidden}
+body.docked .detail .md-bar{cursor:pointer;background:#2B2233;color:#fff;padding:12px 16px}
+body.docked .detail .md-bar .md-nm{font-size:1rem;letter-spacing:0;text-transform:none;color:#fff;flex:1}
+body.docked .detail .md-bar .md-av{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--purple,#8551A3);color:#fff;font-weight:700}
+body.docked .detail .md-bar .md-car{display:block;font-size:1.1rem}
+body.docked .detail .msgdock[data-open="false"] .md-body{display:none}
+body.docked .detail .md-body{padding:14px 16px 16px;max-height:62vh;overflow:auto}
+body.docked .detail .drawer{padding-bottom:80px}
+@media (min-width:1200px){
+  body.docked .detail .drawer{display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:22px;align-items:start}
+  body.docked .detail .drawer>.dmain{grid-column:1;grid-row:1}
+  body.docked .detail .drawer>.rail{display:flex!important;grid-column:2;grid-row:1 / span 2;position:sticky;top:0;background:var(--sunk,#F6F2EE);border:1px solid var(--line);border-radius:14px;padding:16px}
+  body.docked .detail .drawer>.d-sec{grid-column:1}
+  body.docked .detail .tab-act{display:none}
+}
+@media (max-width:640px){ .d-name{font-size:1.4rem} .d-acts .btn{flex:1 1 30%;justify-content:center;padding:10px 8px} .d-head{flex-direction:column-reverse;align-items:stretch} .d-head .row-actions{justify-content:space-between} }
+
+body.docked .wrap{max-width:1640px}
+@media (min-width:1000px){ .split{grid-template-columns:minmax(280px,340px) minmax(0,1fr)} }
+@media (min-width:1200px){ body.docked .detail .drawer{grid-template-columns:minmax(0,1fr) 290px} }
+
+.d-acts .btn{white-space:nowrap}
+@media (max-width:640px){ .d-acts .btn.primary{flex-basis:100%} }
+
+/* ===== daily plan + evaluation ===== */
+.plan{display:flex;flex-direction:column;gap:12px}
+.plan-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.warnchip .n{color:#C2410C!important;font-weight:700}
+.pgroups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.pgroup{display:flex;flex-direction:column;gap:8px}
+.pgroup h3{margin:0;font-size:.95rem;display:flex;align-items:center;gap:6px}
+.prow{display:grid;grid-template-columns:74px minmax(0,1fr);gap:4px 10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.prow:hover{border-color:var(--purple,#8551A3)}
+.prow .pt{display:flex;flex-direction:column;gap:2px;font-size:.9rem}
+.prow .pmain{display:flex;flex-direction:column;gap:3px;min-width:0}
+.prow .pacts{grid-column:2;display:flex;flex-wrap:wrap;gap:6px}
+.prow .pacts .btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.prow .pacts a.btn{color:var(--fg)}
+.pgroups .prow{grid-template-columns:1fr}
+.pgroups .prow .pacts{grid-column:1}
+.pgroups .prow .pt{flex-direction:row;gap:8px}
+.plan-empty{padding:18px;text-align:center}
+.plan-nudge{background:#FFF4E5;border:1px solid #F5C58A;color:#7A4100;border-radius:10px;padding:8px 12px;font-size:.9rem}
+.rec-yes{color:#2F7A22}.rec-maybe{color:#B45309}.rec-no{color:#B42318}
+.recb{font-size:.75rem;font-weight:700;border:1px solid currentColor;border-radius:999px;padding:1px 8px}
+.ev-scrim{position:fixed;inset:0;background:rgba(10,6,14,.45);z-index:60}
+.evmodal{position:fixed;z-index:61;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;background:var(--surface);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(20,10,30,.35)}
+.evh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.evh h2{margin:0;display:flex;align-items:center;gap:10px;font-size:1.25rem}
+.evmodal h3{margin:6px 0 2px;font-size:1rem}
+.recseg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;align-self:flex-start}
+.recseg button{border:none;background:var(--surface);padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;color:var(--fg)}
+.recseg button+button{border-left:1px solid var(--line)}
+.recseg button b{margin-right:4px}
+.recseg button.rec-yes b{color:#2F7A22}.recseg button.rec-maybe b{color:#B45309}.recseg button.rec-no b{color:#B42318}
+.recseg button[aria-pressed="true"].rec-yes{background:#2F7A22;color:#fff}
+.recseg button[aria-pressed="true"].rec-maybe{background:#B45309;color:#fff}
+.recseg button[aria-pressed="true"].rec-no{background:#B42318;color:#fff}
+.recseg button[aria-pressed="true"] b{color:#fff!important}
+.evmodal textarea{min-height:150px}
+.evfoot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.evfoot .ok{color:#2F7A22;font-weight:600}
+.evitem{border-left:3px solid var(--purple,#8551A3)}
+@media (max-width:900px){ .pgroups{grid-template-columns:1fr} }
+@media (max-width:640px){ .evmodal{top:auto;bottom:0;left:0;transform:none;width:100%;border-radius:16px 16px 0 0;max-height:92vh} .recseg{align-self:stretch} .recseg button{flex:1} }
+
+.pgroup>.prow{grid-template-columns:120px minmax(0,1fr) auto;align-items:center}
+.pgroups .prow{grid-template-columns:1fr!important}
+.pgroup>.prow .pacts{grid-column:auto}
+@media (max-width:700px){ .pgroup>.prow{grid-template-columns:84px minmax(0,1fr)} .pgroup>.prow .pacts{grid-column:2} }
+
+/* ===== simple store portal ===== */
+.s-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.s-howto{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.88rem;color:var(--muted)}
+.s-howto b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--purple-soft,#F1E9F6);color:var(--purple,#8551A3);font-size:.75rem;margin-right:4px}
+.s-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.s-steps li{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;color:var(--muted);text-align:center;position:relative}
+.s-steps li b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--surface);font-size:.85rem;z-index:1}
+.s-steps li:not(:last-child)::after{content:"";position:absolute;top:14px;left:calc(50% + 16px);right:calc(-50% + 16px);height:2px;background:var(--line)}
+.s-steps li.done b{background:var(--s-hired);border-color:var(--s-hired);color:#fff}
+.s-steps li.done:not(:last-child)::after{background:var(--s-hired)}
+.s-steps li.now b{border-color:var(--purple,#8551A3);color:var(--purple,#8551A3)}
+.s-steps li.now{color:var(--fg);font-weight:700}
+.s-next{display:flex;flex-direction:column;gap:10px;border:2px solid var(--purple,#8551A3);border-radius:14px;padding:14px 16px;background:var(--purple-soft,#F8F3FB)}
+.s-next.done{border-color:var(--s-hired);background:var(--surface)}
+.s-next h3{margin:0;font-size:1.1rem;text-transform:none;letter-spacing:0;color:var(--fg)}
+.s-next .s-call{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:1.02rem;padding:12px 18px}
+.s-decide .btn{min-width:110px;justify-content:center}
+.s-first{font-size:1.05rem;font-weight:600}
+.s-certs{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
+.s-certs .ccheck{font-size:.98rem}
+@media (max-width:640px){ .s-top .btn{flex:1 1 100%} .s-howto{display:none} .s-decide .btn{flex:1 1 40%} }
+
+.s-topbtns{gap:8px}
+.s-guide{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:16px}
+.s-guide summary{cursor:pointer;font-weight:700;color:var(--purple,#8551A3)}
+.s-guide ol{margin:10px 0 6px;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+.s-tip{background:var(--purple-soft,#F6F0FA);border-radius:10px;padding:8px 12px;font-size:.9rem;margin-bottom:10px}
+@media (max-width:640px){ .s-topbtns{width:100%} .s-topbtns .btn{flex:1 1 45%} }
+
+.s-certs .ccheck{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.s-certs .ccheck .small{flex-basis:100%;padding-left:30px}
 </style>
 </head>
 <body>
@@ -489,7 +688,7 @@ h1{font-weight:800}
   <!-- DASHBOARD -->
   <section class="view" id="v-dashboard">
     <div class="kpis" id="kpis"></div>
-    <div class="panel" id="approvalPanel" hidden style="border-color:var(--s-offer)"><h2>From the stores <span class="small">new position requests</span></h2><div id="approvals"></div></div>
+    <div class="panel" id="approvalPanel" hidden style="border-color:var(--s-offer)"><h2>From the stores <span class="small">hires, walk-ins and position requests</span></h2><div id="approvals"></div></div>
     <div class="panel" id="openPanel">
       <div class="ph"><h2>Open positions <span class="small">what each store needs filled</span></h2><button class="btn sm primary" id="addOpening">Add opening</button></div>
       <div id="openForm"></div>
@@ -513,25 +712,23 @@ h1{font-weight:800}
 
   <!-- APPLICANTS -->
   <section class="view" id="v-applicants" hidden>
-
-    <div class="pipe" id="pipe" role="group" aria-label="Filter by stage"></div>
-    <div class="filters">
-      <input id="q" type="search" placeholder="Search name, phone, past employer, skills…" aria-label="Search">
-      <select id="fStore" aria-label="Store"></select>
-      <select id="fType" aria-label="Employment type">
-        <option value="">Full &amp; part-time</option><option>Full-time</option><option>Part-time</option>
-      </select>
-      <select id="fSort" aria-label="Sort">
-        <option value="new">Newest first</option><option value="start">Soonest start date</option><option value="name">Name A–Z</option>
-      </select>
+    <div class="cand-top">
+      <div class="cand-title"><h2>Candidates</h2><span class="small" id="candSub"></span></div>
+      <div class="filters">
+        <input id="q" type="search" placeholder="Search name, phone, past employer, skills…" aria-label="Search">
+        <select id="fStore" aria-label="Store"></select>
+        <select id="fType" aria-label="Employment type">
+          <option value="">Full &amp; part-time</option><option>Full-time</option><option>Part-time</option>
+        </select>
+        <select id="fSort" aria-label="Sort">
+          <option value="new">Newest first</option><option value="start">Soonest start date</option><option value="name">Name A–Z</option>
+        </select>
+      </div>
     </div>
-    <div class="tablewrap">
-      <table class="main">
-        <thead><tr>
-          <th>Applicant</th><th>Store</th><th>Wants</th><th>Recent notes</th><th class="hide-sm">Available</th><th>Start</th><th>Stage</th>
-        </tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
+    <div class="pipe stabs" id="pipe" role="group" aria-label="Filter by stage"></div>
+    <div class="split">
+      <div class="clist" id="rows" role="list" aria-label="Candidates"></div>
+      <div class="detail" id="detailWrap"></div>
     </div>
   </section>
 
@@ -609,6 +806,14 @@ h1{font-weight:800}
   </section>
 
   <section class="view" id="v-calendar" hidden>
+    <div class="panel plan">
+      <div class="plan-head">
+        <div><h2 style="margin:0">Daily plan</h2><div class="small" id="planSub"></div></div>
+        <div class="row-actions plan-nav"><button class="btn sm" data-plan="-1" aria-label="Previous day">‹</button><button class="btn sm" data-plan="0">Today</button><button class="btn sm" data-plan="1" aria-label="Next day">›</button></div>
+      </div>
+      <div class="pipe stabs" id="planTabs" role="group" aria-label="Plan view"></div>
+      <div id="planBody"></div>
+    </div>
     <div class="panel cal">
       <div class="cal-head">
         <div class="row-actions"><button class="btn sm" data-cal="prev" aria-label="Previous month">‹</button><h2 id="calTitle" style="margin:0;min-width:9.5em;text-align:center"></h2><button class="btn sm" data-cal="next" aria-label="Next month">›</button><button class="btn sm ghost" data-cal="today">Today</button></div>
@@ -654,7 +859,24 @@ h1{font-weight:800}
       <span class="who"><span id="sWho"></span><button class="btn sm" id="sLangBtn" type="button" lang="es">Español</button><button class="btn sm ghost" id="sSignOut">Sign out</button></span>
     </div>
   </header>
-  <div class="skpis" id="sKpis"></div>
+  <div class="s-top">
+    <div class="s-howto" id="sHowto"><span><b>1</b> Claim</span><span><b>2</b> Call &amp; set interview</span><span><b>3</b> Hire or pass</span><span><b>4</b> First day &amp; FH/TABC</span></div>
+    <div class="row-actions s-topbtns"><button class="btn primary" id="sReqBtn" type="button">Request a position</button><button class="btn" id="sWalkinBtn" type="button">+ Add a walk-in hire</button></div>
+  </div>
+  <details class="s-guide" id="sGuide" open>
+    <summary>How hiring works with the hiring office</summary>
+    <ol>
+      <li><b>You request a position.</b> Tell us the job, how many, full or part-time and the shift.</li>
+      <li><b>We post the job and screen applicants.</b> We call them and check their availability.</li>
+      <li><b>Good fits show up under New.</b> Claim the ones you want so other stores can’t.</li>
+      <li><b>You call and set the interview.</b> Save the day and time here so it’s on our calendar.</li>
+      <li><b>You decide: hire or pass.</b> If you hire, add the first day you discussed and whether you got their Food Handler and TABC copies.</li>
+      <li><b>We send the offer and onboarding,</b> then email you and the new hire the first-day details.</li>
+      <li><b>First day:</b> welcome them, tour the store, share store contacts, start the training videos and keep a copy of their FH and TABC.</li>
+    </ol>
+    <div class="small">Hired someone who walked in? Use <b>+ Add a walk-in hire</b> and we’ll take it from there.</div>
+  </details>
+  <div class="skpis" id="sKpis" hidden></div>
   <div class="panel" id="sSoon" hidden style="margin-bottom:16px"><h2>Coming up</h2><div class="list" id="sSoonList"></div></div>
   <div class="panel" id="sOpenPanel" style="margin-bottom:16px">
     <div class="ph"><h2>Positions to fill<span id="sPosCount"></span> <span class="small">tell the office what your store needs</span></h2><button class="btn sm primary" id="sOpenAdd" type="button">Request a position</button></div>
@@ -662,12 +884,13 @@ h1{font-weight:800}
     <div class="list" id="sOpenList"></div>
   </div>
   <h2 style="margin:0 0 10px;font-size:1.05rem" id="sAppsHead">Applicants</h2>
-  <div class="pipe" id="sPipe" style="margin-bottom:14px"></div>
+  <div class="pipe stabs" id="sPipe" style="margin-bottom:14px"></div>
   <div class="s-cards" id="sList"></div>
-  <p class="small" style="margin-top:18px">Claim an applicant to take them for your store. Then use <b>Request approval to hire</b> and the office will send the offer.</p>
+  <p class="small" style="margin-top:18px">When you decide to hire, the hiring office sends the offer and onboarding. You just welcome them on their first day.</p>
 </div>
 </div>
 <div id="drawerHost"></div>
+<div id="evalHost"></div>
 <div id="sDrawerHost"></div>
 <div id="toastHost"></div>
 
@@ -1215,7 +1438,7 @@ function certReminderText(c,es){
 }
 function tokenValuesLinks(es){ return {fh:es?"https://www.360training.com/course/curso-de-capacitacion-para-manipuladores-de-alimentos-de-texas":"https://www.360training.com/course/texas-food-handler-training",tabc:"https://www.360training.com/course/tabc-seller-server-training"}; }
 function fill(str,vals,mark){
-  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; if(OPTIONAL_TOKENS.has(k)) return ""; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; });
+  return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; if(OPTIONAL_TOKENS.has(k)) return ""; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; }).replace(/([ap]\.m\.)\./g,"$1");
 }
 function emailFor(c,stage,lang){ const t=tplFor(stage,lang), v=tokenValues(c,lang); return {s:fill(t.s,v), b:fill(t.b,v), sHtml:fill(esc(t.s),v,true), bHtml:fill(esc(t.b),v,true), missing:/\{|\[[a-z ]+\]/.test(fill(t.s+t.b,v))}; }
 
@@ -1410,20 +1633,144 @@ function renderPipe(){
     STAGES.map(s=>`<button class="chip" aria-pressed="${filterStage===s.id}" data-stage="${s.id}"><span class="sw" style="background:var(${s.c})"></span><span>${s.label}</span><span class="n">${counts[s.id]||0}</span></button>`).join("");
   $("#tabCount").textContent=candidates.length||"";
 }
-function renderRows(){
-  const list=visible(), tb=$("#rows");
-  if(!candidates.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">No applicants yet. Use the Add applicant tab to add the first one.</div></td></tr>`; return; }
-  if(!list.length){ tb.innerHTML=`<tr><td colspan="7"><div class="emptystate">Nobody matches these filters.</div></td></tr>`; return; }
-  tb.innerHTML=list.map(c=>`<tr class="row" data-id="${esc(c.id)}" tabindex="0">
-    <td><div class="nm">${esc(c.name||"(no name)")}${isSpanish(c)?`<span class="lang">ES</span>`:""}</div><div class="small mono">${esc(c.phone||"")}</div><div class="small">Applied ${esc(ago(c.createdAt))}</div></td>
-    <td><span class="store">${esc(c.store||"—")}</span></td>
-    <td>${wants(c)}</td>
-    <td class="notecell">${noteCell(c)}</td>
-    <td class="hide-sm">${daysHtml(c)}</td>
-    <td class="mono">${esc(fmtDate(c.startDate)||"—")}</td>
-    <td>${pill(c.stage)}${c.stage==="declined"&&c.closeReason?`<div class="small" style="margin-top:4px">${esc(c.closeReason)}</div>`:""}${waitPill(c)?`<div>${waitPill(c)}</div>`:""}${portalBadge(c)}${["interview","offer","hired"].includes(c.stage)?`<div>${certBadges(c)}</div>`:""}${c.stage==="offer"&&c.offerRate?`<div class="small mono" style="margin-top:4px">${esc(payText(c,"en"))}</div>`:c.interviewDate&&["screen","interview"].includes(c.stage)?`<div class="small" style="margin-top:4px">${esc(fmtDateTime(c.interviewDate))}</div>`:""}</td>
-  </tr>`).join("");
+
+const ICON={
+ pin:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`,
+ cal:`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`,
+ msg:`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>`,
+ phone:`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>`,
+ left:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>`,
+ right:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`
+};
+let msgOpen=false;
+const RAILW=matchMedia("(min-width:1200px)");
+function railWide(){ return docked()&&RAILW.matches; }
+function effPane(){ return railWide()&&dPane==="notes"?"steps":dPane; }
+function cityOf(c){ const a=(c.address||"").trim(); if(!a) return ""; const m=a.match(/([^,]+),\s*([A-Z]{2})\b/); return m?`${m[1].trim()}, ${m[2]}`:(a.length<40?a:""); }
+function activityFeed(c){
+  const canDel=n=>staffRow?.is_admin||n.by===myName();
+  const items=(c.notesLog||[]).map(n=>({at:n.at||0,html:`<div class="act note"><div class="note-meta"><span>${esc(new Date(n.at).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}))}${n.by?` · ${esc(n.by)}`:""}</span>
+      ${canDel(n)?(confirmNoteDel===n.id?`<span class="row-actions"><button class="copy" style="color:var(--danger)" data-ndelyes="${esc(n.id)}">Delete</button><button class="copy" data-ndelno>Keep</button></span>`:`<button class="copy" style="color:var(--muted)" data-ndel="${esc(n.id)}">Delete</button>`):""}</div>
+      <div class="note-text">${esc(n.text)}</div></div>`}));
+  (c.history||[]).forEach(h=>items.push({at:h.at||0,html:`<div class="act sys"><span class="dot" style="background:var(${(STAGE[h.stage]||STAGE.new).c})"></span><span>Moved to <b>${esc(STAGE[h.stage]?.label||h.stage)}</b> · ${esc(new Date(h.at).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}))}</span></div>`}));
+  (c.evals||[]).forEach(v=>{ if(!v.rec&&!v.notes) return; items.push({at:v.at||0,html:`<div class="act note evitem"><div class="note-meta"><span>${esc(v.kind)} evaluation · ${esc(new Date(v.at).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}))}${v.by?` · ${esc(v.by)}`:""}</span><button class="copy" data-evedit="${esc(v.key)}">Edit</button></div>
+      <div>${v.rec?`<b class="rec-${v.rec}">${REC[v.rec].icon} ${REC[v.rec].label}</b>`:`<span class="small">No recommendation yet</span>`}</div>${v.notes?`<div class="note-text">${esc(v.notes)}</div>`:""}</div>`}); });
+  if(c.createdAt) items.push({at:c.createdAt,html:`<div class="act sys"><span class="dot"></span><span>Applied${c.position?` for <b>${esc(c.position)}</b>`:""}${c.storeRaw?` · ${esc(c.storeRaw)}`:""}</span></div>`});
+  items.sort((a,b)=>b.at-a.at);
+  let last="", out="";
+  items.forEach(it=>{ const d=new Date(it.at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}); if(d!==last){ out+=`<div class="act-day">${esc(d)}</div>`; last=d; } out+=it.html; });
+  if(c.notes&&c.notes.trim()) out+=`<div class="act-day">Earlier (no date)</div><div class="act note"><div class="note-text">${esc(c.notes)}</div></div>`;
+  return out||`<div class="none">No activity yet.</div>`;
 }
+
+/* ---------- evaluations + daily plan ---------- */
+ICON.clip=`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>`;
+const REC={yes:{label:"Yes",icon:"✓"},maybe:{label:"Maybe",icon:"?"},no:{label:"No",icon:"✕"}};
+function evKey(kind,when){ return kind+"|"+(when||""); }
+function evalFor(c,kind,when){ return (c.evals||[]).find(x=>x.key===evKey(kind,when)); }
+function latestEval(c){ return (c.evals||[]).filter(v=>v.rec).sort((a,b)=>b.at-a.at)[0]; }
+let evalCtx=null, evalTimer=null;
+function openEval(id,kind,when){ evalCtx={id,kind,when}; renderEval(); setTimeout(()=>$("#evNotes")?.focus(),30); }
+function closeEval(){ if(evalTimer){ clearTimeout(evalTimer); evalTimer=null; saveEval({notes:$("#evNotes")?.value??""},true); } evalCtx=null; $("#evalHost").innerHTML=""; }
+function saveEval(ch,quiet){
+  if(!evalCtx) return; const c=candidates.find(x=>x.id===evalCtx.id); if(!c) return;
+  const key=evKey(evalCtx.kind,evalCtx.when), list=(c.evals||[]).map(x=>({...x})); let v=list.find(x=>x.key===key);
+  if(!v){ v={id:"e"+Date.now().toString(36),key,kind:evalCtx.kind,when:evalCtx.when,rec:"",notes:""}; list.push(v); }
+  Object.assign(v,ch,{by:myName(),at:Date.now()});
+  patch(c.id,{evals:list}).then(()=>{ const s=$("#evSaved"); if(s&&!quiet) s.innerHTML=`<span class="ok">✓ Auto-saved</span>`; }).catch(()=>{ const s=$("#evSaved"); if(s) s.textContent="Couldn’t save. Try again."; });
+}
+function renderEval(){
+  const host=$("#evalHost"), c=evalCtx&&candidates.find(x=>x.id===evalCtx.id); if(!c){ host.innerHTML=""; return; }
+  const v=evalFor(c,evalCtx.kind,evalCtx.when)||{}, d=new Date(evalCtx.when), when=isNaN(d)?"":fmtDateTime(evalCtx.when,true);
+  host.innerHTML=`<div class="ev-scrim" data-evclose></div>
+  <div class="evmodal" role="dialog" aria-modal="true" aria-labelledby="evTitle">
+    <div class="evh"><h2 id="evTitle">${ICON.clip}<span>Evaluation for ${esc(c.name||"candidate")}</span></h2><button class="btn ghost sm" data-evclose aria-label="Close">✕</button></div>
+    <div class="small">${esc([evalCtx.kind,when,c.hireFor||c.position,c.store].filter(Boolean).join(" · "))}</div>
+    <div class="small">Only your team sees this. It’s never sent to the applicant.</div>
+    <div><h3>Would you recommend moving forward?</h3><div class="small">Your answer doesn’t change their stage. Use Status for that.</div></div>
+    <div class="recseg" role="group" aria-label="Recommendation">${Object.entries(REC).map(([k,r])=>`<button data-rec="${k}" class="rec-${k}" aria-pressed="${v.rec===k}"><b>${r.icon}</b> ${r.label}</button>`).join("")}</div>
+    <label class="field">Notes<textarea id="evNotes" placeholder="How did it go? Availability, attitude, experience, anything the store should know…">${esc(v.notes||"")}</textarea></label>
+    <div class="evfoot"><span id="evSaved" class="small">${v.at?`Last saved ${esc(fmtDateTime(v.at))}${v.by?` by ${esc(v.by)}`:""}`:""}</span><button class="btn primary" data-evclose>Done</button></div>
+  </div>`;
+}
+$("#evalHost").addEventListener("click",e=>{
+  if(e.target.closest("[data-evclose]")) return closeEval();
+  const r=e.target.closest("[data-rec]"); if(r){ const c=candidates.find(x=>x.id===evalCtx?.id), cur=c&&evalFor(c,evalCtx.kind,evalCtx.when)?.rec, nv=cur===r.dataset.rec?"":r.dataset.rec;
+    document.querySelectorAll("#evalHost [data-rec]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rec===nv))); saveEval({rec:nv,notes:$("#evNotes").value}); }
+});
+$("#evalHost").addEventListener("input",e=>{ if(e.target.id!=="evNotes") return; $("#evSaved").textContent="Saving…"; clearTimeout(evalTimer); evalTimer=setTimeout(()=>{ evalTimer=null; saveEval({notes:e.target.value}); },700); });
+window.addEventListener("keydown",e=>{ if(e.key==="Escape"&&evalCtx){ e.stopImmediatePropagation(); closeEval(); } },true);
+
+let planDay=new Date(), planView="day";
+const sameDay=(a,b)=>dayKey(a)===dayKey(b);
+function planRow(e,showDay){
+  const c=e.c, d=digits(c.phone), ev=e.kind!=="start"?evalFor(c,e.label,c.interviewDate):null, past=e.date<new Date();
+  const loc=e.kind==="screen"?(c.phone||"No phone"):[c.store?`Vista ${c.store}`:"",c.store&&storeInfo(c.store).address].filter(Boolean).join(" · ");
+  return `<div class="prow" data-open="${esc(c.id)}">
+    <div class="pt"><b class="mono">${esc(e.kind==="start"?(c.offerStartTime?fmtTime(c.offerStartTime):"All day"):e.time)}</b>${showDay?`<span class="small">${esc(e.date.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}</span>`:""}</div>
+    <div class="pmain"><div><span class="evdot ev-${e.kind}"></span><b>${esc(c.name||"(no name)")}</b>${isSpanish(c)?` <span class="lang">ES</span>`:""} <span class="small">· ${esc(e.label)}</span></div>
+      <div class="small">${esc([c.hireFor||c.position,c.store].filter(Boolean).join(" · "))}${loc?` · ${esc(loc)}`:""}</div>
+      ${ev&&(ev.rec||ev.notes)?`<div class="small">${ev.rec?`<b class="rec-${ev.rec}">${REC[ev.rec].icon} ${REC[ev.rec].label}</b>`:""}${ev.notes?` ${esc(ev.notes.slice(0,90))}${ev.notes.length>90?"…":""}`:""}</div>`:""}</div>
+    <div class="pacts">${d.length===10?`<a class="btn sm" href="tel:+1${d}">${ICON.phone}Call</a>`:""}${e.kind!=="start"?`<button class="btn sm ${past&&!ev?.rec?"primary":""}" data-eval="${esc(c.id)}" data-kind="${esc(e.label)}" data-when="${esc(c.interviewDate)}">${ICON.clip}${ev?.rec?"Edit evaluation":"Evaluate"}</button>`:""}</div>
+  </div>`;
+}
+function renderPlan(){
+  const body=$("#planBody"); if(!body) return;
+  const evs=calEvents(), now=new Date(), t0=new Date(now); t0.setHours(0,0,0,0);
+  const d14=new Date(t0); d14.setDate(d14.getDate()+15); const b30=new Date(t0); b30.setDate(b30.getDate()-30); const b14=new Date(t0); b14.setDate(b14.getDate()-14);
+  const day=evs.filter(e=>sameDay(e.date,planDay));
+  const action=evs.filter(e=>e.kind!=="start"&&e.date<now&&e.date>=b30&&!evalFor(e.c,e.label,e.c.interviewDate)?.rec).sort((a,b)=>b.date-a.date);
+  const upcoming=evs.filter(e=>e.date>=now&&e.date<d14);
+  const past=evs.filter(e=>e.date<now&&e.date>=b14).sort((a,b)=>b.date-a.date);
+  const isToday=sameDay(planDay,now), dayLabel=planDay.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+  $("#planSub").textContent=planView==="day"?(isToday?`Today · ${dayLabel}`:dayLabel):"";
+  $("#planTabs").innerHTML=[["day",isToday?"Today":planDay.toLocaleDateString(undefined,{month:"short",day:"numeric"}),day.length],["action","Action needed",action.length],["upcoming","Next 2 weeks",upcoming.length],["past","Past 2 weeks",past.length]]
+    .map(([k,l,n])=>`<button class="chip${k==="action"&&n?" warnchip":""}" data-ptab="${k}" aria-pressed="${planView===k}"><span>${esc(l)}</span><span class="n">${n}</span></button>`).join("");
+  document.querySelectorAll(".plan-nav button").forEach(b=>b.disabled=false);
+  if(planView==="day"){
+    const g=[["screen","Calls · phone screens"],["interview","In-store interviews"],["start","First days"]];
+    body.innerHTML=day.length?`<div class="pgroups">${g.map(([k,l])=>{ const L=day.filter(e=>e.kind===k); return `<div class="pgroup"><h3><span class="evdot ev-${k}"></span>${l} <span class="small">${L.length}</span></h3>${L.length?L.map(e=>planRow(e)).join(""):`<div class="none">None</div>`}</div>`; }).join("")}</div>`
+      :`<div class="none plan-empty">Nothing scheduled ${isToday?"today":"this day"}.${upcoming.length?` Next up: <b>${esc(upcoming[0].c.name)}</b>, ${esc(upcoming[0].label.toLowerCase())} ${esc(upcoming[0].date.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}.`:""}</div>`;
+    if(action.length&&day.length) body.innerHTML+=`<div class="plan-nudge">${action.length} past ${action.length===1?"call or interview needs":"calls or interviews need"} an evaluation. <button class="copy" data-ptab="action">Review</button></div>`;
+  } else {
+    const L={action,upcoming,past}[planView];
+    const empty={action:"All caught up. Every past call and interview has an evaluation.",upcoming:"Nothing scheduled in the next 2 weeks.",past:"Nothing in the past 2 weeks."}[planView];
+    body.innerHTML=L.length?`<div class="pgroup">${L.map(e=>planRow(e,true)).join("")}</div>`:`<div class="none plan-empty">${empty}</div>`;
+  }
+}
+let lastList=[];
+const WIDE=matchMedia("(min-width:1000px)");
+function docked(){ return tab==="applicants" && WIDE.matches; }
+function placeDrawer(){ const host=$("#drawerHost"), want=docked()?$("#detailWrap"):document.body; if(host&&want&&host.parentElement!==want) want.appendChild(host); document.body.classList.toggle("docked",docked()); }
+function cardNote(c){ const ln=latestNote(c); if(!ln) return ""; const when=ln.n.at?new Date(ln.n.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}):"Earlier";
+  return `<div class="cc-note"><b>${esc(when)}${ln.n.by?` · ${esc(ln.n.by)}`:""}:</b> ${esc(ln.n.text)}</div>`; }
+function renderRows(){
+  const list=visible(), tb=$("#rows"); lastList=list.map(c=>c.id);
+  const sub=$("#candSub"); if(sub) sub.textContent=list.length===candidates.length?`${candidates.length} total`:`${list.length} of ${candidates.length} shown`;
+  placeDrawer();
+  if(!candidates.length){ tb.innerHTML=`<div class="emptystate">No applicants yet. Use the Add applicant tab to add the first one.</div>`; return; }
+  if(!list.length){ tb.innerHTML=`<div class="emptystate">Nobody matches these filters.</div>`; }
+  else tb.innerHTML=list.map(c=>{
+    const want=c.hireFor||c.position||"Position not picked";
+    const meta=[`Applied ${esc(ago(c.createdAt))}`, c.startDate?`Can start ${esc(fmtDate(c.startDate))}`:"", esc([c.employmentType,c.shift].filter(Boolean).join(" · "))].filter(Boolean);
+    const le=latestEval(c);
+    const badges=[le?`<span class="recb rec-${le.rec}">${REC[le.rec].icon} ${esc(le.kind)}: ${REC[le.rec].label}</span>`:"", waitPill(c), portalBadge(c), ["interview","offer","hired"].includes(c.stage)?certBadges(c):"", c.stage==="declined"&&c.closeReason?`<span class="small">${esc(c.closeReason)}</span>`:""].filter(Boolean).join("");
+    return `<div class="row ccard" role="listitem" data-id="${esc(c.id)}" tabindex="0" aria-current="${openId===c.id}">
+    <div class="cc-top"><div class="nm">${esc(c.name||"(no name)")}${isSpanish(c)?`<span class="lang">ES</span>`:""}</div>${pill(c.stage)}</div>
+    <div class="cc-sub"><b>${esc(want)}</b> · ${esc(c.store||"No store yet")}</div>
+    <div class="cc-meta small">${meta.map(m=>`<span>${m}</span>`).join("")}</div>
+    <div>${daysHtml(c)}</div>
+    <div class="cc-badges">${badges}</div>
+    ${cardNote(c)}
+  </div>`; }).join("");
+  if(docked()){
+    if(!openId&&list.length) openDrawer(list[0].id);
+    else if(openId&&!$("#drawerHost .drawer")) renderDrawer();
+  }
+}
+function markSelected(){ document.querySelectorAll("#rows .ccard").forEach(el=>el.setAttribute("aria-current",String(el.dataset.id===openId))); }
+let dPane=(()=>{ try{ return localStorage.getItem("vista-dpane")||"steps"; }catch{ return "steps"; } })();
+function setPane(p){ dPane=p; try{ localStorage.setItem("vista-dpane",p); }catch{} const dr=$("#drawerHost .drawer"); if(dr){ const e=effPane(); dr.dataset.pane=e; dr.querySelectorAll(".dtabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.dpane===e))); } }
 
 /* ---------- templates editor ---------- */
 function renderTemplates(){
@@ -1483,9 +1830,9 @@ function noteCell(c){
   const when=ln.n.at?new Date(ln.n.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}):"Earlier";
   return `<button class="notebtn" data-notes="${esc(c.id)}"><span class="snip">${esc(ln.n.text)}</span><span class="small">${esc(when)}${ln.n.by?` · ${esc(ln.n.by)}`:""}${ln.more?` · +${ln.more} more`:""}</span></button>`;
 }
-function openNotes(id){ openDrawer(id); requestAnimationFrame(()=>{ const sec=document.getElementById("notesSec"); if(sec){ sec.scrollIntoView({block:"start"}); document.getElementById("dNote")?.focus({preventScroll:true}); } }); }
+function openNotes(id){ setPane("notes"); openDrawer(id); requestAnimationFrame(()=>{ const sec=document.getElementById("notesSec"); if(sec){ sec.scrollIntoView({block:"start"}); document.getElementById("dNote")?.focus({preventScroll:true}); } }); }
 function myName(){ return staffRow?.name||me?.email||"Miguel"; }
-function notesText(c){ return [...(c.notesLog||[]).map(n=>n.text), c.notes||""].join(" "); }
+function notesText(c){ return [...(c.notesLog||[]).map(n=>n.text), ...(c.evals||[]).map(v=>v.notes||""), c.notes||""].join(" "); }
 function notesForCsv(c){
   const log=(c.notesLog||[]).slice().sort((a,b)=>a.at-b.at).map(n=>`[${fmtDateTime(n.at)}${n.by?" · "+n.by:""}] ${n.text}`);
   if(c.notes) log.unshift(`[Earlier] ${c.notes}`);
@@ -1510,12 +1857,34 @@ function renderDrawer(){
   const storeOpts=[""].concat(STORES,c.store&&!STORES.includes(c.store)?[c.store]:[]).map(s=>`<option value="${esc(s)}" ${c.store===s?"selected":""}>${esc(s)||"Pick a store"}</option>`).join("");
   const people=HANDLERS.slice();
   const ms=mailStage||c.stage, ml=mailLang||(isSpanish(c)?"es":"en");
+  const ep=effPane();
+  const pos=lastList.indexOf(c.id), nNotes=(c.notesLog||[]).length+(c.notes&&c.notes.trim()?1:0);
+  const telD=digits(c.phone), mailto=c.email?`mailto:${encodeURIComponent(c.email)}`:"";
   host.innerHTML=`<div class="scrim" data-close></div>
-  <aside class="drawer" role="dialog" aria-label="${esc(c.name)}">
+  <aside class="drawer" role="dialog" aria-label="${esc(c.name)}" data-pane="${esc(ep)}">
+    <div class="dmain">
+    <div class="d-top">
     <div class="d-head">
-      <div><h2 class="d-name">${esc(c.name||"(no name)")}</h2><div class="small">Applied ${esc(new Date(c.createdAt||Date.now()).toLocaleDateString())} · ${esc(c.referralDetail||c.referralSource||"source unknown")}</div></div>
-      <button class="btn ghost" data-close aria-label="Close">Close</button>
+      <div class="d-title"><h2 class="d-name">${esc(c.name||"(no name)")}${isSpanish(c)?` <span class="lang">ES</span>`:""}</h2>
+        ${cityOf(c)?`<div class="d-line">${ICON.pin}<span>${esc(cityOf(c))}</span></div>`:""}
+        <div class="d-line"><span>Applied to: <b class="applied-to">${esc(c.hireFor||c.position||"Position not picked")} · ${esc(c.store||"No store yet")}</b></span></div>
+        <div class="small">Applied ${esc(new Date(c.createdAt||Date.now()).toLocaleDateString())} · ${esc(c.referralDetail||c.referralSource||"source unknown")}${c.phone?` · <span class="mono">${esc(c.phone)}</span>`:""}${c.email?` · ${esc(c.email)}`:""}</div>
+      </div>
+      <div class="row-actions">${pos>-1&&lastList.length>1?`<span class="d-nav"><button class="btn sm ghost" data-dnav="-1" ${pos<1?"disabled":""} aria-label="Previous candidate">${ICON.left}</button><button class="btn sm ghost" data-dnav="1" ${pos>=lastList.length-1?"disabled":""} aria-label="Next candidate">${ICON.right}</button><span class="small">${pos+1} of ${lastList.length}</span></span>`:""}<button class="btn ghost" data-close aria-label="Close">${tab==="applicants"?"← Back to list":"Close"}</button></div>
     </div>
+    <div class="d-acts">
+      <button class="btn primary" data-setupiv>${ICON.cal}${c.interviewDate&&!isNaN(new Date(c.interviewDate))?"Interview "+esc(fmtDateTime(c.interviewDate,true)):"Set up interview"}</button>
+      <button class="btn" data-msgopen>${ICON.msg}Message</button>
+      ${telD.length===10?`<a class="btn" href="tel:+1${telD}">${ICON.phone}Call</a>`:""}
+      ${c.interviewDate&&!isNaN(new Date(c.interviewDate))?(()=>{ const k=calKind(c).label, ev=evalFor(c,k,c.interviewDate); return `<button class="btn" data-evalc>${ICON.clip}${ev&&ev.rec?`${esc(k)}: <span class="rec-${ev.rec}">${REC[ev.rec].icon} ${REC[ev.rec].label}</span>`:"Evaluate"}</button>`; })():""}
+    </div>
+    </div>
+    <nav class="dtabs" role="tablist" aria-label="Candidate sections">
+      <button role="tab" data-dpane="steps" aria-selected="${ep==="steps"}">Next steps</button>
+      <button role="tab" data-dpane="profile" aria-selected="${ep==="profile"}">Profile</button>
+      <button role="tab" data-dpane="notes" class="tab-act" aria-selected="${ep==="notes"}">Activity &amp; notes<span class="n">${nNotes||""}</span></button>
+    </nav>
+    <div class="dpane" data-pane="steps">
     <div class="d-sec"><h3>Stage</h3><div class="stagebar">${STAGES.map(s=>`<button data-setstage="${s.id}" aria-pressed="${c.stage===s.id}" style="${c.stage===s.id?`background:var(${s.c})`:""}">${s.label}</button>`).join("")}</div>${stageConfirmBox(c)}</div>
     <div class="d-grid">
       <label>Store<select id="dStore">${storeOpts}</select>${c.store&&storeInfo(c.store).address?`<span class="small" style="font-weight:400">${esc(storeInfo(c.store).address)}</span>`:""}</label>
@@ -1551,14 +1920,6 @@ function renderDrawer(){
 
     ${certSection(c)}
 
-    <div class="d-sec"><h3>Email &amp; text</h3>
-      <div class="row-actions">
-        <select id="mStage" class="btn sm" aria-label="Template">${TPL_LIST.map(s=>`<option value="${s.id}" ${ms===s.id?"selected":""}>${s.label}${s.id===c.stage?" (current)":""}</option>`).join("")}</select>
-        <div class="seg" role="group" aria-label="Language"><button data-mlang="en" aria-pressed="${ml==="en"}">EN</button><button data-mlang="es" aria-pressed="${ml==="es"}">ES</button></div>
-      </div>
-      <div id="mailBox"></div>
-    </div>
-
     <div class="d-sec" id="storeMailSec"><h3>Emails &amp; texts to the store</h3>
       <div class="row-actions">
         <select id="sMailTpl" class="btn sm" aria-label="Store email">${STORE_TPL.map(x=>`<option value="${x.id}" ${storeTplFor(c)===x.id?"selected":""}>${x.label}</option>`).join("")}</select>
@@ -1566,11 +1927,9 @@ function renderDrawer(){
       </div>
       <div id="storeMailBox"></div>
     </div>
+    </div>
 
-    <div class="d-sec" id="notesSec"><h3>Notes</h3>
-      <div class="note-add"><textarea id="dNote" placeholder="Add a note: phone screen, follow-up, reference check…"></textarea>
-        <div><button class="btn sm primary" id="addNote">Add note</button></div></div>
-      <div class="notes">${noteList(c)}</div></div>
+    <div class="dpane" data-pane="profile">
     <div class="d-sec"><div class="row-actions" style="justify-content:space-between"><h3>Contact</h3>${editContact?"":`<button class="btn sm ghost" id="editContact">Edit</button>`}</div>
     ${editContact?`<form class="d-grid" id="contactForm">
         <label>Name<input id="cName" value="${esc(c.name||"")}" required autocomplete="off"></label>
@@ -1598,11 +1957,29 @@ function renderDrawer(){
     <div class="d-sec"><h3>Education</h3><div>${esc([c.degree,c.school].filter(Boolean).join(", ")||"—")}</div></div>
     ${c.skills?`<div class="d-sec"><h3>Skills</h3><div class="pre">${esc(c.skills)}</div></div>`:""}
     ${c.references?`<div class="d-sec"><h3>References</h3><div class="pre">${esc(c.references)}</div></div>`:""}
-    ${(c.history||[]).length?`<div class="d-sec"><h3>History</h3><div class="hist">${c.history.slice().reverse().map(h=>`<span>${esc(STAGE[h.stage]?.label||h.stage)} · ${esc(fmtDateTime(h.at))}</span>`).join("")}</div></div>`:""}
+    </div>
+    <div class="msgdock" data-open="${msgOpen}">
+      <button class="md-bar" data-msgtoggle aria-expanded="${msgOpen}"><span class="md-av">${esc((c.name||"?").trim().charAt(0).toUpperCase())}</span><span class="md-nm">Message ${esc(c.name||"")}</span><span class="md-car">${msgOpen?"▾":"▴"}</span></button>
+      <div class="md-body">
+        <div class="row-actions">
+          <select id="mStage" class="btn sm" aria-label="Template">${TPL_LIST.map(s=>`<option value="${s.id}" ${ms===s.id?"selected":""}>${s.label}${s.id===c.stage?" (current)":""}</option>`).join("")}</select>
+          <div class="seg" role="group" aria-label="Language"><button data-mlang="en" aria-pressed="${ml==="en"}">EN</button><button data-mlang="es" aria-pressed="${ml==="es"}">ES</button></div>
+        </div>
+        <div id="mailBox"></div>
+      </div>
+    </div>
+    </div>
+    <div class="dpane rail" data-pane="notes" id="notesSec">
+      <label class="rail-status"><span>Status</span><select id="hStage" aria-label="Status">${STAGES.map(s=>`<option value="${s.id}" ${c.stage===s.id?"selected":""}>${s.label}</option>`).join("")}</select></label>
+      <div class="note-add"><h3>Write private note</h3><textarea id="dNote" placeholder="Write private note here… phone screen, follow-up, reference check"></textarea>
+        <div><button class="btn sm primary" id="addNote">Save note</button></div></div>
+      <div class="d-sec"><h3>Activity feed</h3><div class="feed">${activityFeed(c)}</div></div>
+    </div>
     <div class="d-sec">${confirmDelete?`<div class="confirm">Delete ${esc(c.name)} for good? <button class="btn danger" id="delYes">Delete</button><button class="btn ghost" id="delNo">Keep</button></div>`:`<div><button class="btn ghost danger sm" id="delBtn">Delete applicant</button></div>`}</div>
   </aside>`;
   refreshMail(c);
   const dr=host.querySelector(".drawer"); if(dr) dr.scrollTop=scrollTop;
+  markSelected();
   if(keepId && document.getElementById(keepId)) document.getElementById(keepId).focus();
 }
 function hoursFlag(c){
@@ -1652,8 +2029,8 @@ function refreshMail(c){
       <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
     ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
 }
-function openDrawer(id){ openId=id; storeMailTpl=null; storeMailLang=null; readyForm=false; stageConfirm=null; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; renderDrawer(); }
-function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; }
+function openDrawer(id){ placeDrawer(); openId=id; storeMailTpl=null; storeMailLang=null; readyForm=false; stageConfirm=null; confirmDelete=false; mailStage=null; mailLang=null; editContact=false; confirmNoteDel=null; askingStore=false; const same=$("#drawerHost .drawer"); renderDrawer(); const dr=$("#drawerHost .drawer"); if(dr&&same) dr.scrollTop=0; }
+function closeDrawer(){ openId=null; $("#drawerHost").innerHTML=""; markSelected(); if(docked()) renderRows(); }
 
 /* ---------- storage ---------- */
 function lsLoad(){ try{ return JSON.parse(localStorage.getItem("vista-hiring-local")||"[]"); }catch{ return []; } }
@@ -1704,9 +2081,9 @@ async function exportCsv(){
 /* ---------- ui wiring ---------- */
 let toastT; function toast(m){ $("#toastHost").innerHTML=`<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toastT); toastT=setTimeout(()=>$("#toastHost").innerHTML="",2600); }
 async function copyText(t,label){ try{ await navigator.clipboard.writeText(t); toast(label||"Copied."); }catch{ toast("Copy is blocked here. Select the text and copy it instead."); } }
-function setTab(t){ tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","future","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
+function setTab(t){ if(docked()&&t!=="applicants"&&openId){ openId=null; $("#drawerHost").innerHTML=""; } tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","future","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
 function renderAll(){
-  renderPipe();
+  placeDrawer(); renderPipe();
   if(tab==="dashboard") renderDashboard();
   if(tab==="applicants") renderRows();
   if(tab==="add") renderPreview();
@@ -1797,6 +2174,7 @@ function calEvents(){
 }
 function renderCalendar(){
   const sel=$("#calStore"), v=sel.value;
+  queueMicrotask(renderPlan);
   sel.innerHTML=`<option value="">All stores</option>`+STORES.map(s=>`<option>${esc(s)}</option>`).join(""); sel.value=v;
   $("#calTitle").textContent=calMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});
   const evs=calEvents(), byDay={};
@@ -1822,6 +2200,10 @@ function renderCalendar(){
     return head+`<div class="li" data-open="${esc(e.c.id)}"><div><span class="evdot ev-${e.kind}"></span><b>${esc(e.c.name)}</b><div class="small">${esc([e.label,e.c.store,e.c.hireFor||e.c.position].filter(Boolean).join(" · "))}</div></div><div class="r mono">${esc(e.time)}</div></div>`; }).join(""):(calSel?`<div class="none">Nothing scheduled this day.</div>`:`<div class="none">Nothing scheduled in the next two weeks. Set a screen or interview time, or an offer start date, on an applicant’s card.</div>`);
 }
 $("#v-calendar").addEventListener("click",e=>{
+  const ev=e.target.closest("[data-eval]"); if(ev){ openEval(ev.dataset.eval,ev.dataset.kind,ev.dataset.when); return; }
+  const pt=e.target.closest("[data-ptab]"); if(pt){ planView=pt.dataset.ptab; renderPlan(); return; }
+  const pn=e.target.closest("[data-plan]"); if(pn){ const n=Number(pn.dataset.plan); if(!n){ planDay=new Date(); } else { planDay=new Date(planDay); planDay.setDate(planDay.getDate()+n); } planView="day"; renderPlan(); return; }
+  if(e.target.closest("a[href]")) return;
   const o=e.target.closest("[data-open]"); if(o) return openDrawer(o.dataset.open);
   const b=e.target.closest("[data-cal]");
   if(!b){ const day=e.target.closest("[data-day]"); if(day){ calSel=calSel===day.dataset.day?null:day.dataset.day; renderCalendar(); if(calSel&&innerWidth<760) $("#calAgendaTitle").scrollIntoView({behavior:"smooth",block:"start"}); } return; }
@@ -1998,10 +2380,13 @@ $("#manForm").addEventListener("submit",async e=>{ e.preventDefault();
 $("#manualPanel").addEventListener("click",e=>{ const b=e.target.closest("[data-open-dup]"); if(b) openDrawer(b.dataset.openDup); });
 ["#q","#fStore","#fType","#fSort"].forEach(s=>$(s).addEventListener("input",renderRows));
 $("#pipe").addEventListener("click",e=>{ const b=e.target.closest("[data-stage]"); if(!b) return; filterStage=b.dataset.stage; renderPipe(); renderRows(); });
-$("#rows").addEventListener("click",e=>{ const nb=e.target.closest("[data-notes]"); if(nb){ e.stopPropagation(); openNotes(nb.dataset.notes); return; } const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); });
-$("#rows").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const r=e.target.closest("tr.row"); if(r) openDrawer(r.dataset.id); }});
+$("#rows").addEventListener("click",e=>{ const nb=e.target.closest("[data-notes]"); if(nb){ e.stopPropagation(); openNotes(nb.dataset.notes); return; } const r=e.target.closest(".row[data-id]"); if(r) openDrawer(r.dataset.id); });
+$("#rows").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const r=e.target.closest(".row[data-id]"); if(r) openDrawer(r.dataset.id); }
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){ const r=e.target.closest(".row[data-id]"); const n=r&&(e.key==="ArrowDown"?r.nextElementSibling:r.previousElementSibling); if(n&&n.dataset.id){ e.preventDefault(); n.focus(); openDrawer(n.dataset.id); } }});
 $("#exportBtn").onclick=exportCsv;
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&openId) closeDrawer(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&openId&&!docked()) closeDrawer(); });
+WIDE.addEventListener("change",()=>{ placeDrawer(); if(tab==="applicants") renderRows(); });
+RAILW.addEventListener("change",()=>{ if(openId) renderDrawer(); });
 
 // templates
 $("#v-templates").addEventListener("click",async e=>{
@@ -2023,6 +2408,13 @@ $("#v-templates").addEventListener("focusin",e=>{ if(e.target.id==="tplS"||e.tar
 $("#drawerHost").addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest("[data-close]")) return closeDrawer();
+  const dp=t.closest("[data-dpane]"); if(dp){ setPane(dp.dataset.dpane); return; }
+  if(t.closest("[data-msgtoggle]")){ msgOpen=!msgOpen; const d=$("#drawerHost .msgdock"); if(d){ d.dataset.open=msgOpen; d.querySelector(".md-car").textContent=msgOpen?"▾":"▴"; d.querySelector(".md-bar").setAttribute("aria-expanded",msgOpen); } return; }
+  if(t.closest("[data-msgopen]")){ msgOpen=true; if(!document.body.classList.contains("docked")) setPane("steps"); renderDrawer(); requestAnimationFrame(()=>{ const d=$("#drawerHost .msgdock"); if(d&&!document.body.classList.contains("docked")) d.scrollIntoView({block:"start",behavior:"smooth"}); }); return; }
+  const ee=t.closest("[data-evedit]"); if(ee){ const c=candidates.find(x=>x.id===openId); const v=(c?.evals||[]).find(x=>x.key===ee.dataset.evedit); if(v) openEval(c.id,v.kind,v.when); return; }
+  if(t.closest("[data-evalc]")){ const c=candidates.find(x=>x.id===openId); if(c) openEval(c.id,calKind(c).label,c.interviewDate); return; }
+  if(t.closest("[data-setupiv]")){ setPane("steps"); requestAnimationFrame(()=>{ const w=document.getElementById("dWhen"); if(w){ w.scrollIntoView({block:"center",behavior:"smooth"}); w.focus({preventScroll:true}); try{ w.showPicker&&w.showPicker(); }catch{} } }); return; }
+  const dn=t.closest("[data-dnav]"); if(dn){ const i=lastList.indexOf(openId)+Number(dn.dataset.dnav); if(lastList[i]){ openDrawer(lastList[i]); document.querySelector(`#rows .ccard[data-id="${CSS.escape(lastList[i])}"]`)?.scrollIntoView({block:"nearest"}); } return; }
   const c=candidates.find(x=>x.id===openId); if(!c) return;
   const st=t.closest("[data-setstage]");
   if(st){ const ns=st.dataset.setstage;
@@ -2088,6 +2480,7 @@ const FIELD={dOTime:"offerStartTime",dFutureFor:"futureFor",dStore:"store",dWho:
   fhReq:"fhReq",tabcReq:"tabcReq"};
 $("#drawerHost").addEventListener("change",e=>{
   const t=e.target;
+  if(t.id==="hStage"){ const b=$("#drawerHost").querySelector(`[data-setstage="${CSS.escape(t.value)}"]`); if(b) b.click(); if(stageConfirm) setPane("steps"); return; }
   if(t.id==="mStage"){ mailStage=t.value; return renderDrawer(); }
   if(t.id==="dCloseReason"){ const c=candidates.find(x=>x.id===openId); if(!c) return; const now=Date.now(), v=t.value;
     patch(openId,{closeReason:v,notesLog:v?[...(c.notesLog||[]),{id:"n"+now.toString(36),text:`Not moving forward: ${v}.`,at:now,by:myName()}]:(c.notesLog||[])}).then(()=>toast(v?"Reason saved to notes.":"Reason cleared.")).catch(()=>{}); return; }
@@ -2277,7 +2670,7 @@ $("#v-team").addEventListener("click",async e=>{
 });
 
 /* ---------- store portal: office side ---------- */
-const PORTAL_ON=false; // store logins / portal paused; data stays in Supabase
+const PORTAL_ON=true; // store logins / portal paused; data stays in Supabase
 let portalReady=true, shares=[], storeNotes=[], hireReqs=[], ivReqs=[], portalStarted=false;
 async function loadPortal(){
   const [a,b,c,iv]=await Promise.all([
@@ -2300,7 +2693,7 @@ const ivFor=id=>ivReqs.filter(x=>x.candidate_id===id&&x.status!=="cancelled");
 function slotLabel(v){ return fmtDateTime(v,true); }
 const reqsFor=id=>hireReqs.filter(x=>x.candidate_id===id);
 function payFmt(p){ p=String(p||"").trim(); return /^\$?\d+(\.\d+)?$/.test(p)?`$${p.replace("$","")}/hr`:p; }
-function reqLine(r){ return [r.position,payFmt(r.pay),r.start_date?"start "+fmtDate(r.start_date):""].filter(Boolean).join(" · "); }
+function reqLine(r){ return [r.walkin?"Walk-in":"",r.position,payFmt(r.pay),r.start_date?"first day "+fmtDate(r.start_date)+(r.start_time?" "+fmtTime(r.start_time):""):"",(r.fh_collected||r.tabc_collected)?"has "+[r.fh_collected&&"FH",r.tabc_collected&&"TABC"].filter(Boolean).join(" + "):""].filter(Boolean).join(" · "); }
 function portalBadge(c){
   if(!portalReady||!PORTAL_ON) return "";
   const p=reqsFor(c.id).find(r=>r.status==="pending");
@@ -2314,7 +2707,7 @@ function portalBadge(c){
 }
 let readyForm=false, stageConfirm=null;
 function fmtTime(t){ return t?new Date("2000-01-01T"+t).toLocaleTimeString(UI_LOC||"en-US",{hour:"numeric",minute:"2-digit"}):""; }
-function certSummary(c){ return Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>`${CERTS[k].short} ${certDone(c,k)&&certFiled(c,k)?"✓":"missing"}`).join(" · "); }
+function certSummary(c){ return Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>`${CERTS[k].short} ${certDone(c,k)&&certFiled(c,k)?"✓":certDone(c,k)?"copy received (add to shared folder)":"missing"}`).join(" · "); }
 function storeMgrs(store){ return team.filter(t=>t.store===store); }
 function mgrMail(c,store){
   const m=storeMgrs(store);
@@ -2329,6 +2722,10 @@ function schedBlock(c){
   if(r?.confirmed_at) return `<div class="hreq" style="border-color:var(--s-hired)"><div><b style="color:var(--s-hired)">${esc(r.store)} confirmed the first day</b> <span class="small">${esc(r.confirmed_by||"")} · ${esc(fmtDateTime(r.confirmed_at))}</span></div>
       <div class="mono">${esc(fmtDate(r.start_date_confirmed,true))} at ${esc(fmtTime(r.start_time))}</div>${r.confirm_note?`<div class="pre">${esc(r.confirm_note)}</div>`:""}
       ${c.stage!=="hired"?`<div class="row-actions"><button type="button" class="btn sm primary" data-tohired>Move to Hired and send the first-day email</button></div>`:`<div class="small">The start date and time are filled in on the offer and in the Hired email.</div>`}</div>`;
+  if(r&&r.start_date&&!r.ready_at){ const cs=certSummary(c);
+    return `<div class="hreq" style="border-color:var(--s-hired)"><div><b>First day ${esc(r.store)} discussed:</b> <span class="mono">${esc(fmtDate(r.start_date,true))}${r.start_time?" at "+esc(fmtTime(r.start_time)):""}</span></div>
+      ${cs?`<div class="small">${esc(cs)}</div>`:""}
+      ${c.stage!=="hired"?`<div class="row-actions"><button type="button" class="btn sm primary" data-tohired>Onboarding done: move to Hired</button><span class="small">Then send the joint first-day email to ${esc(r.store)} and the new hire.</span></div>`:`<div class="small">It’s filled in on the first-day emails.</div>`}</div>`; }
   if(r?.ready_at) return `<div class="hreq"><div><b>Waiting on ${esc(r.store)} to pick the first day</b> <span class="small">sent ${esc(fmtDateTime(r.ready_at))}</span></div>${r.ready_note?`<div class="pre">${esc(r.ready_note)}</div>`:""}${mgrMail(c,r.store)}</div>`;
   const store=r?.store||c.store;
   if(!store) return `<div class="small">Set the store above to send them to a store for scheduling.</div>`;
@@ -2353,7 +2750,7 @@ function renderApprovals(){
   const sec=(title,list)=>list.length?`<h3 style="margin:10px 0 2px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">${title}</h3><div class="list">${list.join("")}</div>`:"";
   $("#approvals").innerHTML=
     sec("Stores asking for an interview",ivPend.map(r=>row(r,`<div>${esc((r.slots||[]).length)} time${(r.slots||[]).length===1?"":"s"} offered</div><div class="small">Open to schedule</div>`,`${esc(r.store)} · ${esc(r.requested_by||"")} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
-    sec("Stores asking to hire",pend.map(r=>row(r,`<div>${esc(reqLine(r))}</div><div class="small">Open to approve</div>`,`${esc(r.store)} · ${esc(r.requested_by||r.requested_email)} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
+    sec("Store hires: review and send the offer",pend.map(r=>row(r,`<div>${esc(reqLine(r))}</div><div class="small">Open to send the offer</div>`,`${esc(r.store)} · ${esc(r.requested_by||r.requested_email)} · ${esc(ago(new Date(r.created_at).getTime()))}`)))+
     sec("First day confirmed: move to Hired",confirmed.map(r=>row(r,`<div class="mono">${esc(fmtDate(r.start_date_confirmed))} · ${esc(fmtTime(r.start_time))}</div><div class="small">Send the first-day email</div>`,`${esc(r.store)} · ${esc(r.confirmed_by||"")}`)))+
     sec("New openings from stores (last 7 days)",newOpen.map(o=>`<div class="li" data-go="dashboard"><div><b>${esc(o.store)}: ${esc(o.position)}</b><div class="small">${esc([o.type,o.shift,o.notes].filter(Boolean).join(" · "))}</div></div><div class="r"><div>${esc(o.needed||1)} needed</div><div class="small">${esc(o.requestedBy||"")} · ${esc(ago(o.createdAt))}</div></div></div>`))+
     sec("Stores passed (last 7 days)",passedRecent.map(x=>`<div class="li" data-open="${esc(x.candidate_id)}"><div><b>${esc(nm(x.candidate_id)?.name||"Applicant")}</b><div class="small">${esc(x.store)} · ${esc(x.declined_by||"")}${x.decline_reason?` · “${esc(x.decline_reason)}”`:""}</div></div><div class="r"><div class="small">${esc(ago(new Date(x.declined_at).getTime()))}</div><div class="small">Share elsewhere</div></div></div>`))+
@@ -2401,10 +2798,10 @@ function portalSection(c){
     :`<div class="small">${sh.length?"Managers at the highlighted stores can see this applicant and claim them.":"Share with a store so its manager can see this applicant and claim them."} They only see contact info, position, availability and store notes.</div>
       <div class="sharechips">${STORES.map(st=>{ const pz=passed.find(x=>x.store===st); return `<button type="button" data-share="${esc(st)}" aria-pressed="${on.has(st)}" ${pz?`class="passed" title="${esc(st)} passed. Tap to share again."`:""}>${on.has(st)?"✓ ":pz?"✕ ":""}${esc(st)}</button>`; }).join("")}</div>`;
   const reqHtml=reqs.map(r=>r.status==="pending"
-    ?`<div class="hreq pending"><div><b>${esc(r.store)} wants to hire</b> <span class="small">${esc(r.requested_by||r.requested_email)} · ${esc(fmtDateTime(r.created_at))}</span></div>
+    ?`<div class="hreq pending"><div><b>${esc(r.store)} ${r.walkin?"hired a walk-in":"wants to hire"}</b> <span class="small">${esc(r.requested_by||r.requested_email)} · ${esc(fmtDateTime(r.created_at))}</span></div>
       <div class="mono">${esc(reqLine(r))}</div>${r.note?`<div class="pre">${esc(r.note)}</div>`:""}
       <input id="pDecide" placeholder="Note back to the store (optional)" autocomplete="off" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface);color:var(--fg)">
-      <div class="row-actions"><button type="button" class="btn sm primary" data-hr="approve" data-rid="${esc(r.id)}">Approve and move to Offer</button><button type="button" class="btn sm" data-hr="decline" data-rid="${esc(r.id)}">Decline</button></div></div>`
+      <div class="row-actions"><button type="button" class="btn sm primary" data-hr="approve" data-rid="${esc(r.id)}">Looks good: move to Offer</button><button type="button" class="btn sm" data-hr="decline" data-rid="${esc(r.id)}">Decline</button></div></div>`
     :`<div class="small">${esc(r.store)} asked ${esc(reqLine(r))}: <b>${esc(r.status)}</b>${r.decided_by?` by ${esc(r.decided_by)}`:""}${r.decision_note?` · “${esc(r.decision_note)}”`:""} · ${esc(fmtDateTime(r.decided_at||r.created_at))}</div>`).join("");
   const noteHtml=(notes.length||targets.length)?`<div class="d-sec" style="margin-top:6px"><h3>Store notes <span style="text-transform:none;letter-spacing:0;font-weight:400">· the store sees these</span></h3>
       ${notes.length?`<div>${notes.map(n=>`<div class="snote">${esc(n.body)}<span class="small">${esc(n.store)} · ${esc(n.author||n.author_email)} · ${esc(fmtDateTime(n.created_at))}</span></div>`).join("")}</div>`:`<div class="none">No store notes yet.</div>`}
@@ -2502,6 +2899,7 @@ $("#drawerHost").addEventListener("click",async e=>{
       if(r.position) ch.hireFor=r.position;
       if(rate) ch.offerRate=rate;
       if(r.start_date) ch.offerStart=r.start_date;
+      if(r.start_time) ch.offerStartTime=r.start_time;
       if(!["offer","hired"].includes(c.stage)){ ch.stage="offer"; ch.history=[...(c.history||[]),{stage:"offer",at:now}]; }
       mailStage=null;
     }
@@ -2517,6 +2915,7 @@ const PASS_REASONS=["Not a fit for the position","Availability doesn’t work","
 function sPassSection(a){
   if(a.is_hired) return "";
   const r=sLatest(a); if(r&&["pending","approved"].includes(r.status)) return "";
+  if(!sPassing&&sIv(a)?.status==="scheduled") return "";
   if(!sPassing) return `<div class="d-sec"><div class="row-actions"><button type="button" class="btn sm ghost danger" data-spass="open">Pass on this applicant</button><span class="small">${a.claimed_at?"Releases them so the office can place them elsewhere.":"Or leave them here to keep for later."}</span></div></div>`;
   return `<div class="d-sec checkbox"><h3>Pass on ${esc(a.name||"this applicant")}</h3>
     <div class="small">They leave your list. The office sees that ${esc(sStore())} passed and why, and can send them to another store.</div>
@@ -2544,7 +2943,7 @@ async function loadStore(){
   if(a.error){ $("#sStatus").textContent="Couldn’t load. Reload the page."; return; }
   sApps=a.data||[]; sNotes=b.data||[]; sReqs=c.data||[]; sIvs=iv.error?[]:(iv.data||[]);
   $("#sStatus").textContent=`${sApps.length} applicant${sApps.length===1?"":"s"} · synced`;
-  if(sFirstLoad){ sFirstLoad=false; if(sApps.some(a=>sStatus(a)==="ready")) sFilter="ready"; }
+  if(sFirstLoad){ sFirstLoad=false; if(!sApps.some(a=>sStatus(a)==="new")&&sApps.some(a=>sStatus(a)==="interviewing")) sFilter="interviewing"; }
   renderStoreApp();
 }
 let sOpenings=[], sOpenFormOn=false, sOpenDel=null;
@@ -2556,7 +2955,7 @@ function renderStoreOpenings(){
   const f=$("#sOpenForm");
   const o=sOpenFormOn&&sOpenFormOn!=="new"?(sOpenings||[]).find(x=>x.id===sOpenFormOn)||{}:{needed:1};
   const opt=(list,v)=>list.map(x=>`<option value="${x}" ${(v||"")===x?"selected":""}>${x||"—"}</option>`).join("");
-  if(!f.contains(document.activeElement)) f.innerHTML=sOpenFormOn?`<form class="openform" id="sOForm" style="margin-bottom:12px">
+  if(!f.contains(document.activeElement)) f.innerHTML=sOpenFormOn?`${sOpenFormOn==="new"?`<div class="s-tip"><b>What happens next:</b> the hiring office posts the job and screens applicants. The good fits show up under <b>New</b> for you to claim and interview.</div>`:""}<form class="openform" id="sOForm" style="margin-bottom:12px">
       <label class="field wide">Position<input id="soPos" list="sDeptList" required value="${esc(o.pos_name||"")}" placeholder="e.g. Cashier" autocomplete="off"></label>
       <label class="field">How many<input id="soNeed" type="number" min="1" max="50" value="${esc(o.needed||1)}"></label>
       <label class="field">Full / part-time<select id="soType">${opt(["","Full-time","Part-time","Either"],o.otype)}</select></label>
@@ -2574,6 +2973,9 @@ function renderStoreOpenings(){
     return `<div class="li" style="cursor:default;align-items:flex-start"><div><b>${esc(o.pos_name)}</b> <span class="small">· ${esc(o.needed)} needed</span><div class="small">${esc([o.otype,o.oshift,o.notes].filter(Boolean).join(" · "))}</div>${mine&&o.requested_by?`<div class="small">Requested by ${esc(o.requested_by)}${o.created_ms?" · "+esc(ago(Number(o.created_ms))):""}</div>`:""}</div><div class="r">${acts}</div></div>`; }).join("")
     :`<div class="none">No open positions listed for ${esc(sStore())}. Tap “Request a position” when you need someone.</div>`;
 }
+try{ if(localStorage.getItem("vista-sguide")==="closed") $("#sGuide").open=false; }catch{}
+$("#sGuide").addEventListener("toggle",()=>{ try{ localStorage.setItem("vista-sguide",$("#sGuide").open?"open":"closed"); }catch{} });
+$("#sReqBtn").addEventListener("click",()=>{ if(sPreview) return previewBlock(); sOpenFormOn="new"; sOpenDel=null; renderStoreOpenings(); $("#sOpenPanel").scrollIntoView({behavior:"smooth",block:"start"}); setTimeout(()=>$("#soPos")?.focus({preventScroll:true}),350); });
 $("#sOpenAdd").addEventListener("click",()=>{ if(sPreview) return previewBlock(); sOpenFormOn="new"; sOpenDel=null; renderStoreOpenings(); $("#soPos")?.focus(); });
 $("#sOpenForm").addEventListener("click",e=>{ if(e.target.id==="soCancel"){ sOpenFormOn=false; document.activeElement?.blur(); renderStoreOpenings(); } });
 $("#sOpenList").addEventListener("click",async e=>{ const t=e.target; if(sPreview&&t.closest("button")) return previewBlock();
@@ -2601,7 +3003,8 @@ function buildPreview(){
   sApps=shares.filter(x=>x.store===st&&!x.declined_at&&byId[x.candidate_id]).map(sh=>{ const c=byId[sh.candidate_id];
     return {id:c.id,name:c.name,phone:c.phone,email:c.email,position_wanted:c.position,hire_for:c.hireFor,employment_type:c.employmentType,shift:c.shift,can_start:c.startDate,
       availability:c.availability,avail_days:c.availDays||[],form_language:c.formLanguage,shared_at:sh.shared_at,claimed_at:sh.claimed_at,claimed_by:sh.claimed_by,
-      is_hired:c.stage==="hired",first_day:["offer","hired"].includes(c.stage)?c.offerStart||null:null,first_time:["offer","hired"].includes(c.stage)?c.offerStartTime||null:null}; })
+      is_hired:c.stage==="hired",first_day:c.offerStart||null,first_time:c.offerStartTime||null,
+      stage:["offer","hired"].includes(c.stage)?c.stage:"",fh_have:!!c.fhHave,tabc_have:!!c.tabcHave,fh_req:c.fhReq||"auto",tabc_req:c.tabcReq||"auto",walkin:!!c.walkin,applied_ms:c.createdAt}; })
     .sort((a,b)=>new Date(b.shared_at)-new Date(a.shared_at));
   sNotes=storeNotes.filter(n=>n.store===st); sReqs=hireReqs.filter(r=>r.store===st); sIvs=ivReqs.filter(r=>r.store===st);
   sOpenings=openings.filter(o=>o.store===st).map(o=>({id:o.id,pos_name:o.position,needed:o.needed||1,otype:o.type,oshift:o.shift,notes:o.notes,requested_by:o.requestedBy,created_ms:o.createdAt,from_store:!!o.fromStore}))
@@ -2612,7 +3015,7 @@ function buildPreview(){
 }
 function renderPreview2(){ if(!sPreview) return; buildPreview(); renderStoreApp(); renderStoreOpenings(); }
 function enterPreview(st){
-  sPreview=st; sOpen=null; sReqForm=false; sStartEdit=false; sOpenFormOn=false; sOpenDel=null; sFilter="all"; closeDrawer(); $("#sDrawerHost").innerHTML="";
+  sPreview=st; sOpen=null; sReqForm=false; sStartEdit=false; sOpenFormOn=false; sOpenDel=null; sFilter="new"; closeDrawer(); $("#sDrawerHost").innerHTML="";
   $("#app").hidden=true; $("#storeApp").hidden=false; $("#sPreviewBar").hidden=false; $("#sSignOut").hidden=true;
   $("#sTitle").textContent=`${st} hiring`; $("#sWho").textContent="";
   $("#sPreviewPick").innerHTML=STORES.map(x=>`<option ${x===st?"selected":""}>${esc(x)}</option>`).join("");
@@ -2628,32 +3031,35 @@ $("#sPreviewExit").addEventListener("click",exitPreview);
 function sFirst(a){ const r=sLatest(a); return {day:a.first_day||r?.start_date_confirmed||"",time:a.first_time||r?.start_time||""}; }
 function sHiredOld(a){ const d=sFirst(a).day; return !!(a.is_hired&&d&&new Date(d+"T00:00").getTime()<Date.now()-30*864e5); }
 function sStatus(a){
-  if(a.is_hired) return "hired";
+  if(a.is_hired) return "starting";
   if(!a.claimed_at) return "new";
-  const latest=sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
-  if(latest?.status==="pending") return "waiting";
-  if(latest?.status==="approved") return latest.confirmed_at?"scheduled":latest.ready_at?"ready":"approved";
-  const iv=sIv(a); if(iv&&(iv.status==="pending"||(iv.status==="scheduled"&&!iv.outcome))) return "interview";
-  return "claimed";
+  const latest=sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled"&&x.status!=="declined");
+  if(latest||a.stage==="offer") return "hired";
+  return "interviewing";
 }
 const sIv=a=>sIvs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
-const S_FILTERS=[["new","New to you"],["claimed","Claimed"],["interview","Interviews"],["waiting","Waiting approval"],["approved","Approved"],["ready","Ready to schedule"],["scheduled","Scheduled"],["hired","Hired"],["all","All"]];
+const S_FILTERS=[["new","New"],["interviewing","Interviewing"],["hired","Hired"],["starting","Starting"]];
 const sLatest=a=>sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
-function sBadge(st,a){ return {interview:(()=>{ const iv=sIv(a); return iv?.status==="pending"?`<span class="portalpill">Interview requested</span>`:`<span class="portalpill ask">Interview ${esc(fmtDateTime(iv?.scheduled_at))}</span>`; })(),new:`<span class="portalpill">New</span>`,claimed:`<span class="portalpill">Claimed${a.claimed_by?" · "+esc(a.claimed_by):""}</span>`,waiting:`<span class="portalpill ask">Waiting approval</span>`,approved:`<span class="pill" style="color:var(--s-hired)">Approved</span>`,ready:`<span class="portalpill ask">Ready to schedule</span>`,scheduled:`<span class="pill" style="color:var(--s-hired)">Starts ${esc(fmtDate(sFirst(a).day))}${sFirst(a).time?" · "+esc(fmtTime(sFirst(a).time)):""}</span>`,hired:(()=>{ const f=sFirst(a), past=f.day&&new Date(f.day+"T23:59").getTime()<Date.now(); return `<span class="pill" style="color:#fff;background:var(--s-hired);border-color:var(--s-hired)">Hired${f.day?` · ${past?"started":"starts"} ${esc(fmtDate(f.day))}${!past&&f.time?" · "+esc(fmtTime(f.time)):""}`:""}</span>`; })()}[st]||""; }
+function sBadge(st,a){ return sBadge2(st,a); }
+function sBadge2(st,a){
+  if(st==="new") return `<span class="portalpill">New</span>`;
+  if(st==="interviewing"){ const iv=sIv(a); if(iv&&iv.status==="scheduled"&&!iv.outcome){ const past=new Date(iv.scheduled_at).getTime()<Date.now(); return `<span class="portalpill ${past?"ask":""}">${past?"Decide: hire or pass":"Interview "+esc(fmtDateTime(iv.scheduled_at))}</span>`; }
+    if(iv?.outcome==="showed") return `<span class="portalpill ask">Interviewed · decide</span>`; return `<span class="portalpill ask">Call to invite</span>`; }
+  const f=sFirst(a), miss=sCertMissing(a);
+  return `<span class="portalpill" style="border-color:var(--s-hired);color:var(--s-hired)">${st==="starting"?"Hired":"Sent to hiring team"}${f.day?" · "+esc(fmtDate(f.day)):""}</span>${miss.length?`<span class="portalpill ask">Need ${esc(miss.join(" & "))}</span>`:""}`;
+}
+function sOldBadge(st,a){ return {interview:(()=>{ const iv=sIv(a); return iv?.status==="pending"?`<span class="portalpill">Interview requested</span>`:`<span class="portalpill ask">Interview ${esc(fmtDateTime(iv?.scheduled_at))}</span>`; })(),new:`<span class="portalpill">New</span>`,claimed:`<span class="portalpill">Claimed${a.claimed_by?" · "+esc(a.claimed_by):""}</span>`,waiting:`<span class="portalpill ask">Waiting approval</span>`,approved:`<span class="pill" style="color:var(--s-hired)">Approved</span>`,ready:`<span class="portalpill ask">Ready to schedule</span>`,scheduled:`<span class="pill" style="color:var(--s-hired)">Starts ${esc(fmtDate(sFirst(a).day))}${sFirst(a).time?" · "+esc(fmtTime(sFirst(a).time)):""}</span>`,hired:(()=>{ const f=sFirst(a), past=f.day&&new Date(f.day+"T23:59").getTime()<Date.now(); return `<span class="pill" style="color:#fff;background:var(--s-hired);border-color:var(--s-hired)">Hired${f.day?` · ${past?"started":"starts"} ${esc(fmtDate(f.day))}${!past&&f.time?" · "+esc(fmtTime(f.time)):""}`:""}</span>`; })()}[st]||""; }
 function sDays(a){ return daysHtml({availDays:Array.isArray(a.avail_days)?a.avail_days:[],availability:a.availability}); }
 function renderStoreDash(cnt){
-  const today=new Date(); today.setHours(0,0,0,0); const tISO=today.toISOString().slice(0,10);
-  const upcoming=sApps.filter(a=>["scheduled","hired"].includes(sStatus(a))).map(a=>({a,f:sFirst(a),r:sLatest(a)})).filter(x=>x.f.day&&x.f.day>=tISO).sort((x,y)=>(x.f.day+x.f.time).localeCompare(y.f.day+y.f.time));
+  const today=new Date(); today.setHours(0,0,0,0); const tISO=dayKey(today);
+  const wk=new Date(today); wk.setDate(wk.getDate()+8); const wISO=dayKey(wk);
   const posOpen=(sOpenings||[]).reduce((n,o)=>n+(Number(o.needed)||1),0);
-  const tiles=[["New to review","waiting for you",cnt.new||0,"new"],["Claimed","next: request an interview",cnt.claimed||0,"claimed"],["Interviews","requested or scheduled",cnt.interview||0,"interview"],
-    ["Waiting approval","hire requests with the office",cnt.waiting||0,"waiting"],["Ready to schedule","pick a first day",cnt.ready||0,"ready"],["Starting soon","first days ahead",upcoming.length,"scheduled"]];
   $("#sPosCount").textContent=posOpen?` · ${posOpen} needed`:"";
-  $("#sKpis").innerHTML=tiles.map(([l,e,n,f])=>`<button type="button" class="kpi" data-skpi="${f}"${(f==="new"||f==="ready")&&n?` style="border-color:var(--s-offer)"`:""}><span>${l}</span><b>${n}</b><em>${e}</em></button>`).join("");
-  const ivList=sApps.map(a=>({a,iv:sIv(a)})).filter(x=>x.iv&&x.iv.status==="scheduled"&&!x.iv.outcome).sort((x,y)=>x.iv.scheduled_at.localeCompare(y.iv.scheduled_at));
-  const ivItems=ivList.map(({a,iv})=>{ const past=new Date(iv.scheduled_at).getTime()<Date.now(); return `<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">${past?"Interview time passed · tell us how it went":"In-person interview"}</div></div><div class="r"><div class="mono">${esc(fmtDateTime(iv.scheduled_at))}</div>${past?`<span class="portalpill ask">Report</span>`:""}</div></div>`; });
-  const todo=sApps.filter(a=>sStatus(a)==="ready");
-  const items=ivItems.concat(todo.map(a=>`<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">Onboarding done · pick their first day</div></div><div class="r"><span class="portalpill ask">Ready to schedule</span></div></div>`))
-    .concat(upcoming.slice(0,6).map(({a,f,r})=>`<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">First day${a.is_hired?" · hired":""}${(r?.position||a.hire_for)?" · "+esc(r?.position||a.hire_for):""}</div></div><div class="r"><div class="mono">${esc(fmtDate(f.day,true))}</div><div class="small">${esc(f.time?fmtTime(f.time):"time not set")}</div></div></div>`));
+  const ivItems=sApps.map(a=>({a,iv:sIv(a)})).filter(x=>x.iv&&x.iv.status==="scheduled"&&!x.iv.outcome&&!sLatest(x.a)).sort((x,y)=>x.iv.scheduled_at.localeCompare(y.iv.scheduled_at))
+    .map(({a,iv})=>{ const past=new Date(iv.scheduled_at).getTime()<Date.now(); return `<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">${past?"Interview done? Tell us: hire or pass":"Interview at your store"}</div></div><div class="r"><div class="mono">${esc(fmtDateTime(iv.scheduled_at))}</div>${past?`<span class="portalpill ask">Decide</span>`:""}</div></div>`; });
+  const firsts=sApps.filter(a=>["hired","starting"].includes(sStatus(a))).map(a=>({a,f:sFirst(a)})).filter(x=>x.f.day&&x.f.day>=tISO&&x.f.day<wISO).sort((x,y)=>(x.f.day+x.f.time).localeCompare(y.f.day+y.f.time))
+    .map(({a,f})=>{ const miss=sCertMissing(a); return `<div class="li" data-sopen="${esc(a.id)}"><div><b>${esc(a.name)}</b><div class="small">First day${a.hire_for?" · "+esc(a.hire_for):""}${miss.length?` · <span style="color:var(--s-offer)">get ${esc(miss.join(" & "))} copy</span>`:""}</div></div><div class="r"><div class="mono">${esc(fmtDate(f.day,true))}</div><div class="small">${esc(f.time?fmtTime(f.time):"time not set")}</div></div></div>`; });
+  const items=ivItems.concat(firsts);
   $("#sSoon").hidden=!items.length; $("#sSoonList").innerHTML=items.join("");
 }
 function renderStoreApp(){
@@ -2670,88 +3076,115 @@ function renderStoreApp(){
     :`<div class="emptystate">${sApps.length?"Nobody in this list right now.":"No applicants shared with your store yet. The office shares them here as they come in."}</div>`;
   if(sOpen) renderStoreDrawer();
 }
-function sIvSection(a){
-  const iv=sIv(a), me0=staffRow?.name||"";
-  const inp=(id,type,ph,val)=>`<input id="${id}" type="${type}" ${ph?`placeholder="${esc(ph)}"`:""} value="${esc(val||"")}" autocomplete="off">`;
-  let body;
-  if(sIvForm==="req") body=`<div class="checkbox" style="display:flex;flex-direction:column;gap:8px"><b>Request an in-person interview</b>
-      <div class="small">Give the office 1–3 times that work for you. They’ll call ${esc(a.name||"the applicant")}, confirm one and send the details with your store’s address.</div>
-      <div class="d-grid"><label>Option 1${inp("ivS1","datetime-local")}</label><label>Option 2 (optional)${inp("ivS2","datetime-local")}</label>
-      <label>Option 3 (optional)${inp("ivS3","datetime-local")}</label><label>Who should they ask for?${inp("ivAsk","text","e.g. Gustavo at customer service",me0)}</label></div>
-      <div class="d-grid"><label style="grid-column:1/-1">Note for the office (optional)${inp("ivNote","text","e.g. Mornings only this week")}</label></div>
-      <div class="row-actions"><button type="button" class="btn sm primary" data-ivsend>Send to the office</button><button type="button" class="btn sm ghost" data-ivform="close">Cancel</button></div></div>`;
-  else if(sIvForm==="self") body=`<div class="checkbox" style="display:flex;flex-direction:column;gap:8px"><b>We’ll schedule it ourselves</b>
-      <div class="small">Call ${esc(a.name||"the applicant")} yourself, then enter the time you agreed on so it shows on the office calendar.</div>
-      <div class="d-grid"><label>Interview date &amp; time${inp("ivAt","datetime-local")}</label><label>Who should they ask for?${inp("ivAsk","text","e.g. Gustavo",me0)}</label></div>
-      <div class="d-grid"><label style="grid-column:1/-1">Note (optional)${inp("ivNote","text","e.g. Confirmed by phone")}</label></div>
-      <div class="row-actions"><button type="button" class="btn sm primary" data-ivself>Save interview</button><button type="button" class="btn sm ghost" data-ivform="close">Cancel</button></div></div>`;
-  else if(iv?.status==="pending") body=`<div class="hreq pending"><div><b>Waiting on the office to confirm a time</b> <span class="small">sent ${esc(fmtDateTime(iv.created_at))}</span></div>
-      <div class="small">${(iv.slots||[]).map(x=>esc(fmtDateTime(x,true))).join("<br>")}</div>${iv.note?`<div class="pre">${esc(iv.note)}</div>`:""}
-      <div class="row-actions"><button type="button" class="btn sm ghost" data-ivcancel="${esc(iv.id)}">Cancel request</button></div></div>`;
-  else if(iv?.status==="scheduled"&&!iv.outcome){ const past=new Date(iv.scheduled_at).getTime()<Date.now();
-    body=`<div class="hreq ${past?"pending":""}"><div><b>Interview ${esc(fmtDateTime(iv.scheduled_at,true))}</b> <span class="small">${iv.self_scheduled?"booked by your store":"confirmed by the office"}</span></div>
-      ${iv.ask_for?`<div class="small">They’ll ask for ${esc(iv.ask_for)}</div>`:""}
-      <div class="small"><b style="color:var(--fg)">How did it go?</b> ${past?"":"Tap after the interview."}</div>
-      ${sNoShowAsk?`<div class="row-actions"><span class="small">Mark as no show? They’ll leave your list and the office will close them out.</span><button type="button" class="btn sm danger" data-ivout="noshow">Yes, no show</button><button type="button" class="btn sm ghost" data-ivout="back">Cancel</button></div>`
-        :`<div class="row-actions"><button type="button" class="btn sm primary" data-ivout="showed">They came in</button><button type="button" class="btn sm" data-ivout="ask">No show</button></div>`}</div>`; }
-  else if(iv?.outcome==="showed") body=`<div class="small"><b style="color:var(--s-hired)">Interviewed</b> ${esc(fmtDateTime(iv.scheduled_at))}. Next: request approval to hire, or pass below.</div>`;
-  else body=`<div class="row-actions"><button type="button" class="btn primary" data-ivform="req">Request interview</button><button type="button" class="btn ghost" data-ivform="self">We’ll schedule it ourselves</button></div>`;
-  return `<div class="d-sec"><h3>Interview</h3>${body}</div>`;
+function sCertReq(a,k){ return certReq({fhReq:a.fh_req,tabcReq:a.tabc_req,hireFor:a.hire_for,position:a.position_wanted},k); }
+function sCertMissing(a){ if(!["hired","starting"].includes(sStatus(a))) return []; return Object.keys(CERTS).filter(k=>sCertReq(a,k)&&!a[k+"_have"]).map(k=>CERTS[k].short); }
+let sHireForm=false, sWalkin=false;
+function sSteps(a){
+  const st=sStatus(a), iv=sIv(a), n=st==="new"?1:st==="interviewing"?((iv&&iv.status==="scheduled")?3:2):4;
+  const L=["Claim","Call & interview","Hire or pass","First day"];
+  return `<ol class="s-steps">${L.map((l,i)=>`<li class="${i+1<n?"done":i+1===n?"now":""}"><b>${i+1<n?"✓":i+1}</b><span>${l}</span></li>`).join("")}</ol>`;
 }
-function sHireSection(a){
-  if(a.is_hired){ const f=sFirst(a), past=f.day&&new Date(f.day+"T23:59").getTime()<Date.now();
-    return `<div class="d-sec"><h3>Hired</h3><div class="hreq" style="border-color:var(--s-hired)"><div><b style="color:var(--s-hired)">Hired for ${esc(sStore())}</b></div>
-      ${f.day?`<div class="mono">${past?"Started":"First day"}: ${esc(fmtDate(f.day,true))}${f.time?` at ${esc(fmtTime(f.time))}`:""}</div>`:`<div class="small">The office hasn’t set the first day yet.</div>`}
-      ${past?"":`<div class="small">The office sent their first-day details: where to report, dress code and what to bring.</div>`}</div></div>`; }
-  if(!a.claimed_at) return `<div class="d-sec"><h3>Hire</h3><div class="small">Claim this applicant first. Then you can ask the office for approval to hire.</div></div>`;
-  const reqs=sReqs.filter(r=>r.candidate_id===a.id), pend=reqs.find(r=>r.status==="pending"), latest=reqs.find(r=>r.status!=="cancelled");
-  if(pend) return `<div class="d-sec"><h3>Hire</h3><div class="hreq pending"><div><b>Waiting on the office</b> <span class="small">sent ${esc(fmtDateTime(pend.created_at))}</span></div>
-      <div class="mono">${esc(reqLine(pend))}</div>${pend.note?`<div class="pre">${esc(pend.note)}</div>`:""}
-      <div class="row-actions"><button type="button" class="btn sm ghost" data-sreqcancel="${esc(pend.id)}">Cancel request</button></div></div></div>`;
-  if(latest?.status==="approved"){
-    const L=latest, appr=`<div class="small">Approved${L.decided_by?` by ${esc(L.decided_by)}`:""} ${esc(fmtDateTime(L.decided_at))} · ${esc(reqLine(L))}</div>`;
-    if(L.ready_at&&(!L.confirmed_at||sStartEdit)) return `<div class="d-sec"><h3>First day</h3><div class="hreq pending">
-      <div><b>Onboarding complete: ready to schedule</b> <span class="small">${esc(fmtDateTime(L.ready_at))}</span></div>
-      ${L.ready_note?`<div class="pre">${esc(L.ready_note)}</div>`:""}
-      <div class="d-grid">
-        <label>First day<input id="sdDate" type="date" value="${esc(L.start_date_confirmed||L.start_date||"")}"></label>
-        <label>Start time<input id="sdTime" type="time" value="${esc(L.start_time||"")}"></label>
-      </div>
-      <div class="d-grid"><label style="grid-column:1/-1">Note for the office (optional)<input id="sdNote" value="${esc(L.confirm_note||"")}" placeholder="e.g. Ask for Rosa at the deli" autocomplete="off"></label></div>
-      <div class="row-actions"><button type="button" class="btn sm primary" data-sdconfirm="${esc(L.id)}">Confirm first day</button>${sStartEdit?`<button type="button" class="btn sm ghost" data-sdedit="close">Cancel</button>`:""}</div></div>${appr}</div>`;
-    if(L.confirmed_at) return `<div class="d-sec"><h3>First day</h3><div class="hreq" style="border-color:var(--s-hired)">
-      <div><b style="color:var(--s-hired)">Scheduled</b> <span class="small">confirmed by ${esc(L.confirmed_by||"")} ${esc(fmtDateTime(L.confirmed_at))}</span></div>
-      <div class="mono">${esc(fmtDate(L.start_date_confirmed,true))} at ${esc(fmtTime(L.start_time))}</div>${L.confirm_note?`<div class="pre">${esc(L.confirm_note)}</div>`:""}
-      <div class="small">The office sends them the first-day details.</div>
-      <div class="row-actions"><button type="button" class="btn sm ghost" data-sdedit="open">Change day or time</button></div></div>${appr}</div>`;
-    return `<div class="d-sec"><h3>Hire</h3><div class="hreq" style="border-color:var(--s-hired)"><div><b style="color:var(--s-hired)">Approved</b>${L.decided_by?` by ${esc(L.decided_by)}`:""} <span class="small">${esc(fmtDateTime(L.decided_at))}</span></div>
-      <div class="mono">${esc(reqLine(L))}</div>${L.decision_note?`<div class="pre">${esc(L.decision_note)}</div>`:""}
-      <div class="small">The office is sending the offer and onboarding. When they finish, this changes to “Ready to schedule” and you pick their first day.</div></div></div>`;
-  }
-  const ivSec=sIvSection(a);
-  const declined=latest?.status==="declined"?`<div class="hreq"><div><b>Not approved</b>${latest.decided_by?` by ${esc(latest.decided_by)}`:""} <span class="small">${esc(fmtDateTime(latest.decided_at))}</span></div><div class="mono">${esc(reqLine(latest))}</div>${latest.decision_note?`<div class="pre">${esc(latest.decision_note)}</div>`:""}</div>`:"";
-  if(!sReqForm) return `${ivSec}<div class="d-sec"><h3>Hire</h3>${declined}<div class="row-actions"><button type="button" class="${sIv(a)?.outcome==="showed"?"btn primary":"btn"}" data-sreq>Request approval to hire</button>${sIv(a)?.outcome==="showed"?"":`<span class="small">Usually after the interview.</span>`}</div></div>`;
+function sIvForm2(a,iv){
+  const me0=staffRow?.name||"", tel=(a.phone||"").replace(/[^\d+]/g,"");
+  return `<div class="s-next">
+    <h3>${iv?"Change the interview time":`Call ${esc((a.name||"them").split(" ")[0])} to invite them`}</h3>
+    ${iv?"":`<div class="small">Call, agree on a day and time for an in-person interview, then save it here. It goes on the hiring office calendar.</div>
+    ${a.phone?`<a class="btn primary s-call" href="tel:${esc(tel)}">${ICON.phone} Call ${esc(a.phone)}</a>`:`<div class="warn">No phone on file. Try email: ${esc(a.email||"none")}</div>`}`}
+    <div class="d-grid"><label>Interview date &amp; time<input id="ivAt" type="datetime-local" value="${esc(iv?.scheduled_at||"")}"></label><label>Who should they ask for?<input id="ivAsk" value="${esc(iv?.ask_for||me0)}" placeholder="e.g. Gustavo" autocomplete="off"></label></div>
+    <div class="row-actions"><button type="button" class="btn sm primary" data-ivself>Save interview</button>${iv?`<button type="button" class="btn sm ghost" data-ivform="close">Cancel</button>`:`<button type="button" class="btn sm ghost" data-shire>Already interviewed? Hire</button>`}</div>
+  </div>`;
+}
+function sHireForm2(a){
   const pos=/open to anything/i.test(a.position_wanted||"")?(a.hire_for||""):(a.hire_for||a.position_wanted||"");
-  return `<div class="d-sec checkbox"><h3>Request approval to hire</h3>
+  const tabcNeed=sCertReq({...a,hire_for:pos||a.hire_for},"tabc");
+  return `<div class="s-next hire">
+    <h3>Hire ${esc(a.name||"")}</h3>
+    <div class="small">The hiring office sends the offer and onboarding. Tell them the position and the first day you discussed.</div>
     <div class="d-grid">
-      <label>Position<input id="rPos" value="${esc(pos)}" placeholder="e.g. Cashier" autocomplete="off"></label>
-      <label>Pay ($ per hour)<input id="rPay" inputmode="decimal" placeholder="e.g. 13.50" autocomplete="off"></label>
-      <label>Start date<input id="rStart" type="date"></label>
-      <label>Note to the office<input id="rNote" placeholder="e.g. Interviewed Tuesday, great fit for mornings" autocomplete="off"></label>
+      <label>Position<input id="hPos" list="sDeptList" value="${esc(pos)}" placeholder="e.g. Cashier" autocomplete="off"></label>
+      <label>First day you discussed<input id="hDate" type="date"></label>
+      <label>Start time<input id="hTime" type="time"></label>
+      <label>Note (optional)<input id="hNote" placeholder="e.g. Mornings, Mon–Fri" autocomplete="off"></label>
     </div>
-    <div class="row-actions"><button type="button" class="btn sm primary" data-sreqsend>Send request</button><button type="button" class="btn sm ghost" data-sreqx>Cancel</button></div></div>`;
+    <datalist id="sDeptList">${DEPTS.map(d=>`<option value="${esc(d)}">`).join("")}</datalist>
+    <div class="s-certs"><span class="small">Did you get a copy?</span>
+      <label class="ccheck"><input type="checkbox" id="hFh"> Food Handler card</label>
+      <label class="ccheck"><input type="checkbox" id="hTabc"> TABC certificate${tabcNeed?"":` <span class="small">(if their job sells alcohol)</span>`}</label></div>
+    <div class="row-actions"><button type="button" class="btn primary" data-shiresend>Send to the hiring team</button><button type="button" class="btn ghost" data-shirex>Cancel</button></div>
+  </div>`;
+}
+function sCertBlock(a){
+  return `<div class="s-certs"><span class="small"><b>Copies collected</b> (needed before their first shift)</span>
+    ${Object.keys(CERTS).map(k=>{ const need=sCertReq(a,k); return `<label class="ccheck"><input type="checkbox" data-scert="${k}" ${a[k+"_have"]?"checked":""}> ${esc(CERTS[k].label)}${need?"":` <span class="small">(not needed for this job)</span>`}</label>`; }).join("")}
+  </div>`;
+}
+function sNextSection(a){
+  const st=sStatus(a), iv=sIv(a);
+  if(st==="new") return `<div class="s-next"><h3>Want ${esc((a.name||"them").split(" ")[0])} for ${esc(sStore())}?</h3><div class="small">Claim them so other stores can’t. Then call to set up an interview.</div>
+    <div class="row-actions"><button type="button" class="btn primary" data-sclaim>Claim for ${esc(sStore())}</button></div></div>`;
+  if(st==="interviewing"){
+    if(sHireForm) return sHireForm2(a);
+    const sched=iv&&iv.status==="scheduled"&&!iv.outcome;
+    if(!iv||iv.status!=="scheduled"||sIvForm==="self") return sIvForm2(a,sIvForm==="self"?iv:null);
+    const past=new Date(iv.scheduled_at).getTime()<Date.now();
+    return `<div class="s-next"><h3>Interview ${esc(fmtDateTime(iv.scheduled_at,true))}</h3>
+      ${iv.ask_for?`<div class="small">They’ll ask for ${esc(iv.ask_for)}</div>`:""}
+      <div><b>${iv.outcome==="showed"||past?"How did it go?":"After the interview, decide:"}</b></div>
+      ${sNoShowAsk?`<div class="row-actions"><span class="small">Mark as no show? They leave your list and the office closes them out.</span><button type="button" class="btn sm danger" data-ivout="noshow">Yes, no show</button><button type="button" class="btn sm ghost" data-ivout="back">Cancel</button></div>`
+      :`<div class="row-actions s-decide"><button type="button" class="btn primary" data-shire>✓ Hire</button><button type="button" class="btn" data-spass="open">✕ Pass</button>${sched?`<button type="button" class="btn ghost" data-ivout="ask">No show</button><button type="button" class="btn ghost" data-ivform="self">Change time</button>`:""}</div>`}
+    </div>`;
+  }
+  const r=sLatest(a), f=sFirst(a);
+  return `<div class="s-next done">
+    <h3>${st==="starting"?"Hired ✓":"Sent to the hiring team ✓"}</h3>
+    <div class="small">${st==="starting"?"Onboarding is done.":r?.status==="approved"?"The office approved it and is sending the offer and onboarding.":"The office will send the offer and onboarding."}${r?.created_at&&st!=="starting"?` Sent ${esc(fmtDateTime(r.created_at))}.`:""}</div>
+    ${f.day?`<div class="mono s-first">First day: ${esc(fmtDate(f.day,true))}${f.time?` at ${esc(fmtTime(f.time))}`:""}</div>`:`<div class="small">First day not set yet.</div>`}
+    ${sCertBlock(a)}
+    ${st==="starting"?`<div class="small">On their first day: welcome them, tour the store, share store contacts and start the training videos.</div>`:""}
+    ${r?.status==="pending"?`<div class="row-actions"><button type="button" class="btn sm ghost" data-sreqcancel="${esc(r.id)}">Undo hire decision</button></div>`:""}
+  </div>`;
+}
+function renderWalkin(){
+  const host=$("#sDrawerHost"); const t=dayKey(new Date());
+  if(["wName","wPhone","wEmail","wDept","wApplied","wDate","wTime","wNote"].includes(document.activeElement?.id)&&host.querySelector(".drawer")) return;
+  host.innerHTML=`<div class="scrim" data-sclose></div>
+  <aside class="drawer" role="dialog" aria-label="Add a walk-in hire">
+    <div class="d-head"><div><h2 class="d-name"><span class="tr-ok">Add a walk-in hire</span></h2><div class="small">Only for someone you already hired at ${esc(sStore())}. The hiring office reviews it and sends the offer and onboarding.</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
+    <form class="d-sec" id="wForm">
+      <div class="d-grid">
+        <label style="grid-column:1/-1">Full name<input id="wName" required autocomplete="off" placeholder="First and last name"></label>
+        <label>Phone<input id="wPhone" inputmode="tel" autocomplete="off" placeholder="915-555-1234"></label>
+        <label>Email<input id="wEmail" type="email" autocomplete="off" placeholder="optional"></label>
+        <label>Department / position<input id="wDept" list="sDeptList2" required autocomplete="off" placeholder="e.g. Cashier"></label>
+        <label>Application date<input id="wApplied" type="date" value="${t}" max="${t}" required></label>
+        <label>First day you discussed<input id="wDate" type="date"></label>
+        <label>Start time<input id="wTime" type="time"></label>
+        <label>Language<select id="wLang"><option>English</option><option>Spanish</option></select></label>
+        <label>Note (optional)<input id="wNote" autocomplete="off" placeholder="e.g. Referred by Rosa"></label>
+      </div>
+      <datalist id="sDeptList2">${DEPTS.map(d=>`<option value="${esc(d)}">`).join("")}</datalist>
+      <div class="s-certs"><span class="small">Did you get a copy?</span>
+        <label class="ccheck"><input type="checkbox" id="wFh"> Food Handler card</label>
+        <label class="ccheck"><input type="checkbox" id="wTabc"> TABC certificate</label></div>
+      <div class="row-actions"><button type="submit" class="btn primary" id="wSend">Send to the hiring team</button><button type="button" class="btn ghost" data-sclose>Cancel</button><span class="small auth-err" id="wMsg"></span></div>
+    </form>
+  </aside>`;
+  setTimeout(()=>$("#wName")?.focus(),30);
 }
 function renderStoreDrawer(){
+  if(sWalkin) return renderWalkin();
   const a=sApps.find(x=>x.id===sOpen), host=$("#sDrawerHost");
   if(!a){ host.innerHTML=""; sOpen=null; return; }
-  if(["sNote","rPos","rPay","rStart","rNote","sdDate","sdTime","sdNote","spNote","ivS1","ivS2","ivS3","ivAsk","ivNote","ivAt"].includes(document.activeElement?.id)&&host.querySelector(".drawer")) return;
+  if(["hPos","hDate","hTime","hNote","sNote","rPos","rPay","rStart","rNote","sdDate","sdTime","sdNote","spNote","ivS1","ivS2","ivS3","ivAsk","ivNote","ivAt"].includes(document.activeElement?.id)&&host.querySelector(".drawer")) return;
   const scroll=host.querySelector(".drawer")?.scrollTop||0;
   const st=sStatus(a), notes=sNotes.filter(n=>n.candidate_id===a.id), tel=(a.phone||"").replace(/[^\d+]/g,"");
   host.innerHTML=`<div class="scrim" data-sclose></div>
   <aside class="drawer" role="dialog" aria-label="${esc(a.name||"Applicant")}">
-    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2><div class="small">Shared with ${esc(sStore())} ${esc(fmtDateTime(a.shared_at))}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
-    <div class="d-sec">${a.claimed_at?`<div>${sBadge(st,a)} <span class="small">Claimed ${esc(fmtDateTime(a.claimed_at))}</span></div>`
-      :`<div class="row-actions"><button type="button" class="btn primary" data-sclaim>Claim for ${esc(sStore())}</button><span class="small">Takes them for your store so other stores can’t.</span></div>`}</div>
+    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2><div class="small">${a.walkin?"Walk-in":"Shared with "+esc(sStore())+" "+esc(fmtDateTime(a.shared_at))}${a.claimed_at?` · claimed${a.claimed_by?" by "+esc(a.claimed_by):""}`:""}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
+
+    ${sSteps(a)}
+    ${sPassing?"":sNextSection(a)}
+    ${sPassSection(a)}
     <div class="d-sec"><h3>Contact</h3>
       <div class="contactrow">${a.phone?`<span class="mono">${esc(a.phone)}</span><a class="btn sm" href="tel:${esc(tel)}">Call</a><a class="btn sm" href="sms:${esc(tel)}">Text</a><button type="button" class="btn sm ghost" data-scopy="${esc(a.phone)}">Copy</button>`:`<span class="small">No phone on file</span>`}</div>
       <div class="contactrow">${a.email?`<span style="overflow-wrap:anywhere">${esc(a.email)}</span><a class="btn sm" href="mailto:${esc(a.email)}">Email</a><button type="button" class="btn sm ghost" data-scopy="${esc(a.email)}">Copy</button>`:`<span class="small">No email on file</span>`}</div></div>
@@ -2760,8 +3193,7 @@ function renderStoreDrawer(){
         <div><b>Full / part-time</b><span>${esc(a.employment_type||"—")}</span></div><div><b>Shift</b><span>${esc(a.shift||"—")}</span></div>
         <div><b>Can start</b><span>${esc(fmtDate(a.can_start)||"—")}</span></div><div><b>Language</b><span>${esc(a.form_language||"—")}</span></div></div>
       <div>${sDays(a)}</div>${a.availability?`<div class="pre">${esc(a.availability)}</div>`:""}</div>
-    ${sHireSection(a)}
-    ${sPassSection(a)}
+
     <div class="d-sec"><h3>Store notes <span style="text-transform:none;letter-spacing:0;font-weight:400">· the office sees these too</span></h3>
       ${notes.length?`<div>${notes.map(n=>`<div class="snote">${esc(n.body)}<span class="small">${esc(n.author||n.author_email)} · ${esc(fmtDateTime(n.created_at))}</span></div>`).join("")}</div>`:`<div class="none">No notes yet.</div>`}
       <textarea id="sNote" rows="2" placeholder="Add a note: called, left voicemail, interviewed…"></textarea>
@@ -2772,14 +3204,25 @@ function renderStoreDrawer(){
 $("#sKpis").addEventListener("click",e=>{ const k=e.target.closest("[data-skpi]"); if(!k) return;
   if(k.dataset.skpi==="__open"){ $("#sOpenPanel").scrollIntoView({behavior:"smooth",block:"start"}); return; }
   sFilter=k.dataset.skpi; renderStoreApp(); $("#sAppsHead").scrollIntoView({behavior:"smooth",block:"start"}); });
-$("#sSoonList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sReqForm=false; sStartEdit=false; sPassing=false; sIvForm=false; sNoShowAsk=false; renderStoreDrawer(); } });
+$("#sSoonList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sWalkin=false; sHireForm=false; sReqForm=false; sStartEdit=false; sPassing=false; sIvForm=false; sNoShowAsk=false; renderStoreDrawer(); } });
 $("#sPipe").addEventListener("click",e=>{ const b=e.target.closest("[data-sf]"); if(b){ sFilter=b.dataset.sf; renderStoreApp(); } });
-$("#sList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sReqForm=false; sStartEdit=false; sPassing=false; sIvForm=false; sNoShowAsk=false; renderStoreDrawer(); } });
+$("#sList").addEventListener("click",e=>{ const b=e.target.closest("[data-sopen]"); if(b){ sOpen=b.dataset.sopen; sWalkin=false; sHireForm=false; sReqForm=false; sStartEdit=false; sPassing=false; sIvForm=false; sNoShowAsk=false; renderStoreDrawer(); } });
 $("#sSignOut").addEventListener("click",()=>sb.auth.signOut());
 $("#sDrawerHost").addEventListener("click",async e=>{
   const t=e.target;
-  if(t.closest("[data-sclose]")){ sOpen=null; $("#sDrawerHost").innerHTML=""; return; }
+  if(t.closest("[data-sclose]")){ sOpen=null; sWalkin=false; $("#sDrawerHost").innerHTML=""; return; }
   const a=sApps.find(x=>x.id===sOpen); if(!a) return;
+  if(t.closest("[data-shire]")){ if(sPreview){ previewBlock(); return; } sHireForm=true; sIvForm=false; renderStoreDrawer(); $("#hDate")?.focus(); return; }
+  if(t.closest("[data-shirex]")){ sHireForm=false; document.activeElement?.blur(); renderStoreDrawer(); return; }
+  const hs=t.closest("[data-shiresend]");
+  if(hs){ if(sPreview){ previewBlock(); return; }
+    const pos=$("#hPos").value.trim(), sdate=$("#hDate").value, stime=$("#hTime").value, hnote=$("#hNote").value.trim();
+    if(!pos){ toast("Enter the position."); $("#hPos").focus(); return; }
+    if(!sdate){ toast("Enter the first day you discussed."); $("#hDate").focus(); return; }
+    hs.disabled=true; document.activeElement?.blur();
+    const {error}=await sb.rpc("store_hire",{cid:a.id,pos,sdate,stime:stime||null,fh:$("#hFh").checked,tabc:$("#hTabc").checked,hnote:hnote||null,who:staffRow.name||me.email});
+    if(error){ hs.disabled=false; toast(/claim/i.test(error.message)?"Claim this applicant first.":"Couldn’t send. Try again."); return; }
+    sHireForm=false; sFilter="hired"; toast(`Sent. The hiring office will send ${a.name||"them"} the offer and onboarding.`); loadStore(); return; }
   const cp0=t.closest("[data-scopy]"); if(cp0) return copyText(cp0.dataset.scopy);
   if(sPreview&&t.closest("button:not([data-sclose])")){ previewBlock(); return; }
   const who=staffRow.name||me.email;
@@ -2804,7 +3247,7 @@ $("#sDrawerHost").addEventListener("click",async e=>{
     sReqForm=false; document.activeElement?.blur(); toast("Sent. The office will review it and send the offer."); loadStore(); return; }
   const ivf=t.closest("[data-ivform]"); if(ivf){ sIvForm=ivf.dataset.ivform==="close"?false:ivf.dataset.ivform; document.activeElement?.blur(); renderStoreDrawer(); return; }
   const ivs=t.closest("[data-ivsend],[data-ivself]");
-  if(ivs){ const self=ivs.hasAttribute("data-ivself"), ask=$("#ivAsk").value.trim(), inote=$("#ivNote").value.trim();
+  if(ivs){ const self=ivs.hasAttribute("data-ivself"), ask=($("#ivAsk")?.value||"").trim(), inote=($("#ivNote")?.value||"").trim();
     let error;
     if(self){ const at=$("#ivAt").value; if(!at){ toast("Pick the interview date and time."); return; } ivs.disabled=true;
       ({error}=await sb.rpc("store_schedule_interview",{cid:a.id,at:at.slice(0,16),ask:ask||null,inote:inote||null,who})); }
@@ -2818,7 +3261,7 @@ $("#sDrawerHost").addEventListener("click",async e=>{
     const iv=sIv(a); if(!iv) return; ivo.disabled=true;
     const {error}=await sb.rpc("interview_outcome",{rid:iv.id,res:m,who});
     if(error){ ivo.disabled=false; toast("Couldn’t save. Try again."); return; }
-    sNoShowAsk=false; if(m==="noshow"){ sOpen=null; $("#sDrawerHost").innerHTML=""; toast("Marked as no show. The office has been notified."); } else toast("Great. Next: request approval to hire, or pass.");
+    sNoShowAsk=false; if(m==="noshow"){ sOpen=null; $("#sDrawerHost").innerHTML=""; toast("Marked as no show. The office has been notified."); } else toast("Saved.");
     loadStore(); return; }
   const sp=t.closest("[data-spass]");
   if(sp){ const m=sp.dataset.spass;
@@ -2840,7 +3283,31 @@ $("#sDrawerHost").addEventListener("click",async e=>{
   if(cx){ const {error}=await sb.from("hire_requests").update({status:"cancelled"}).eq("id",cx.dataset.sreqcancel);
     toast(error?"Couldn’t cancel.":"Request cancelled."); loadStore(); return; }
 });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&sOpen){ sOpen=null; $("#sDrawerHost").innerHTML=""; } });
+
+$("#sDrawerHost").addEventListener("change",async e=>{
+  const cb=e.target.closest("[data-scert]"); if(!cb) return;
+  if(sPreview){ cb.checked=!cb.checked; previewBlock(); return; }
+  const a=sApps.find(x=>x.id===sOpen); if(!a) return;
+  const k=cb.dataset.scert, args={cid:a.id,fh:null,tabc:null,who:staffRow.name||me.email}; args[k]=cb.checked;
+  cb.disabled=true;
+  const {error}=await sb.rpc("store_certs",args);
+  cb.disabled=false;
+  if(error){ cb.checked=!cb.checked; toast("Couldn’t save. Try again."); return; }
+  a[k+"_have"]=cb.checked; toast(cb.checked?`${CERTS[k].short} copy collected. The office sees it.`:`${CERTS[k].short} unchecked.`); loadStore();
+});
+$("#sDrawerHost").addEventListener("submit",async e=>{
+  if(e.target.id!=="wForm") return; e.preventDefault();
+  if(sPreview){ previewBlock(); return; }
+  const v=id=>($("#"+id)?.value||"").trim(), msg=$("#wMsg");
+  if(!v("wPhone")&&!v("wEmail")){ msg.textContent="Add a phone number or email."; return; }
+  const btn=$("#wSend"); btn.disabled=true; msg.textContent="";
+  const {error}=await sb.rpc("submit_walkin",{wname:v("wName"),wphone:v("wPhone")||null,wemail:v("wEmail")||null,wdept:v("wDept"),wapplied:v("wApplied"),
+    sdate:v("wDate")||null,stime:v("wTime")||null,fh:$("#wFh").checked,tabc:$("#wTabc").checked,wnote:v("wNote")||null,wlang:v("wLang"),who:staffRow.name||me.email});
+  if(error){ btn.disabled=false; msg.textContent=/Too many/i.test(error.message)?"Too many walk-ins today. Call the hiring office.":/date/i.test(error.message)?"Check the application date.":"Couldn’t send. Try again."; return; }
+  sWalkin=false; $("#sDrawerHost").innerHTML=""; sFilter="hired"; toast(`${v("wName")} sent to the hiring office for review.`); loadStore();
+});
+$("#sWalkinBtn").addEventListener("click",()=>{ sOpen=null; sWalkin=true; renderWalkin(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&(sOpen||sWalkin)){ sOpen=null; sWalkin=false; $("#sDrawerHost").innerHTML=""; } });
 
 /* ---------- store page: English / Español ---------- */
 let sLang=(()=>{ let v=null; try{ v=localStorage.getItem("vista-store-lang"); }catch{} return v||(/^es/i.test(navigator.language||"")?"es":"en"); })();
@@ -2909,13 +3376,23 @@ const ES={
  "e.g. Interviewed Tuesday, great fit for mornings":"ej. Entrevistado el martes, ideal para las mañanas","e.g. Ask for Rosa at the deli":"ej. Preguntar por Rosa en la salchichonería",
  "e.g. Gustavo at customer service":"ej. Gustavo en servicio al cliente","e.g. Gustavo":"ej. Gustavo","e.g. Mornings only this week":"ej. Solo mañanas esta semana",
  "e.g. Confirmed by phone":"ej. Confirmado por teléfono","e.g. Needs weekends off":"ej. Necesita fines de semana libres","Store view":"Vista de tienda","Back to office view":"Volver a la oficina",
- "This is a preview of the store’s page. Go back to the office view to make changes.":"Esta es una vista previa de la página de la tienda. Vuelva a la oficina para hacer cambios."
+ "This is a preview of the store’s page. Go back to the office view to make changes.":"Esta es una vista previa de la página de la tienda. Vuelva a la oficina para hacer cambios.",
+ "Claim":"Reclamar","Call & set interview":"Llamar y fijar entrevista","Hire or pass":"Contratar o rechazar","First day & FH/TABC":"Primer día y FH/TABC","+ Add a walk-in hire":"+ Agregar contratación sin cita","Interviewing":"En entrevista","Starting":"Por empezar","When you decide to hire, the hiring office sends the offer and onboarding. You just welcome them on their first day.":"Cuando decida contratar, la oficina de contratación envía la oferta y el registro. Usted solo le da la bienvenida en su primer día.","Call & interview":"Llamar y entrevistar","First day":"Primer día","Claim them so other stores can’t. Then call to set up an interview.":"Reclámelo para que otras tiendas no puedan. Luego llame para fijar una entrevista.","Call, agree on a day and time for an in-person interview, then save it here. It goes on the hiring office calendar.":"Llame, acuerden día y hora para una entrevista en persona y guárdela aquí. Aparece en el calendario de la oficina.","Change the interview time":"Cambiar la hora de la entrevista","Already interviewed? Hire":"¿Ya lo entrevistó? Contratar","How did it go?":"¿Cómo le fue?","After the interview, decide:":"Después de la entrevista, decida:","✓ Hire":"✓ Contratar","✕ Pass":"✕ Rechazar","No show":"No se presentó","Change time":"Cambiar hora","The hiring office sends the offer and onboarding. Tell them the position and the first day you discussed.":"La oficina de contratación envía la oferta y el registro. Indique el puesto y el primer día que acordaron.","First day you discussed":"Primer día acordado","Start time":"Hora de entrada","Note (optional)":"Nota (opcional)","Did you get a copy?":"¿Recibió una copia?","Food Handler card":"Tarjeta de Manejo de Alimentos","TABC certificate":"Certificado TABC","(if their job sells alcohol)":"(si su puesto vende alcohol)","Send to the hiring team":"Enviar al equipo de contratación","Hired ✓":"Contratado ✓","Sent to the hiring team ✓":"Enviado al equipo de contratación ✓","Onboarding is done.":"El registro está completo.","The office approved it and is sending the offer and onboarding.":"La oficina lo aprobó y está enviando la oferta y el registro.","The office will send the offer and onboarding.":"La oficina enviará la oferta y el registro.","First day not set yet.":"Primer día aún sin fijar.","Copies collected":"Copias recibidas","(needed before their first shift)":"(necesarias antes de su primer turno)","TABC seller-server":"TABC vendedor-mesero","(not needed for this job)":"(no se necesita para este puesto)","On their first day: welcome them, tour the store, share store contacts and start the training videos.":"En su primer día: deles la bienvenida, un recorrido por la tienda, los contactos de la tienda y empiecen los videos de capacitación.","Undo hire decision":"Deshacer decisión de contratar","Add a walk-in hire":"Agregar contratación sin cita","Full name":"Nombre completo","Phone":"Teléfono","Department / position":"Departamento / puesto","Application date":"Fecha de solicitud","Interview at your store":"Entrevista en su tienda","Interview done? Tell us: hire or pass":"¿Ya fue la entrevista? Díganos: contratar o rechazar","Decide":"Decidir","Call to invite":"Llamar para invitar","Interviewed · decide":"Entrevistado · decidir","Walk-in":"Sin cita","Saved.":"Guardado.","Interview date & time":"Fecha y hora de la entrevista","Who should they ask for?":"¿Por quién debe preguntar?","Save interview":"Guardar entrevista",
+ "Request a position":"Pedir un puesto","How hiring works with the hiring office":"Cómo funciona la contratación con la oficina","You request a position.":"Usted pide un puesto.","Tell us the job, how many, full or part-time and the shift.":"Díganos el puesto, cuántos, tiempo completo o medio tiempo y el turno.","We post the job and screen applicants.":"Publicamos el empleo y filtramos a los solicitantes.","We call them and check their availability.":"Les llamamos y revisamos su disponibilidad.","Good fits show up under New.":"Los buenos candidatos aparecen en Nuevo.","Claim the ones you want so other stores can’t.":"Reclame a los que quiera para que otras tiendas no puedan.","You call and set the interview.":"Usted llama y fija la entrevista.","Save the day and time here so it’s on our calendar.":"Guarde el día y la hora aquí para que aparezca en nuestro calendario.","You decide: hire or pass.":"Usted decide: contratar o rechazar.","If you hire, add the first day you discussed and whether you got their Food Handler and TABC copies.":"Si contrata, agregue el primer día acordado y si recibió sus copias de Manejo de Alimentos y TABC.","We send the offer and onboarding,":"Enviamos la oferta y el registro,","then email you and the new hire the first-day details.":"y luego le enviamos a usted y al nuevo empleado los detalles del primer día.","First day:":"Primer día:","welcome them, tour the store, share store contacts, start the training videos and keep a copy of their FH and TABC.":"deles la bienvenida, un recorrido por la tienda, los contactos de la tienda, empiecen los videos de capacitación y guarde una copia de su FH y TABC.","Hired someone who walked in? Use":"¿Contrató a alguien que llegó sin cita? Use","and we’ll take it from there.":"y nosotros nos encargamos del resto.","What happens next:":"Lo que sigue:","the hiring office posts the job and screens applicants. The good fits show up under":"la oficina publica el empleo y filtra a los solicitantes. Los buenos candidatos aparecen en","for you to claim and interview.":"para que usted los reclame y entreviste.","New":"Nuevo","Either":"Cualquiera","Closing":"Cierre","Any shift":"Cualquier turno",
+ "e.g. Mornings, Mon–Fri":"ej. Mañanas, lun–vie","e.g. Gustavo":"ej. Gustavo","First and last name":"Nombre y apellido","optional":"opcional","e.g. Referred by Rosa":"ej. Lo recomendó Rosa","e.g. Cashier":"ej. Cajero"
 };
 const ES_PREFIX=[["Approved by ","Aprobado por "],["Claimed · ","Reclamado · "],["Claimed ","Reclamado "],["Requested by ","Solicitado por "],["Shared with ","Compartido con "],["Shared ","Compartido "],
  ["confirmed by ","confirmado por "],["sent ","enviado "],["by ","por "],["Hired for ","Contratado para "],["Hired · starts ","Contratado · empieza "],["Hired · started ","Contratado · empezó "],
  ["Starts ","Empieza "],["First day: ","Primer día: "],["Started: ","Empezó: "],["First day · ","Primer día · "],["They’ll ask for ","Preguntará por "],["Interview ","Entrevista "],
  ["Claim for ","Reclamar para "],["Pass on ","Rechazar a "],["Store view: ","Vista de tienda: "]];
 const ES_RX=[
+ [/^get (.+) copy$/,"falta copia de $1"],[/^Walk-in · (.+)$/,"Sin cita · $1"],
+ [/^Want (.+) for (.+)\?$/,"¿Quiere a $1 para $2?"],[/^Claim for (.+)$/,"Reclamar para $1"],[/^Call (.+) to invite them$/,"Llame a $1 para invitarlo"],[/^Call (\(?\d.*)$/,"Llamar al $1"],
+ [/^Hire (.+)$/,"Contratar a $1"],[/^Interview (.+)$/,"Entrevista $1"],[/^First day: (.+)$/,"Primer día: $1"],[/^They’ll ask for (.+)$/,"Preguntará por $1"],
+ [/^Sent to hiring team(.*)$/,"Enviado a contratación$1"],[/^Need (.+)$/,"Falta $1"],[/^Sent (.+)\.$/,"Enviado $1."],
+ [/^Only for someone you already hired at (.+)\. The hiring office reviews it and sends the offer and onboarding\.$/,"Solo para alguien que ya contrató en $1. La oficina lo revisa y envía la oferta y el registro."],
+ [/^(.+) sent to the hiring office for review\.$/,"$1 se envió a la oficina para revisión."],[/^Sent\. The hiring office will send (.+) the offer and onboarding\.$/,"Enviado. La oficina enviará a $1 la oferta y el registro."],
+ [/^(Food Handler|TABC) copy collected\. The office sees it\.$/,"Copia de $1 recibida. La oficina la ve."],
  [/^(\d+) applicants? · synced$/,(m,n)=>`${n} solicitante${n==="1"?"":"s"} · sincronizado`],[/^(\d+) applicants?$/,(m,n)=>`${n} solicitante${n==="1"?"":"s"}`],
  [/^(.+) hiring$/,"Contratación · $1"],[/^· (\d+) needed$/,(m,n)=>n==="1"?"· se necesita 1":`· se necesitan ${n}`],[/^(\d+) needed$/,(m,n)=>n==="1"?"se necesita 1":`se necesitan ${n}`],
  [/^((Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)(, | and |, and )?)+$/,m=>m.replace(/Sunday/g,"domingo").replace(/Monday/g,"lunes").replace(/Tuesday/g,"martes").replace(/Wednesday/g,"miércoles").replace(/Thursday/g,"jueves").replace(/Friday/g,"viernes").replace(/Saturday/g,"sábado").replace(/ and /g," y ")],
@@ -2928,7 +3405,7 @@ const ES_RX=[
  [/^(.+)\. Next: request approval to hire, or pass below\.$/,"$1. Siguiente: pida aprobación para contratar o rechácelo abajo."],
  [/^Pass on (.+)$/,"Rechazar a $1"],[/^· preview only/,"· solo vista previa"]
 ];
-function esAgo(t){ return t.replace(/\b(\d+)m ago\b/g,"hace $1 min").replace(/\b(\d+)h ago\b/g,"hace $1 h").replace(/\b(\d+)d ago\b/g,(m,n)=>`hace ${n} día${n==="1"?"":"s"}`)
+function esAgo(t){ return t.replace(/ · claimed by /g," · reclamado por ").replace(/^claimed by /,"reclamado por ").replace(/ · claimed$/," · reclamado").replace(/\b(\d+)m ago\b/g,"hace $1 min").replace(/\b(\d+)h ago\b/g,"hace $1 h").replace(/\b(\d+)d ago\b/g,(m,n)=>`hace ${n} día${n==="1"?"":"s"}`)
   .replace(/ at (\d{1,2}:\d{2})/g," a las $1").replace(/\/hr\b/g,"/h").replace(/ · preview only · manager: /," · solo vista previa · gerente: ").replace(/ · preview only · no manager added yet/," · solo vista previa · sin gerente todavía"); }
 function trES(t){
   const k=t.trim(); if(!k) return t;
@@ -2947,7 +3424,7 @@ function trRoot(root){
   if(!root) return;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let n; const list=[];
   while(n=w.nextNode()) list.push(n);
-  for(const n of list){ const p=n.parentElement; if(!p||p.closest("script,style,.nm,.d-name,#sLangBtn")) continue;
+  for(const n of list){ const p=n.parentElement; if(!p||(p.closest("script,style,.nm,.d-name,#sLangBtn")&&!p.closest(".tr-ok"))) continue;
     if(p.closest(".days")&&/^[SMTWF]$/.test(n.nodeValue)){ const i=[...p.parentElement.children].indexOf(p); if(!_orig.has(n)) _orig.set(n,n.nodeValue); n.nodeValue="DLMMJVS"[i]||n.nodeValue; continue; }
     const v=trES(n.nodeValue); if(v!==n.nodeValue){ if(!_orig.has(n)) _orig.set(n,n.nodeValue); n.nodeValue=v; } }
   root.querySelectorAll?.("[placeholder]").forEach(e=>{ const v=trES(e.placeholder); if(v!==e.placeholder){ if(!e.dataset.enPh) e.dataset.enPh=e.placeholder; e.placeholder=v; } });
