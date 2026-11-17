@@ -1404,9 +1404,17 @@ function stageEnteredAt(c){ const h=(c.history||[]).filter(x=>x.stage===c.stage)
 /* ---------- email fill ---------- */
 function tplFor(stage,lang,ch){ if(ch==="sms"){ const o=tplOverrides[stage]?.[lang+"_sms"]; return o||{s:"",b:DEFAULT_SMS[stage][lang]}; }
   const o=tplOverrides[stage]?.[lang]; return o||DEFAULT_TPL[stage][lang]; }
-function textFor(c,stage,lang){ const t=tplFor(stage,lang,"sms"), v=tokenValues(c,lang); return {b:fill(t.b,v), bHtml:fill(esc(t.b),v,true), missing:/\[[a-z ]+\]/.test(fill(t.b,v))}; }
+function textFor(c,stage,lang){ const t=tplFor(stage,lang,"sms"), v=tokenValues(c,lang,stage); return {b:fill(t.b,v), bHtml:fill(esc(t.b),v,true), missing:/\[[a-z ]+\]/.test(fill(t.b,v))}; }
 function smsUrl(phone,body){ const d=digits(phone); return d.length===10?`sms:+1${d}&body=${encodeURIComponent(body)}`:""; }
-function tokenValues(c,lang){
+// Early-stage messages read naturally without a store or position; later ones need the real details.
+const SOFT_TPL=new Set(["new","screen","noshow","future","declined"]);
+function tokenValues(c,lang,stage){
+  const v=tokenValues0(c,lang), es=lang==="es";
+  if(SOFT_TPL.has(stage)){ if(!v.store_name) v.store_name="Vista Markets"; if(!v.store) v.store="Vista Markets"; if(!v.position) v.position=es?"un puesto":"a position"; }
+  if(stage==="st_candidate"&&!v.position) v.position=es?"cualquier puesto (abierto a lo que haya)":"any position (open to what you need)";
+  return v;
+}
+function tokenValues0(c,lang){
   const snd=SENDERS[c.interviewer]||SENDERS.Miguel, es=lang==="es";
   const respond=new Date(Date.now()+2*864e5);
   return {
@@ -1440,7 +1448,7 @@ function tokenValuesLinks(es){ return {fh:es?"https://www.360training.com/course
 function fill(str,vals,mark){
   return str.replace(/\{([a-z_]+)\}/g,(m,k)=>{ if(!(k in vals)) return m; const v=vals[k]; if(v) return mark?esc(v):v; if(OPTIONAL_TOKENS.has(k)) return ""; return mark?`<span class="missing">[${k.replace(/_/g," ")}]</span>`:`[${k.replace(/_/g," ")}]`; }).replace(/([ap]\.m\.)\./g,"$1");
 }
-function emailFor(c,stage,lang){ const t=tplFor(stage,lang), v=tokenValues(c,lang); return {s:fill(t.s,v), b:fill(t.b,v), sHtml:fill(esc(t.s),v,true), bHtml:fill(esc(t.b),v,true), missing:/\{|\[[a-z ]+\]/.test(fill(t.s+t.b,v))}; }
+function emailFor(c,stage,lang){ const t=tplFor(stage,lang), v=tokenValues(c,lang,stage); return {s:fill(t.s,v), b:fill(t.b,v), sHtml:fill(esc(t.s),v,true), bHtml:fill(esc(t.b),v,true), missing:/\{|\[[a-z ]+\]/.test(fill(t.s+t.b,v))}; }
 
 /* ---------- email compose links ---------- */
 const MAILERS={
@@ -1994,15 +2002,25 @@ function storeTplFor(c){ return storeMailTpl||({offer:"st_onboarded",hired:"st_f
 function storeLangFor(c){ const t=storeTplFor(c); return storeMailLang||(t==="st_firstday"&&isSpanish(c)?"es":"en"); }
 function storeRecipients(c,tpl){ const se=(c.store?storeInfo(c.store).email:"")||""; const list=se.split(/[;,\s]+/).filter(Boolean);
   if(tpl==="st_firstday"&&c.email) list.unshift(c.email); return list; }
+
+function blankWarn(c,tpl){
+  const need=[]; if(!c.store&&!SOFT_TPL.has(tpl)) need.push("store"); if(!c.hireFor&&!SOFT_TPL.has(tpl)&&tpl!=="st_candidate") need.push("Hiring for (position)");
+  if(["screen","interview","st_candidate"].includes(tpl)&&!c.interviewDate) need.push(tpl==="screen"?"Screen / interview time":"interview time");
+  if(["hired","st_firstday"].includes(tpl)&&!c.offerStart) need.push("start date");
+  if(["hired","st_firstday"].includes(tpl)&&!c.offerStartTime) need.push("start time");
+  if(tpl==="offer"&&!c.offerRate) need.push("pay rate");
+  return `Fill in ${need.length?"<b>"+need.map(esc).join(", ")+"</b>":"the red items"} on this card to unlock the send buttons, so nothing goes out with blanks. Copy still works.`;
+}
 function refreshStoreMail(c){
   const box=document.getElementById("storeMailBox"); if(!box) return;
   const tpl=storeTplFor(c), lang=storeLangFor(c), m=emailFor(c,tpl,lang), to=storeRecipients(c,tpl), hasStoreEmail=!!(c.store&&storeInfo(c.store).email);
-  const toStr=to.join(","), mailer=getMailer(), cell=c.store?(storeInfo(c.store).cell||""):"", tx=textFor(c,tpl,lang), sms=smsUrl(cell,tx.b)||`sms:&body=${encodeURIComponent(tx.b)}`;
+  const toStr0=to.join(","), mailer=getMailer(), cell=c.store?(storeInfo(c.store).cell||""):"", tx=textFor(c,tpl,lang), sms0=smsUrl(cell,tx.b)||`sms:&body=${encodeURIComponent(tx.b)}`;
+  const blocked=m.missing||tx.missing||!c.store, toStr=blocked?"":toStr0, sms=blocked?"":sms0;
   const app=toStr?`mailto:${to.map(encodeURIComponent).join(",")}?subject=${encodeURIComponent(m.s)}&body=${encodeURIComponent(m.b.replace(/\n/g,"\r\n"))}`:"";
   const web=toStr?composeUrl(mailer,toStr,m.s,m.b):"";
-  const warn=!c.store?`<div class="warn">Set the store on this card first.</div>`:!hasStoreEmail?`<div class="warn">No manager email for ${esc(c.store)} yet. Add it on the <a href="#" data-gostores>Stores tab</a>.</div>`:"";
+  const warn=!c.store?`<div class="warn">Set the store on this card first.</div>`:blocked?`<div class="warn">${blankWarn(c,tpl)}</div>`:!hasStoreEmail?`<div class="warn">No manager email for ${esc(c.store)} yet. Add it on the <a href="#" data-gostores>Stores tab</a>.</div>`:"";
   box.innerHTML=`${warn}<div class="mail">
-    <div class="mh"><span class="small">To: ${esc(to.join(", ")||"—")}${tpl==="st_firstday"?" (new hire + store)":""}</span>
+    <div class="mh"><span class="small">To: ${esc(toStr0.split(",").join(", ")||"—")}${tpl==="st_firstday"?" (new hire + store)":""}</span>
       <span class="row-actions">${app?`<a class="btn sm primary" href="${esc(app)}" style="text-decoration:none">Open in Outlook app</a><a class="btn sm" href="${esc(web)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(MAILERS[mailer].label)} on the web</a>`:""}<button class="btn sm" data-copystore="s">Copy subject</button><button class="btn sm" data-copystore="b">Copy message</button></span></div>
     <div class="subj">${m.sHtml}</div><div class="bdy">${m.bHtml}</div></div>
     <div class="mail" style="margin-top:4px">
@@ -2017,15 +2035,15 @@ function refreshMail(c){
   const ms=mailStage||c.stage, ml=mailLang||(isSpanish(c)?"es":"en"), m=emailFor(c,ms,ml);
   const mailer=getMailer(), web=c.email?composeUrl(mailer,c.email,m.s,m.b):"";
   const app=c.email?`mailto:${encodeURIComponent(c.email)}?subject=${encodeURIComponent(m.s)}&body=${encodeURIComponent(m.b.replace(/\n/g,"\r\n"))}`:"";
-  const tx=textFor(c,ms,ml), sms=smsUrl(c.phone,tx.b);
-  box.innerHTML=`<div class="mail">
+  const tx=textFor(c,ms,ml), sms=smsUrl(c.phone,tx.b), block=m.missing, blockT=tx.missing;
+  box.innerHTML=`${block||blockT?`<div class="warn">${blankWarn(c,ms)}</div>`:""}<div class="mail">
     <div class="mh"><span class="small">To: ${esc(c.email||"no email on file")}</span>
-      <span class="row-actions">${app?`<a class="btn sm primary" href="${esc(app)}" style="text-decoration:none">Open in Outlook app</a><a class="btn sm" href="${esc(web)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(MAILERS[mailer].label)} on the web</a>`:""}<button class="btn sm" data-copymail="s">Copy subject</button><button class="btn sm" data-copymail="b">Copy message</button></span></div>
+      <span class="row-actions">${app&&!block?`<a class="btn sm primary" href="${esc(app)}" style="text-decoration:none">Open in Outlook app</a><a class="btn sm" href="${esc(web)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(MAILERS[mailer].label)} on the web</a>`:""}<button class="btn sm" data-copymail="s">Copy subject</button><button class="btn sm" data-copymail="b">Copy message</button></span></div>
     <div class="subj">${m.sHtml}</div><div class="bdy">${m.bHtml}</div></div>
     ${app?`<div class="row-actions small">Web button uses <select id="mailer" class="btn sm" aria-label="Email service">${Object.entries(MAILERS).map(([k,v])=>`<option value="${k}" ${k===mailer?"selected":""}>${v.label}</option>`).join("")}</select> If the Outlook app doesn’t open, use the web button or the copy buttons.</div>`:""}
     <div class="mail" style="margin-top:4px">
       <div class="mh"><span class="small">Text to: <span class="mono">${esc(c.phone||"no phone on file")}</span> · ${tx.b.length} characters</span>
-        <span class="row-actions">${sms?`<a class="btn sm primary" href="${esc(sms)}" style="text-decoration:none">Open in Messages</a>`:""}<button class="btn sm" data-copytext>Copy text</button></span></div>
+        <span class="row-actions">${sms&&!blockT?`<a class="btn sm primary" href="${esc(sms)}" style="text-decoration:none">Open in Messages</a>`:""}<button class="btn sm" data-copytext>Copy text</button></span></div>
       <div class="bdy" style="padding-top:10px">${tx.bHtml}</div></div>
     ${m.missing||tx.missing?`<div class="small">Red items are blank on this card. Fill them in above (time, pay, start date…) before sending and the messages update.</div>`:""}`;
 }
