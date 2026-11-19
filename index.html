@@ -642,6 +642,7 @@ body.docked .wrap{max-width:1640px}
 .s-tip{background:var(--purple-soft,#F6F0FA);border-radius:10px;padding:8px 12px;font-size:.9rem;margin-bottom:10px}
 @media (max-width:640px){ .s-topbtns{width:100%} .s-topbtns .btn{flex:1 1 45%} }
 
+.s-pio{background:#FFFBEF;border:1px solid #F3C64A;border-radius:10px;padding:8px 10px;margin:6px 0;display:flex;flex-direction:column;gap:4px}
 .s-certs .ccheck{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
 .s-certs .ccheck .small{flex-basis:100%;padding-left:30px}
 
@@ -649,6 +650,53 @@ body.docked .wrap{max-width:1640px}
 .topt{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .topt b{width:18px;color:var(--purple,#8551A3)}
 .topt select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);color:var(--fg);font:inherit;font-size:.9rem}
+
+/* ===== Eastlake pioneers ===== */
+.pbadge{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;font-weight:700;color:#7A4E00;background:#FFF1C9;border:1px solid #F3C64A;border-radius:999px;padding:1px 8px}
+.pbadge.big{font-size:.82rem;padding:3px 10px}
+.pfilter[aria-pressed="true"]{background:#FFF1C9;border-color:#F3C64A;color:#7A4E00}
+.pio-sec{border:2px solid #F3C64A;border-radius:14px;padding:12px 14px;background:#FFFBEF}
+.pio-flags{display:flex;flex-direction:column;gap:4px;justify-content:center}
+.pio-ready{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.pchip{font-size:.75rem;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted);background:var(--surface)}
+.pchip.ok{color:#2F7A22;border-color:#9ED493;background:#F0FAEE}
+.pst{font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 8px;text-transform:none;letter-spacing:0}
+.pst-ready{background:#2F7A22;color:#fff}.pst-training{background:#0B7CC3;color:#fff}.pst-pipeline{background:#EADCF2;color:#5B3175}
+.east-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px;background:linear-gradient(135deg,#FFF8E1,#fff 60%)}
+.east-head h2{margin:0 0 4px;font-family:var(--display);color:var(--purple-deep,#5B3175)}
+.east-count .big{font-family:var(--display);font-size:2.6rem;font-weight:800;color:#C2410C;line-height:1;margin-right:6px}
+.east-head input[type=date]{margin-left:6px}
+.east-total{flex:1 1 420px;display:flex;flex-direction:column;gap:8px;max-width:620px}
+.dbar{display:flex;height:10px;border-radius:999px;background:#EEE8E1;overflow:hidden}
+.dbar.big{height:16px}
+.b-ready{background:#2F7A22}.b-train{background:#0B7CC3}.b-pipe{background:#B48AD0}.b-open{background:#EEE8E1}
+.legend{display:flex;gap:14px;flex-wrap:wrap}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.waves{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.wave{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.wave.now{border:2px solid #F37B20;background:#FFF6EE}.wave.past{opacity:.55}
+.now-tag{position:absolute;top:8px;right:10px;font-size:.7rem;font-weight:800;color:#fff;background:#F37B20;border-radius:999px;padding:1px 8px}
+.east-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:14px;align-items:start}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.dcard.empty{border-style:dashed}
+.dcard.add{border-style:dashed;gap:6px}
+.dc-head{display:flex;align-items:center;gap:8px}.dc-head h3{margin:0;font-size:1rem;flex:1}
+.dtarget{width:56px;padding:2px 6px}
+.open{color:#C2410C}.nolead{color:#B45309;font-weight:600}
+.dc-list{display:flex;flex-direction:column;gap:6px}
+.prow2{display:flex;flex-direction:column;gap:4px;border-top:1px dashed var(--line);padding-top:6px;cursor:pointer}
+.prow2:hover .pr-name b{color:var(--purple,#8551A3);text-decoration:underline}
+.pr-chips{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.lead{font-size:.7rem;font-weight:800;color:#7A4E00;background:#FFF1C9;border-radius:999px;padding:0 6px}
+.loadlist{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-width:520px}
+.loadlist>div{display:grid;grid-template-columns:110px 1fr 28px auto;gap:10px;align-items:center}
+.lbar{height:8px;background:#EEE8E1;border-radius:999px;overflow:hidden}.lbar i{display:block;height:100%;background:#0B7CC3}
+.east-add{margin-bottom:14px}
+@media (max-width:900px){ .waves{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:640px){ .east-count .big{font-size:2rem} .waves{grid-template-columns:1fr} }
+
+.pio-sec label.ccheck,.pio-sec .ccheck{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:.92rem;color:var(--fg);text-transform:none;letter-spacing:0;font-weight:500}
+.pio-sec .ccheck input{width:auto;margin:0}
+.pio-flags{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;gap:6px 18px;justify-content:flex-start!important}
 </style>
 </head>
 <body>
@@ -684,6 +732,7 @@ body.docked .wrap{max-width:1640px}
     <button role="tab" data-tab="applicants" aria-selected="false">Applicants<span class="count" id="tabCount"></span></button>
     <button role="tab" data-tab="add" aria-selected="false">Add applicant</button>
     <button role="tab" data-tab="calendar" aria-selected="false">Calendar</button>
+    <button role="tab" data-tab="eastlake" aria-selected="false">★ Eastlake<span class="count" id="eastCount"></span></button>
     <button role="tab" data-tab="future" aria-selected="false">Future pool<span class="count" id="futureCount"></span></button>
     <button role="tab" data-tab="templates" aria-selected="false">Email templates</button>
     <button role="tab" data-tab="stores" aria-selected="false">Stores</button>
@@ -725,6 +774,7 @@ body.docked .wrap{max-width:1640px}
         <select id="fType" aria-label="Employment type">
           <option value="">Full &amp; part-time</option><option>Full-time</option><option>Part-time</option>
         </select>
+        <button type="button" class="btn sm pfilter" id="fPio" aria-pressed="false" title="Show only Eastlake Pioneers">★ Pioneers</button>
         <select id="fSort" aria-label="Sort">
           <option value="new">Newest first</option><option value="start">Soonest start date</option><option value="name">Name A–Z</option>
         </select>
@@ -830,6 +880,10 @@ body.docked .wrap{max-width:1640px}
     <div class="panel"><h2 id="calAgendaTitle">Coming up</h2><div class="list" id="calAgenda"></div></div>
   </section>
 
+  <section class="view" id="v-eastlake" hidden>
+    <div id="eastBody"></div>
+  </section>
+
   <section class="view" id="v-future" hidden>
     <div class="panel">
       <h2>Future pool <span class="small">good people you didn’t hire yet</span></h2>
@@ -914,7 +968,7 @@ const STAGES=[
   {id:"declined",label:"Not moving forward",c:"--s-out"}
 ];
 // Email/text templates that aren't stages (the old "No show / no reply" stage is now a follow-up template + a reason under Not moving forward)
-const TPL_EXTRA=[{id:"noshow",label:"Follow-up: couldn’t reach",c:"--s-out"}];
+const TPL_EXTRA=[{id:"noshow",label:"Follow-up: couldn’t reach",c:"--s-out"},{id:"pioneer",label:"★ Pioneer offer (Eastlake)",c:"--s-offer"}];
 const TPL_LIST=STAGES.concat(TPL_EXTRA);
 // Emails sent to the store manager (not the applicant)
 const STORE_TPL=[{id:"st_candidate",label:"Candidate & interview",c:"--blue"},{id:"st_onboarded",label:"Onboarding done · confirm start",c:"--s-offer"},{id:"st_firstday",label:"First day · store + new hire",c:"--s-hired"}];
@@ -936,6 +990,32 @@ const DEPTS=["Cashier","Head Cashier","Stocker","Pricing","Office","Hot Deli","C
 
 /* ---------- default email templates ---------- */
 const DEFAULT_TPL={
+  pioneer:{en:{s:"Welcome to the Eastlake opening team – Vista Markets",b:`Hi {first_name},
+
+Congratulations! You're joining Vista Markets as one of our Eastlake Pioneers, the team that will open our new Eastlake store.
+
+Here's the plan:
+• Training: you'll start at {store_name} ({store_address}) as {position}, learning how we work with an experienced team.
+• Move: on {move_date} you'll move to Eastlake ({pioneer_dept}) to help set up and get ready for opening day.
+
+Your onboarding steps and first-day details will come in a separate email. If you have any questions, call or text me at {sender_phone}.
+
+We're excited to have you on the opening team!
+{sender_name}
+Vista Markets`},
+  es:{s:"Bienvenido(a) al equipo de apertura de Eastlake – Vista Markets",b:`Hola {first_name},
+
+¡Felicidades! Se une a Vista Markets como parte de nuestros Pioneros de Eastlake, el equipo que abrirá nuestra nueva tienda Eastlake.
+
+Este es el plan:
+• Capacitación: empezará en {store_name} ({store_address}) como {position}, aprendiendo cómo trabajamos con un equipo con experiencia.
+• Cambio: el {move_date} pasará a Eastlake ({pioneer_dept}) para ayudar a preparar todo para el día de la apertura.
+
+Los pasos de registro y los detalles de su primer día llegarán en otro correo. Si tiene preguntas, llámeme o mándeme un mensaje al {sender_phone}.
+
+¡Nos da mucho gusto tenerle en el equipo de apertura!
+{sender_name}
+Vista Markets`}},
  st_candidate:{en:{s:"Candidate for {store}: {name} – interview {interview_time}",b:`Hi {manager_first},
 
 We have a candidate for {store_name} and set up an in-person interview with you.
@@ -1302,6 +1382,8 @@ Gracias,
 Vista Markets`}}
 };
 const DEFAULT_SMS={
+ pioneer:{en:"Congrats {first_name}! You're one of our Eastlake Pioneers, the team opening our new Eastlake store. You'll train at {store_name} as {position}, then move to Eastlake on {move_date}. Check your email for details. – {sender_name}",
+      es:"¡Felicidades {first_name}! Usted es parte de nuestros Pioneros de Eastlake, el equipo que abrirá nuestra nueva tienda Eastlake. Se capacitará en {store_name} como {position} y luego pasará a Eastlake el {move_date}. Revise su correo para más detalles. – {sender_name}"},
  st_candidate:{en:"Hi {manager_first}, it's {sender_name} from Vista Markets. I just emailed you about {name}, in-person interview {interview_time} at {store}. Please check your email and reply after the interview. Thanks!",
       es:"Hola {manager_first}, soy {sender_name} de Vista Markets. Le acabo de enviar un correo sobre {name}, entrevista en persona {interview_time} en {store}. Por favor revise su correo y responda después de la entrevista. ¡Gracias!"},
  st_onboarded:{en:"Hi {manager_first}, it's {sender_name}. {name} finished onboarding. I emailed you to confirm the start date ({offer_start} at {start_time}). Please check your email and reply. Thanks!",
@@ -1337,7 +1419,7 @@ const DEFAULT_STORE_INFO={
 };
 let storeInfoOverrides={}, editingStore=null;
 function storeInfo(name){ const o={...(DEFAULT_STORE_INFO[name]||{}),...(storeInfoOverrides[name]||{})}; if(!o.name&&name) o.name="Vista Markets "+name; return o; }
-const TOKENS=["time_line","when_line","when_choice","reply_hint","first_name","name","store_manager","manager_first","candidate_email","availability","cert_status","cert_reminder","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
+const TOKENS=["move_date","pioneer_dept","time_line","when_line","when_choice","reply_hint","first_name","name","store_manager","manager_first","candidate_email","availability","cert_status","cert_reminder","store","store_name","store_address","store_phone","start_time","food_handler_link","tabc_link","position","phone","employment_type","interview_time","ask_for","pay","hours","offer_start","respond_by","sender_name","sender_phone","sender_email"];
 
 var UI_LOC;
 let db=null, downloads=null, candidates=[], parsed=[], filterStage="", openId=null;
@@ -1417,6 +1499,7 @@ function tokenValues(c,lang,stage){
   const v=tokenValues0(c,lang), es=lang==="es";
   if(SOFT_TPL.has(stage)){ if(!v.store_name) v.store_name="Vista Markets"; if(!v.store) v.store="Vista Markets"; if(!v.position) v.position=es?"un puesto":"a position"; }
   timeTokens(c,v,es,stage);
+  const pio=c.pioneer||{}; v.move_date=pio.moveDate?(es?fmtDateES(pio.moveDate):fmtDate(pio.moveDate,true)):""; v.pioneer_dept=pio.dept||"";
   if(stage==="st_candidate"&&!v.position) v.position=es?"cualquier puesto (abierto a lo que haya)":"any position (open to what you need)";
   return v;
 }
@@ -1657,6 +1740,7 @@ function renderPreview(){
 function visible(){
   const q=$("#q").value.trim().toLowerCase(), st=$("#fStore").value, ty=$("#fType").value, sort=$("#fSort").value;
   let list=candidates.filter(c=>(!filterStage||(filterStage==="__waiting"?isWaiting(c):c.stage===filterStage))&&(!st||(st==="none"?!c.store:c.store===st))&&(!ty||(c.employmentType||"").toLowerCase()===ty.toLowerCase()));
+  if(pioFilter) list=list.filter(c=>c.pioneer);
   if(q){ const qd=q.replace(/\D/g,""); list=list.filter(c=>[c.name,c.email,c.employer,c.jobTitle,c.skills,c.position,c.hireFor,c.address,notesText(c)].join(" ").toLowerCase().includes(q)||(qd.length>=3&&digits(c.phone).includes(qd))); }
   if(sort==="name") list.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
   else if(sort==="start") list.sort((a,b)=>(a.startDate||"9999").localeCompare(b.startDate||"9999"));
@@ -1774,6 +1858,120 @@ function renderPlan(){
     body.innerHTML=L.length?`<div class="pgroup">${L.map(e=>planRow(e,true)).join("")}</div>`:`<div class="none plan-empty">${empty}</div>`;
   }
 }
+
+/* ---------- Eastlake pioneers ---------- */
+const EAST_DEFAULT_DEPTS=[["Store Manager",1],["Department Supervisor",3],["Cashier",10],["Head Cashier",2],["Stocker",6],["Hot Deli",6],["Cold Deli",3],["Meat Market",4],["Produce",3],["Bakery",3],["Tortilleria",2],["Maintenance",1]].map(([name,target])=>({name,target}));
+function addDays(iso,n){ const d=new Date(iso+"T12:00"); d.setDate(d.getDate()+n); return dayKey(d); }
+let east={openDate:addDays(dayKey(new Date()),70),depts:EAST_DEFAULT_DEPTS}, pioFilter=false, eastAdd=false, eastDeptEdit=false;
+async function saveEast(ch){ east={...east,...ch}; renderEastlake(); if(db){ try{ await db.doc("settings/eastlake").set({openDate:east.openDate,depts:east.depts}); }catch{ toast("Couldn’t save the Eastlake plan."); } } }
+function pioStatus(c){
+  const p=c.pioneer||{};
+  if(!(c.stage==="hired"||p.transfer)) return "pipeline";
+  const certsOk=Object.keys(CERTS).every(k=>!certReq(c,k)||certDone(c,k));
+  return certsOk&&p.videos&&p.signoff?"ready":"training";
+}
+const PIO_LABEL={ready:"Ready",training:"In training",pipeline:"Hiring"};
+function pioBadge(c,big){ const p=c.pioneer||{}, st=pioStatus(c); return `<span class="pbadge ${big?"big":""}">★ Pioneer${p.dept?" · "+esc(p.dept):""}${big?` · <b>${PIO_LABEL[st]}</b>`:""}${p.lead?" · Lead":""}</span>`; }
+function pioChecks(c){
+  const p=c.pioneer||{}, items=[];
+  Object.keys(CERTS).forEach(k=>{ if(certReq(c,k)) items.push([CERTS[k].short,certDone(c,k)]); });
+  items.push(["Videos",!!p.videos],["Sign-off",!!p.signoff]);
+  return items;
+}
+function pioneerSection(c){
+  const p=c.pioneer;
+  if(!p) return `<div class="d-sec"><div class="row-actions" style="justify-content:space-between"><h3>Eastlake opening</h3><button type="button" class="btn sm" data-pio="on">★ Mark as Eastlake Pioneer</button></div><div class="small">Pioneers train at a current store, then move to Eastlake before opening day.</div></div>`;
+  const depts=east.depts.map(d=>d.name); if(p.dept&&!depts.includes(p.dept)) depts.push(p.dept);
+  const st=pioStatus(c);
+  return `<div class="d-sec pio-sec"><div class="row-actions" style="justify-content:space-between"><h3>★ Eastlake Pioneer <span class="pst pst-${st}">${PIO_LABEL[st]}</span></h3><button type="button" class="copy" data-pio="off">Remove tag</button></div>
+    <div class="d-grid">
+      <label>Eastlake department<select data-pf="dept"><option value="">Pick…</option>${depts.map(d=>`<option ${p.dept===d?"selected":""}>${esc(d)}</option>`).join("")}</select></label>
+      <label>Training at<select data-pf="trainStore">${STORES.map(x=>`<option ${(p.trainStore||c.store)===x?"selected":""}>${esc(x)}</option>`).join("")}</select></label>
+      <label>Moves to Eastlake<input type="date" data-pf="moveDate" value="${esc(p.moveDate||"")}"></label>
+      <div class="pio-flags"><label class="ccheck"><input type="checkbox" data-pf="lead" ${p.lead?"checked":""}> Opening lead for this department</label>
+        <label class="ccheck"><input type="checkbox" data-pf="transfer" ${p.transfer?"checked":""}> Current employee moving over</label></div>
+    </div>
+    <div><b class="small">Ready for Eastlake?</b></div>
+    <div class="pio-ready">
+      ${Object.keys(CERTS).filter(k=>certReq(c,k)).map(k=>`<span class="pchip ${certDone(c,k)?"ok":""}">${certDone(c,k)?"✓":"○"} ${esc(CERTS[k].label)}</span>`).join("")}
+      <label class="ccheck"><input type="checkbox" data-pf="videos" ${p.videos?"checked":""}> 3-day training videos done</label>
+      <label class="ccheck"><input type="checkbox" data-pf="signoff" ${p.signoff?"checked":""}> ${esc(p.trainStore||c.store||"Training store")} manager signed off</label>
+    </div>
+    ${c.stage!=="hired"&&!p.transfer?`<div class="small">Counts as <b>Hiring</b> until they’re Hired. Send the <b>★ Pioneer offer</b> template from Message.</div>`:""}
+  </div>`;
+}
+function renderEastlake(){
+  const host=$("#eastBody"); if(!host) return;
+  if(host.contains(document.activeElement)&&["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+  const pio=candidates.filter(c=>c.pioneer), open=east.openDate, today=dayKey(new Date());
+  const days=Math.round((new Date(open+"T12:00")-new Date(today+"T12:00"))/864e5);
+  const byDept={}; pio.forEach(c=>{ const d=c.pioneer.dept||"__none"; (byDept[d]=byDept[d]||[]).push(c); });
+  const total=east.depts.reduce((n,d)=>n+(Number(d.target)||0),0);
+  const cnt=st=>pio.filter(c=>c.pioneer.dept&&pioStatus(c)===st).length;
+  const ready=cnt("ready"), training=cnt("training"), pipe=cnt("pipeline"), filled=ready+training;
+  const pct=n=>total?Math.min(100,Math.round(n/total*100)):0;
+  const waves=[["Department leads",-75,-60,"Promote or hire one lead per department first."],["Core staff",-60,-30,"Hire and train at existing stores."],["Final wave",-30,-14,"Fill the gaps the board shows."],["Move & set up",-7,0,"Everyone moves to Eastlake to set up and stock."]];
+  const curWave=waves.findIndex(w=>-days>=w[1]&&-days<w[2]+ (w[2]===0?1:0));
+  const load={}; pio.forEach(c=>{ if(pioStatus(c)!=="pipeline"){ const s=c.pioneer.trainStore||c.store||"Not set"; load[s]=(load[s]||0)+1; } });
+  const row=c=>{ const p=c.pioneer, st=pioStatus(c);
+    return `<div class="prow2" data-open="${esc(c.id)}"><div class="pr-name"><b>${esc(c.name||"(no name)")}</b>${p.lead?` <span class="lead">Lead</span>`:""}${p.transfer?` <span class="small">current employee</span>`:""}
+      <div class="small">${esc(p.trainStore||c.store||"No training store")}${p.moveDate?" → Eastlake "+esc(fmtDate(p.moveDate)):""}</div></div>
+      <div class="pr-chips"><span class="pst pst-${st}">${PIO_LABEL[st]}</span>${st!=="pipeline"?pioChecks(c).map(([l,ok])=>`<span class="pchip ${ok?"ok":""}">${ok?"✓":"○"} ${esc(l)}</span>`).join(""):`<span class="small">${esc(STAGE[c.stage]?.label||c.stage)}</span>`}</div></div>`; };
+  const card=d=>{ const L=(byDept[d.name]||[]).sort((a,b)=>(b.pioneer.lead?1:0)-(a.pioneer.lead?1:0)), t=Number(d.target)||0;
+    const r=L.filter(c=>pioStatus(c)==="ready").length, tr=L.filter(c=>pioStatus(c)==="training").length, pp=L.filter(c=>pioStatus(c)==="pipeline").length, op=Math.max(0,t-r-tr-pp);
+    const w=n=>t?Math.min(100,n/t*100):0, lead=L.some(c=>c.pioneer.lead);
+    return `<div class="dcard ${op&&!L.length?"empty":""}">
+      <div class="dc-head"><h3>${esc(d.name)}</h3><span class="mono">${r+tr} of ${eastDeptEdit?`<input type="number" min="0" max="99" class="dtarget" data-dtarget="${esc(d.name)}" value="${t}" aria-label="${esc(d.name)} target">`:t}</span>${eastDeptEdit&&!L.length?`<button type="button" class="copy" data-ddel="${esc(d.name)}" aria-label="Remove ${esc(d.name)}">✕</button>`:""}</div>
+      <div class="dbar"><span class="b-ready" style="width:${w(r)}%"></span><span class="b-train" style="width:${w(tr)}%"></span><span class="b-pipe" style="width:${w(pp)}%"></span></div>
+      <div class="small">${[r&&`${r} ready`,tr&&`${tr} in training`,pp&&`${pp} hiring`,op&&`<b class="open">${op} open</b>`].filter(Boolean).join(" · ")||"Fully staffed"}${!lead&&t>1?` · <span class="nolead">no lead yet</span>`:""}</div>
+      ${L.length?`<div class="dc-list">${L.map(row).join("")}</div>`:""}
+    </div>`; };
+  const unassigned=byDept.__none||[];
+  host.innerHTML=`
+  <div class="east-head panel">
+    <div><h2>Eastlake opening</h2>
+      <div class="east-count"><span class="big">${days>0?days:days===0?"Today":"Open"}</span>${days>0?` days to opening`:""}</div>
+      <label class="small">Opening day <input type="date" id="eastOpen" value="${esc(open)}"></label></div>
+    <div class="east-total"><div class="mono"><b>${filled}</b> of ${total} filled · <b>${ready}</b> ready</div>
+      <div class="dbar big"><span class="b-ready" style="width:${pct(ready)}%"></span><span class="b-train" style="width:${pct(training)}%"></span><span class="b-pipe" style="width:${pct(pipe)}%"></span></div>
+      <div class="legend small"><span><i class="b-ready"></i>Ready</span><span><i class="b-train"></i>In training</span><span><i class="b-pipe"></i>Hiring</span><span><i class="b-open"></i>Open</span></div>
+      <div class="row-actions"><button type="button" class="btn sm primary" data-eadd>+ Add current employee moving over</button><button type="button" class="btn sm" data-dedit>${eastDeptEdit?"Done editing":"Edit departments & targets"}</button></div></div>
+  </div>
+  ${eastAdd?`<form class="panel east-add" id="eastAddForm"><h3>Current employee moving to Eastlake</h3><div class="d-grid">
+      <label>Full name<input id="eaName" required autocomplete="off"></label><label>Phone<input id="eaPhone" inputmode="tel" autocomplete="off"></label>
+      <label>Works at now<select id="eaStore">${STORES.map(x=>`<option>${esc(x)}</option>`).join("")}</select></label>
+      <label>Eastlake department<select id="eaDept">${east.depts.map(d=>`<option>${esc(d.name)}</option>`).join("")}</select></label>
+      <label class="ccheck"><input type="checkbox" id="eaLead"> Opening lead for this department</label></div>
+      <div class="row-actions"><button class="btn primary" type="submit">Add to Eastlake</button><button class="btn ghost" type="button" data-eaddx>Cancel</button></div></form>`:""}
+  <div class="waves">${waves.map((w,i)=>`<div class="wave ${i===curWave?"now":-days>w[2]?"past":""}"><div class="small mono">${esc(fmtDate(addDays(open,w[1])))} – ${esc(fmtDate(addDays(open,w[2])))}</div><b>${i+1}. ${esc(w[0])}</b><div class="small">${esc(w[3])}</div>${i===curWave?`<span class="now-tag">Now</span>`:""}</div>`).join("")}</div>
+  <div class="east-grid">${east.depts.map(card).join("")}
+    ${eastDeptEdit?`<form class="dcard add" id="eastDeptForm"><h3>Add a department</h3><input id="edName" list="eastDeptList" placeholder="e.g. Cakes" autocomplete="off"><datalist id="eastDeptList">${DEPTS.filter(d=>!east.depts.some(x=>x.name===d)).map(d=>`<option value="${esc(d)}">`).join("")}</datalist><input id="edTarget" type="number" min="1" value="2" aria-label="How many"><button class="btn sm" type="submit">Add</button></form>`:""}</div>
+  ${unassigned.length?`<div class="panel"><h3>Pioneers without a department yet</h3><div class="dc-list">${unassigned.map(row).join("")}</div></div>`:""}
+  <div class="panel"><h3>Training load by store</h3><div class="small">Pioneers working at each store right now. Spread them out so no store is stretched.</div>
+    <div class="loadlist">${Object.keys(load).length?Object.entries(load).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<div><span>${esc(s)}</span><span class="lbar"><i style="width:${Math.min(100,n*12)}%"></i></span><b class="mono">${n}</b>${n>=6?` <span class="nolead">heavy</span>`:""}</div>`).join(""):`<div class="small">No pioneers in training yet.</div>`}</div></div>`;
+}
+$("#v-eastlake").addEventListener("click",e=>{
+  const t=e.target;
+  if(t.closest("[data-eadd]")){ eastAdd=true; renderEastlake(); $("#eaName")?.focus(); return; }
+  if(t.closest("[data-eaddx]")){ eastAdd=false; document.activeElement?.blur(); renderEastlake(); return; }
+  if(t.closest("[data-dedit]")){ eastDeptEdit=!eastDeptEdit; renderEastlake(); return; }
+  const dd=t.closest("[data-ddel]"); if(dd){ saveEast({depts:east.depts.filter(d=>d.name!==dd.dataset.ddel)}); return; }
+  const o=t.closest("[data-open]"); if(o&&!t.closest("input,select,button,a")) openDrawer(o.dataset.open);
+});
+$("#v-eastlake").addEventListener("change",e=>{
+  const t=e.target;
+  if(t.id==="eastOpen"&&t.value){ t.blur(); saveEast({openDate:t.value}); return; }
+  if(t.dataset.dtarget){ const n=Math.max(0,Math.min(99,Number(t.value)||0)); t.blur(); saveEast({depts:east.depts.map(d=>d.name===t.dataset.dtarget?{...d,target:n}:d)}); }
+});
+$("#v-eastlake").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(e.target.id==="eastDeptForm"){ const n=$("#edName").value.trim(), t=Number($("#edTarget").value)||1; if(!n) return; if(east.depts.some(d=>d.name.toLowerCase()===n.toLowerCase())){ toast("That department is already on the board."); return; } document.activeElement?.blur(); saveEast({depts:[...east.depts,{name:n,target:t}]}); return; }
+  if(e.target.id==="eastAddForm"){ const name=$("#eaName").value.trim(); if(!name) return; const now=Date.now(), store=$("#eaStore").value, dept=$("#eaDept").value;
+    const c={id:newId(),name,phone:$("#eaPhone").value.trim(),email:"",position:dept,hireFor:dept,store,storeRaw:store,stage:"hired",createdAt:now,updatedAt:now,referralSource:"Current employee",referralDetail:"Moving to Eastlake",interviewer:myName()||"Miguel",history:[{stage:"hired",at:now}],availDays:[],
+      notesLog:[{id:"n"+now.toString(36),text:`Current employee at ${store} moving to Eastlake (${dept}).`,at:now,by:myName()}],
+      pioneer:{dept,trainStore:store,moveDate:addDays(east.openDate,-7),transfer:true,lead:$("#eaLead").checked,videos:true,signoff:false}};
+    document.activeElement?.blur(); try{ await saveDoc(c); eastAdd=false; toast(`${name} added to the Eastlake team.`); renderEastlake(); }catch{} }
+});
 let lastList=[];
 const WIDE=matchMedia("(min-width:1000px)");
 function docked(){ return tab==="applicants" && WIDE.matches; }
@@ -1790,7 +1988,7 @@ function renderRows(){
     const want=c.hireFor||c.position||"Position not picked";
     const meta=[`Applied ${esc(ago(c.createdAt))}`, c.startDate?`Can start ${esc(fmtDate(c.startDate))}`:"", esc([c.employmentType,c.shift].filter(Boolean).join(" · "))].filter(Boolean);
     const le=latestEval(c);
-    const badges=[le?`<span class="recb rec-${le.rec}">${REC[le.rec].icon} ${esc(le.kind)}: ${REC[le.rec].label}</span>`:"", waitPill(c), portalBadge(c), ["interview","offer","hired"].includes(c.stage)?certBadges(c):"", c.stage==="declined"&&c.closeReason?`<span class="small">${esc(c.closeReason)}</span>`:""].filter(Boolean).join("");
+    const badges=[c.pioneer?pioBadge(c):"", le?`<span class="recb rec-${le.rec}">${REC[le.rec].icon} ${esc(le.kind)}: ${REC[le.rec].label}</span>`:"", waitPill(c), portalBadge(c), ["interview","offer","hired"].includes(c.stage)?certBadges(c):"", c.stage==="declined"&&c.closeReason?`<span class="small">${esc(c.closeReason)}</span>`:""].filter(Boolean).join("");
     return `<div class="row ccard" role="listitem" data-id="${esc(c.id)}" tabindex="0" aria-current="${openId===c.id}">
     <div class="cc-top"><div class="nm">${esc(c.name||"(no name)")}${isSpanish(c)?`<span class="lang">ES</span>`:""}</div>${pill(c.stage)}</div>
     <div class="cc-sub"><b>${esc(want)}</b> · ${esc(c.store||"No store yet")}</div>
@@ -1902,6 +2100,7 @@ function renderDrawer(){
     <div class="d-top">
     <div class="d-head">
       <div class="d-title"><h2 class="d-name">${esc(c.name||"(no name)")}${isSpanish(c)?` <span class="lang">ES</span>`:""}</h2>
+        ${c.pioneer?`<div>${pioBadge(c,true)}</div>`:""}
         ${cityOf(c)?`<div class="d-line">${ICON.pin}<span>${esc(cityOf(c))}</span></div>`:""}
         <div class="d-line"><span>Applied to: <b class="applied-to">${esc(c.hireFor||c.position||"Position not picked")} · ${esc(c.store||"No store yet")}</b></span></div>
         <div class="small">Applied ${esc(new Date(c.createdAt||Date.now()).toLocaleDateString())} · ${esc(c.referralDetail||c.referralSource||"source unknown")}${c.phone?` · <span class="mono">${esc(c.phone)}</span>`:""}${c.email?` · ${esc(c.email)}`:""}</div>
@@ -1937,6 +2136,7 @@ function renderDrawer(){
       <div class="small">They show on the Future pool tab and next to matching openings on the dashboard.</div></div>`:""}
     ${c.interviewDate&&!isNaN(new Date(c.interviewDate))?`<div class="d-sec"><div class="row-actions calrow"><span class="small"><b>${esc(calKind(c).label)}</b> ${esc(fmtDateTime(c.interviewDate,true))}</span>
       <span class="row-actions"><button class="btn sm primary" data-ics>Add to Outlook</button><a class="copy" href="${esc(calLinks(c).outlook)}" target="_blank" rel="noopener">Outlook on the web</a></span></div></div>`:""}
+    ${c.pioneer?pioneerSection(c):""}
     ${portalSection(c)}
 
     ${["offer","hired"].includes(c.stage)||c.offerRate?`
@@ -1954,6 +2154,7 @@ function renderDrawer(){
       ${hoursFlag(c)}
     </div>`:`<div class="d-sec"><button class="btn sm" id="addOffer" style="align-self:flex-start">Add offer details</button></div>`}
 
+    ${c.pioneer?"":pioneerSection(c)}
     ${certSection(c)}
 
     <div class="d-sec" id="storeMailSec"><h3>Emails &amp; texts to the store</h3>
@@ -2143,7 +2344,7 @@ async function exportCsv(){
 /* ---------- ui wiring ---------- */
 let toastT; function toast(m){ $("#toastHost").innerHTML=`<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toastT); toastT=setTimeout(()=>$("#toastHost").innerHTML="",2600); }
 async function copyText(t,label){ try{ await navigator.clipboard.writeText(t); toast(label||"Copied."); }catch{ toast("Copy is blocked here. Select the text and copy it instead."); } }
-function setTab(t){ if(docked()&&t!=="applicants"&&openId){ openId=null; $("#drawerHost").innerHTML=""; } tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","future","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
+function setTab(t){ if(docked()&&t!=="applicants"&&openId){ openId=null; $("#drawerHost").innerHTML=""; } tab=t; document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t)); ["dashboard","applicants","add","calendar","eastlake","future","templates","stores","team"].forEach(v=>$("#v-"+v).hidden=v!==t); renderAll(); }
 function renderAll(){
   placeDrawer(); renderPipe();
   if(tab==="dashboard") renderDashboard();
@@ -2153,6 +2354,8 @@ function renderAll(){
   if(tab==="stores") renderStores();
   if(tab==="calendar") renderCalendar();
   if(tab==="future") renderFuture();
+  if(tab==="eastlake") renderEastlake();
+  const pc=candidates.filter(c=>c.pioneer).length; $("#eastCount").textContent=pc||"";
   const fc=candidates.filter(c=>c.stage==="future").length; $("#futureCount").textContent=fc||"";
   if(tab==="team"&&sb) renderTeam();
   if(openId) renderDrawer();
@@ -2447,6 +2650,7 @@ $("#rows").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const r=e.target
   if(e.key==="ArrowDown"||e.key==="ArrowUp"){ const r=e.target.closest(".row[data-id]"); const n=r&&(e.key==="ArrowDown"?r.nextElementSibling:r.previousElementSibling); if(n&&n.dataset.id){ e.preventDefault(); n.focus(); openDrawer(n.dataset.id); } }});
 $("#exportBtn").onclick=exportCsv;
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&openId&&!docked()) closeDrawer(); });
+$("#fPio").addEventListener("click",()=>{ pioFilter=!pioFilter; $("#fPio").setAttribute("aria-pressed",pioFilter); renderRows(); });
 WIDE.addEventListener("change",()=>{ placeDrawer(); if(tab==="applicants") renderRows(); });
 RAILW.addEventListener("change",()=>{ if(openId) renderDrawer(); });
 
@@ -2477,6 +2681,10 @@ $("#drawerHost").addEventListener("click",async e=>{
   if(t.closest("[data-msgtoggle]")){ msgOpen=!msgOpen; const d=$("#drawerHost .msgdock"); if(d){ d.dataset.open=msgOpen; d.querySelector(".md-car").textContent=msgOpen?"▾":"▴"; d.querySelector(".md-bar").setAttribute("aria-expanded",msgOpen); } return; }
   if(t.closest("[data-msgopen]")){ msgOpen=true; if(!document.body.classList.contains("docked")) setPane("steps"); renderDrawer(); requestAnimationFrame(()=>{ const d=$("#drawerHost .msgdock"); if(d&&!document.body.classList.contains("docked")) d.scrollIntoView({block:"start",behavior:"smooth"}); }); return; }
   const ee=t.closest("[data-evedit]"); if(ee){ const c=candidates.find(x=>x.id===openId); const v=(c?.evals||[]).find(x=>x.key===ee.dataset.evedit); if(v) openEval(c.id,v.kind,v.when); return; }
+  const pt=t.closest("[data-pio]"); if(pt){ const c=candidates.find(x=>x.id===openId); if(!c) return;
+    if(pt.dataset.pio==="on"){ const dept=east.depts.find(d=>d.name===(c.hireFor||c.position))?.name||""; patch(openId,{pioneer:{dept,trainStore:c.store||"",moveDate:addDays(east.openDate,-7),lead:false,transfer:false,videos:false,signoff:false}}).catch(()=>{}); toast("Marked as an Eastlake Pioneer."); }
+    else patch(openId,{pioneer:null}).catch(()=>{});
+    return; }
   if(t.closest("[data-evalc]")){ const c=candidates.find(x=>x.id===openId); if(c) openEval(c.id,calKind(c).label,c.interviewDate); return; }
   if(t.closest("[data-setupiv]")){ setPane("steps"); requestAnimationFrame(()=>{ const w=document.getElementById("dWhen"); if(w){ w.scrollIntoView({block:"center",behavior:"smooth"}); w.focus({preventScroll:true}); try{ w.showPicker&&w.showPicker(); }catch{} } }); return; }
   const dn=t.closest("[data-dnav]"); if(dn){ const i=lastList.indexOf(openId)+Number(dn.dataset.dnav); if(lastList[i]){ openDrawer(lastList[i]); document.querySelector(`#rows .ccard[data-id="${CSS.escape(lastList[i])}"]`)?.scrollIntoView({block:"nearest"}); } return; }
@@ -2550,6 +2758,8 @@ $("#drawerHost").addEventListener("change",e=>{
     const cur=(c.timeOpts&&c.timeOpts.kind===ms)?{...c.timeOpts}:{kind:ms,a:"",b:""};
     if(d&&!tm){ box.querySelector('[data-part="t"]').focus(); return; }
     cur[n==="1"?"a":"b"]=d&&tm?`${d}T${tm}`:""; patch(openId,{timeOpts:cur}).catch(()=>{}); return; }
+  const pf=t.closest("[data-pf]"); if(pf){ const c=candidates.find(x=>x.id===openId); if(!c||!c.pioneer) return; const k=pf.dataset.pf, v=pf.type==="checkbox"?pf.checked:pf.value;
+    const ch={pioneer:{...c.pioneer,[k]:v}}; if(k==="trainStore"&&v) ch.store=v; if(k==="dept"&&v&&!c.hireFor) ch.hireFor=v; patch(openId,ch).catch(()=>{}); return; }
   if(t.id==="hStage"){ const b=$("#drawerHost").querySelector(`[data-setstage="${CSS.escape(t.value)}"]`); if(b) b.click(); if(stageConfirm) setPane("steps"); return; }
   if(t.id==="mStage"){ mailStage=t.value; return renderDrawer(); }
   if(t.id==="dCloseReason"){ const c=candidates.find(x=>x.id===openId); if(!c) return; const now=Date.now(), v=t.value;
@@ -2690,6 +2900,7 @@ function startData(){
     renderAll();
   },()=>{ $("#status").textContent="Couldn’t load. Reload the page."; });
   db.collection("openings").onSnapshot(snap=>{ openings=snap.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{});
+  db.doc("settings/eastlake").onSnapshot(s=>{ if(s.exists){ const d=s.data(); east={...east,...JSON.parse(JSON.stringify(d))}; } if(tab==="eastlake") renderEastlake(); if(openId) renderDrawer(); },()=>{});
   db.doc("settings/request_code").onSnapshot(s=>{ requestCode=s.exists?(s.data().code||""):""; renderReqLink(); },()=>{});
   db.doc("settings/storeinfo").onSnapshot(s=>{
     storeInfoOverrides=s.exists?JSON.parse(JSON.stringify(s.data().map||{})):{};
@@ -3074,7 +3285,7 @@ function buildPreview(){
     return {id:c.id,name:c.name,phone:c.phone,email:c.email,position_wanted:c.position,hire_for:c.hireFor,employment_type:c.employmentType,shift:c.shift,can_start:c.startDate,
       availability:c.availability,avail_days:c.availDays||[],form_language:c.formLanguage,shared_at:sh.shared_at,claimed_at:sh.claimed_at,claimed_by:sh.claimed_by,
       is_hired:c.stage==="hired",first_day:c.offerStart||null,first_time:c.offerStartTime||null,
-      stage:["offer","hired"].includes(c.stage)?c.stage:"",fh_have:!!c.fhHave,tabc_have:!!c.tabcHave,fh_req:c.fhReq||"auto",tabc_req:c.tabcReq||"auto",walkin:!!c.walkin,applied_ms:c.createdAt}; })
+      stage:["offer","hired"].includes(c.stage)?c.stage:"",fh_have:!!c.fhHave,tabc_have:!!c.tabcHave,fh_req:c.fhReq||"auto",tabc_req:c.tabcReq||"auto",walkin:!!c.walkin,applied_ms:c.createdAt,pioneer_dept:c.pioneer?(c.pioneer.dept||"Eastlake"):null,pioneer_move:c.pioneer?.moveDate||null}; })
     .sort((a,b)=>new Date(b.shared_at)-new Date(a.shared_at));
   sNotes=storeNotes.filter(n=>n.store===st); sReqs=hireReqs.filter(r=>r.store===st); sIvs=ivReqs.filter(r=>r.store===st);
   sOpenings=openings.filter(o=>o.store===st).map(o=>({id:o.id,pos_name:o.position,needed:o.needed||1,otype:o.type,oshift:o.shift,notes:o.notes,requested_by:o.requestedBy,created_ms:o.createdAt,from_store:!!o.fromStore}))
@@ -3110,7 +3321,8 @@ function sStatus(a){
 const sIv=a=>sIvs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
 const S_FILTERS=[["new","New"],["interviewing","Interviewing"],["hired","Hired"],["starting","Starting"]];
 const sLatest=a=>sReqs.find(x=>x.candidate_id===a.id&&x.status!=="cancelled");
-function sBadge(st,a){ return sBadge2(st,a); }
+function sBadge(st,a){ return sPioBadge(a)+sBadge2(st,a); }
+function sPioBadge(a){ return a.pioneer_dept?`<span class="pbadge">★ Eastlake Pioneer${a.pioneer_move?" · moves "+esc(fmtDate(a.pioneer_move)):""}</span> `:""; }
 function sBadge2(st,a){
   if(st==="new") return `<span class="portalpill">New</span>`;
   if(st==="interviewing"){ const iv=sIv(a); if(iv&&iv.status==="scheduled"&&!iv.outcome){ const past=new Date(iv.scheduled_at).getTime()<Date.now(); return `<span class="portalpill ${past?"ask":""}">${past?"Decide: hire or pass":"Interview "+esc(fmtDateTime(iv.scheduled_at))}</span>`; }
@@ -3251,7 +3463,7 @@ function renderStoreDrawer(){
   const st=sStatus(a), notes=sNotes.filter(n=>n.candidate_id===a.id), tel=(a.phone||"").replace(/[^\d+]/g,"");
   host.innerHTML=`<div class="scrim" data-sclose></div>
   <aside class="drawer" role="dialog" aria-label="${esc(a.name||"Applicant")}">
-    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2><div class="small">${a.walkin?"Walk-in":"Shared with "+esc(sStore())+" "+esc(fmtDateTime(a.shared_at))}${a.claimed_at?` · claimed${a.claimed_by?" by "+esc(a.claimed_by):""}`:""}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
+    <div class="d-head"><div><h2 class="d-name">${esc(a.name||"(no name)")}</h2>${a.pioneer_dept?`<div class="s-pio">${sPioBadge(a)}<div class="small">Training with you, then moving to our new Eastlake store${a.pioneer_move?" on <b>"+esc(fmtDate(a.pioneer_move,true))+"</b>":""} (${esc(a.pioneer_dept)}).</div></div>`:""}<div class="small">${a.walkin?"Walk-in":"Shared with "+esc(sStore())+" "+esc(fmtDateTime(a.shared_at))}${a.claimed_at?` · claimed${a.claimed_by?" by "+esc(a.claimed_by):""}`:""}</div></div><button class="btn ghost" data-sclose aria-label="Close">Close</button></div>
 
     ${sSteps(a)}
     ${sPassing?"":sNextSection(a)}
@@ -3442,13 +3654,15 @@ const ES={
  "Claim":"Reclamar","Call & set interview":"Llamar y fijar entrevista","Hire or pass":"Contratar o rechazar","First day & FH/TABC":"Primer día y FH/TABC","+ Add a walk-in hire":"+ Agregar contratación sin cita","Interviewing":"En entrevista","Starting":"Por empezar","When you decide to hire, the hiring office sends the offer and onboarding. You just welcome them on their first day.":"Cuando decida contratar, la oficina de contratación envía la oferta y el registro. Usted solo le da la bienvenida en su primer día.","Call & interview":"Llamar y entrevistar","First day":"Primer día","Claim them so other stores can’t. Then call to set up an interview.":"Reclámelo para que otras tiendas no puedan. Luego llame para fijar una entrevista.","Call, agree on a day and time for an in-person interview, then save it here. It goes on the hiring office calendar.":"Llame, acuerden día y hora para una entrevista en persona y guárdela aquí. Aparece en el calendario de la oficina.","Change the interview time":"Cambiar la hora de la entrevista","Already interviewed? Hire":"¿Ya lo entrevistó? Contratar","How did it go?":"¿Cómo le fue?","After the interview, decide:":"Después de la entrevista, decida:","✓ Hire":"✓ Contratar","✕ Pass":"✕ Rechazar","No show":"No se presentó","Change time":"Cambiar hora","The hiring office sends the offer and onboarding. Tell them the position and the first day you discussed.":"La oficina de contratación envía la oferta y el registro. Indique el puesto y el primer día que acordaron.","First day you discussed":"Primer día acordado","Start time":"Hora de entrada","Note (optional)":"Nota (opcional)","Did you get a copy?":"¿Recibió una copia?","Food Handler card":"Tarjeta de Manejo de Alimentos","TABC certificate":"Certificado TABC","(if their job sells alcohol)":"(si su puesto vende alcohol)","Send to the hiring team":"Enviar al equipo de contratación","Hired ✓":"Contratado ✓","Sent to the hiring team ✓":"Enviado al equipo de contratación ✓","Onboarding is done.":"El registro está completo.","The office approved it and is sending the offer and onboarding.":"La oficina lo aprobó y está enviando la oferta y el registro.","The office will send the offer and onboarding.":"La oficina enviará la oferta y el registro.","First day not set yet.":"Primer día aún sin fijar.","Copies collected":"Copias recibidas","(needed before their first shift)":"(necesarias antes de su primer turno)","TABC seller-server":"TABC vendedor-mesero","(not needed for this job)":"(no se necesita para este puesto)","On their first day: welcome them, tour the store, share store contacts and start the training videos.":"En su primer día: deles la bienvenida, un recorrido por la tienda, los contactos de la tienda y empiecen los videos de capacitación.","Undo hire decision":"Deshacer decisión de contratar","Add a walk-in hire":"Agregar contratación sin cita","Full name":"Nombre completo","Phone":"Teléfono","Department / position":"Departamento / puesto","Application date":"Fecha de solicitud","Interview at your store":"Entrevista en su tienda","Interview done? Tell us: hire or pass":"¿Ya fue la entrevista? Díganos: contratar o rechazar","Decide":"Decidir","Call to invite":"Llamar para invitar","Interviewed · decide":"Entrevistado · decidir","Walk-in":"Sin cita","Saved.":"Guardado.","Interview date & time":"Fecha y hora de la entrevista","Who should they ask for?":"¿Por quién debe preguntar?","Save interview":"Guardar entrevista",
  "Request a position":"Pedir un puesto","How hiring works with the hiring office":"Cómo funciona la contratación con la oficina","You request a position.":"Usted pide un puesto.","Tell us the job, how many, full or part-time and the shift.":"Díganos el puesto, cuántos, tiempo completo o medio tiempo y el turno.","We post the job and screen applicants.":"Publicamos el empleo y filtramos a los solicitantes.","We call them and check their availability.":"Les llamamos y revisamos su disponibilidad.","Good fits show up under New.":"Los buenos candidatos aparecen en Nuevo.","Claim the ones you want so other stores can’t.":"Reclame a los que quiera para que otras tiendas no puedan.","You call and set the interview.":"Usted llama y fija la entrevista.","Save the day and time here so it’s on our calendar.":"Guarde el día y la hora aquí para que aparezca en nuestro calendario.","You decide: hire or pass.":"Usted decide: contratar o rechazar.","If you hire, add the first day you discussed and whether you got their Food Handler and TABC copies.":"Si contrata, agregue el primer día acordado y si recibió sus copias de Manejo de Alimentos y TABC.","We send the offer and onboarding,":"Enviamos la oferta y el registro,","then email you and the new hire the first-day details.":"y luego le enviamos a usted y al nuevo empleado los detalles del primer día.","First day:":"Primer día:","welcome them, tour the store, share store contacts, start the training videos and keep a copy of their FH and TABC.":"deles la bienvenida, un recorrido por la tienda, los contactos de la tienda, empiecen los videos de capacitación y guarde una copia de su FH y TABC.","Hired someone who walked in? Use":"¿Contrató a alguien que llegó sin cita? Use","and we’ll take it from there.":"y nosotros nos encargamos del resto.","What happens next:":"Lo que sigue:","the hiring office posts the job and screens applicants. The good fits show up under":"la oficina publica el empleo y filtra a los solicitantes. Los buenos candidatos aparecen en","for you to claim and interview.":"para que usted los reclame y entreviste.","New":"Nuevo","Either":"Cualquiera","Closing":"Cierre","Any shift":"Cualquier turno",
  "e.g. Mornings, Mon–Fri":"ej. Mañanas, lun–vie","e.g. Gustavo":"ej. Gustavo","First and last name":"Nombre y apellido","optional":"opcional","e.g. Referred by Rosa":"ej. Lo recomendó Rosa","e.g. Cashier":"ej. Cajero",
- "Please don’t discuss pay.":"Por favor no hable del pago.","The hiring office covers pay with the new hire in the offer.":"La oficina de contratación habla del pago con el nuevo empleado en la oferta.","then email you and the new hire the first-day details. Pay is covered by the hiring office in the offer, so please don’t discuss it.":"y luego le enviamos a usted y al nuevo empleado los detalles del primer día. La oficina cubre el pago en la oferta, así que por favor no hable de él.","Save the day and time here so it’s on our calendar. If they ask about pay, let them know the hiring office will go over it.":"Guarde el día y la hora aquí para que aparezca en nuestro calendario. Si preguntan por el pago, dígales que la oficina de contratación lo explicará."
+ "Please don’t discuss pay.":"Por favor no hable del pago.","The hiring office covers pay with the new hire in the offer.":"La oficina de contratación habla del pago con el nuevo empleado en la oferta.","then email you and the new hire the first-day details. Pay is covered by the hiring office in the offer, so please don’t discuss it.":"y luego le enviamos a usted y al nuevo empleado los detalles del primer día. La oficina cubre el pago en la oferta, así que por favor no hable de él.","Save the day and time here so it’s on our calendar. If they ask about pay, let them know the hiring office will go over it.":"Guarde el día y la hora aquí para que aparezca en nuestro calendario. Si preguntan por el pago, dígales que la oficina de contratación lo explicará.",
+ "★ Eastlake Pioneer":"★ Pionero de Eastlake"
 };
 const ES_PREFIX=[["Approved by ","Aprobado por "],["Claimed · ","Reclamado · "],["Claimed ","Reclamado "],["Requested by ","Solicitado por "],["Shared with ","Compartido con "],["Shared ","Compartido "],
  ["confirmed by ","confirmado por "],["sent ","enviado "],["by ","por "],["Hired for ","Contratado para "],["Hired · starts ","Contratado · empieza "],["Hired · started ","Contratado · empezó "],
  ["Starts ","Empieza "],["First day: ","Primer día: "],["Started: ","Empezó: "],["First day · ","Primer día · "],["They’ll ask for ","Preguntará por "],["Interview ","Entrevista "],
  ["Claim for ","Reclamar para "],["Pass on ","Rechazar a "],["Store view: ","Vista de tienda: "]];
 const ES_RX=[
+ [/^★ Eastlake Pioneer · moves (.+)$/,"★ Pionero de Eastlake · pasa el $1"],[/^Training with you, then moving to our new Eastlake store/,"Se capacita con usted y luego pasa a nuestra nueva tienda Eastlake"],[/^ on $/," el "],
  [/^get (.+) copy$/,"falta copia de $1"],[/^Walk-in · (.+)$/,"Sin cita · $1"],
  [/^Want (.+) for (.+)\?$/,"¿Quiere a $1 para $2?"],[/^Claim for (.+)$/,"Reclamar para $1"],[/^Call (.+) to invite them$/,"Llame a $1 para invitarlo"],[/^Call (\(?\d.*)$/,"Llamar al $1"],
  [/^Hire (.+)$/,"Contratar a $1"],[/^Interview (.+)$/,"Entrevista $1"],[/^First day: (.+)$/,"Primer día: $1"],[/^They’ll ask for (.+)$/,"Preguntará por $1"],
