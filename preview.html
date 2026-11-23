@@ -1,0 +1,578 @@
+<title>Vista Hiring · Preview</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky top nav (Jobs, Candidates, Interviews, Stores, Careers page, Templates, Match settings); each view fills the page. Sample data lives in this browser only. */
+:root{--bg:#f5f3f7;--card:#fff;--sunk:#efecf2;--line:#e2dde8;--ink:#231b2b;--muted:#665f70;
+ --p:#6b3a8f;--p2:#55296f;--ps:#f0e6f7;--g:#2E7D32;--gs:#e5f1e2;--y:#FEC938;--ys:#fff3c9;--yi:#6e5200;--r:#b4470f;--rs:#fde6d7;--b:#2c5aa0;--bs:#e3ebf7;
+ --f-d:"Barlow Condensed","Arial Narrow",sans-serif;--f-b:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17131b;--card:#211b27;--sunk:#2a2231;--line:#3a3142;--ink:#ece6f2;--muted:#ab9fb8;--p:#c39be0;--p2:#d7b8ee;--ps:#33263f;--g:#62b866;--gs:#203421;--y:#f2c53b;--ys:#3a3218;--yi:#f2d27a;--r:#f3a77a;--rs:#3d2416;--b:#9dbbec;--bs:#1d2a3e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17131b;--card:#211b27;--sunk:#2a2231;--line:#3a3142;--ink:#ece6f2;--muted:#ab9fb8;--p:#c39be0;--p2:#d7b8ee;--ps:#33263f;--g:#62b866;--gs:#203421;--y:#f2c53b;--ys:#3a3218;--yi:#f2d27a;--r:#f3a77a;--rs:#3d2416;--b:#9dbbec;--bs:#1d2a3e;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:#5a2d7c}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:linear-gradient(90deg,#4f2470,#7b45a3);color:#fff}
+.topin{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.brand{font-family:var(--f-d);font-weight:800;font-size:22px;margin-right:6px}.brand small{font-family:var(--f-b);font-size:11.5px;font-weight:800;background:var(--y);color:#3a2c00;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:3px}
+nav.nv{display:flex;gap:2px;flex-wrap:wrap}
+nav.nv button{font:inherit;font-weight:700;font-size:14px;border:0;background:transparent;color:#fff;opacity:.82;border-radius:9px;padding:7px 11px;cursor:pointer}
+nav.nv button.on{background:rgba(255,255,255,.2);opacity:1}
+nav.nv .n{display:inline-block;margin-left:4px;font-size:11.5px;background:var(--y);color:#3a2c00;border-radius:999px;padding:0 6px}
+.sp{flex:1}
+.top input{max-width:190px;background:rgba(255,255,255,.16);border:0;color:#fff}.top input::placeholder{color:rgba(255,255,255,.75)}
+.stripe{height:4px;background:linear-gradient(90deg,#FEC938 0 25%,#f07b2a 25% 50%,#4caf50 50% 75%,#1e88e5 75%)}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 60px}
+.guide{display:flex;gap:10px;background:var(--bs);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:14px}.guide b{color:var(--b)}
+h1{font-family:var(--f-d);font-size:30px;margin:0 0 2px;line-height:1.05}
+.sub{color:var(--muted);margin:0 0 12px}
+.hd{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}.hd .sub{margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+.pad{padding:14px 16px}
+.btn{font:inherit;font-weight:700;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 13px;cursor:pointer;white-space:nowrap}
+.btn.p{background:var(--p);border-color:var(--p);color:#fff}.btn.g{background:var(--g);border-color:var(--g);color:#fff}.btn.sm{padding:5px 10px;font-size:13px}.btn.link{border:0;background:none;color:var(--p);padding:4px 6px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pg{background:var(--gs);color:var(--g)}.py{background:var(--ys);color:var(--yi)}.pr{background:var(--rs);color:var(--r)}.pb{background:var(--bs);color:var(--b)}.pp{background:var(--ps);color:var(--p)}.px{background:var(--sunk);color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:inherit;font-weight:700;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer}.chip.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.chip .n{opacity:.7;margin-left:3px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.scroll{overflow-x:auto}
+.cnt{font:inherit;font-weight:800;font-size:16px;border:0;background:none;color:var(--ink);cursor:pointer;border-radius:8px;padding:3px 9px}
+.cnt.z{color:var(--muted);font-weight:500;cursor:default}.cnt.nw{background:var(--ys);color:var(--yi)}
+.cnt:not(.z):hover{background:var(--sunk)}
+.jt b{display:block}.jt small{color:var(--muted)}
+.closed td{opacity:.55}
+/* review */
+.rv{display:grid;grid-template-columns:320px minmax(0,1fr);overflow:hidden;min-height:560px}
+.ls{border-right:1px solid var(--line);background:var(--sunk);display:flex;flex-direction:column;min-width:0}
+.lsh{padding:10px 12px;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.lsb{overflow:auto;max-height:640px}
+.ci{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:10px 12px;border:0;border-bottom:1px solid var(--line);cursor:pointer;background:transparent;width:100%;text-align:left;font:inherit;color:var(--ink)}
+.ci small{color:var(--muted)}.ci.on{background:var(--card);box-shadow:inset 4px 0 0 var(--p)}
+.ci .sc{grid-row:1/3;grid-column:2;align-self:center;font-weight:800;font-size:13px}
+.dt{padding:16px 18px;display:grid;gap:12px;align-content:start;min-width:0}
+.dh{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.av{width:48px;height:48px;border-radius:50%;background:var(--ps);color:var(--p);display:grid;place-items:center;font-family:var(--f-d);font-weight:800;font-size:21px;flex:none}
+.dh h2{margin:0;font-family:var(--f-d);font-size:27px;line-height:1}.dh small{color:var(--muted)}
+.flow{display:flex;margin:2px 0}
+.fs{flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--muted);position:relative;padding-top:18px}
+.fs::before{content:"";position:absolute;top:5px;left:50%;width:12px;height:12px;border-radius:50%;background:var(--line);transform:translateX(-50%);z-index:1}
+.fs::after{content:"";position:absolute;top:10px;left:-50%;width:100%;height:3px;background:var(--line)}.fs:first-child::after{display:none}
+.fs.d{color:var(--p)}.fs.d::before,.fs.d::after{background:var(--p)}.fs.c{color:var(--ink)}.fs.c::before{background:var(--card);border:3px solid var(--p);width:14px;height:14px;top:4px}
+.dec{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--ps);border-radius:12px;padding:10px 12px}
+.db{font:inherit;font-weight:800;font-size:14px;padding:8px 13px;border-radius:10px;border:2px solid;background:var(--card);cursor:pointer}
+.db.y{border-color:var(--g);color:var(--g)}.db.m{border-color:#b08a00;color:#8a6a00}.db.n{border-color:var(--r);color:var(--r)}
+kbd{font-family:ui-monospace,monospace;font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.7;margin-left:4px}
+.nx{display:flex;gap:8px;flex-wrap:wrap}
+.dtabs{display:flex;gap:16px;border-bottom:1px solid var(--line)}
+.dtabs button{font:inherit;font-weight:700;border:0;background:none;color:var(--muted);padding:8px 0;cursor:pointer}.dtabs button.on{color:var(--ink);box-shadow:inset 0 -3px 0 var(--p)}
+.g2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px}
+.box{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}.box h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 10px;font-size:14.5px}.kv span{color:var(--muted)}
+.days{display:flex;gap:3px}.days i{font-style:normal;width:22px;height:22px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:800;background:var(--sunk);color:var(--muted)}.days i.on{background:var(--p);color:#fff}
+.why{font-size:13px;color:var(--muted)}
+.score{position:relative;display:inline-block}
+.score .tip{display:none;position:absolute;right:0;top:120%;width:250px;background:var(--ink);color:var(--card);font-size:12.5px;border-radius:10px;padding:8px 10px;z-index:5;text-align:left;font-weight:500}
+.score:hover .tip,.score:focus-within .tip{display:block}
+.act{display:grid;gap:8px}.ai{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;font-size:14px}.ai span{color:var(--muted)}
+.note{border-left:3px solid var(--p);background:var(--sunk);border-radius:0 8px 8px 0;padding:7px 10px;font-size:14px}.note small{display:block;color:var(--muted)}
+.offer{border:2px solid var(--g);border-radius:12px;padding:12px 14px;background:var(--gs)}
+.offer h4{margin:0 0 6px;font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--g)}
+.f2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+label.f span{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:3px}
+input,select,textarea{font:inherit;font-size:15px;width:100%;border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--card);color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+.empty{padding:30px 16px;text-align:center;color:var(--muted)}
+/* stores */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.st h3{margin:0;font-family:var(--f-d);font-size:23px}
+.st .ln{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px dashed var(--line);font-size:14px}.st .ln:first-of-type{border-top:0}
+.st .ln span{color:var(--muted)}
+.alert{display:flex;gap:8px;align-items:flex-start;background:var(--rs);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:13.5px;margin-top:8px}
+.bar{height:7px;background:var(--sunk);border-radius:5px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--g)}
+/* interviews */
+.day{margin-bottom:12px}.day h3{margin:0 0 6px;font-size:16px}
+.ivr{display:grid;grid-template-columns:80px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}.ivr:first-child{border-top:0}
+/* careers preview */
+.pub{max-width:700px;margin:0 auto}
+.pubh{background:linear-gradient(120deg,#2E7D32,#1b5e20);color:#fff;border-radius:14px 14px 0 0;padding:18px 20px}.pubh h2{margin:0;font-size:28px;font-family:var(--f-d)}
+.pj{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--card)}
+.pj b{font-size:17px}.pj small{color:var(--muted)}
+.dayp{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dayp button{font:inherit;font-weight:800;font-size:13px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 0;cursor:pointer}.dayp button.on{background:var(--g);border-color:var(--g);color:#fff}
+/* settings */
+.wt{display:grid;grid-template-columns:180px minmax(0,1fr) 50px;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.wt:first-child{border-top:0}
+.wt input[type=range]{padding:0;border:0;accent-color:var(--p)}
+/* modal & toast */
+.ov{position:fixed;inset:0;background:rgba(20,12,28,.5);display:grid;place-items:center;z-index:50;padding:16px}
+.md{background:var(--card);color:var(--ink);border-radius:16px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.md h3{margin:0 0 4px;font-family:var(--f-d);font-size:25px}
+.mb{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#231b2b;color:#fff;border-radius:12px;padding:10px 16px;font-weight:700;z-index:80;max-width:calc(100% - 32px)}
+@media (max-width:820px){.top{position:static}body::before{display:none}nav.nv{flex-wrap:nowrap;overflow-x:auto;max-width:100%}nav.nv button{flex:none}.rv{grid-template-columns:1fr}.ls{border-right:0;border-bottom:1px solid var(--line)}.lsb{max-height:260px}.g2{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.wt{grid-template-columns:1fr 50px}.wt b{grid-column:1/-1}.top input{max-width:none;flex:1 1 100%}}
+.pvb{background:#fff4d6;border-bottom:2px solid #e0b100;color:#4a3800;padding:9px 16px;font-size:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;text-align:center}
+.pvn{background:#fff;border:1px solid #e0b100;border-radius:999px;padding:2px 10px;font-weight:700;font-size:12.5px}
+#pvGate[hidden]{display:none}#pvGate{position:fixed;inset:0;background:rgba(20,12,28,.55);display:grid;place-items:center;z-index:90;padding:16px}
+.pvc{background:var(--card);color:var(--ink);border-radius:16px;max-width:460px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}.pvc h2{margin:0 0 6px;font-family:var(--f-d);font-size:26px}.pvc p{margin:8px 0}.pvc .btn{text-decoration:none;display:inline-block}
+</style>
+
+<div class="top"><div class="topin"><span class="brand">Vista Hiring <small>PREVIEW</small></span>
+<nav class="nv" id="nav" aria-label="Sections"></nav><span class="sp"></span><input id="q" type="search" placeholder="Search name, phone, experience…" aria-label="Search candidates"><button type="button" class="btn sm" id="reset" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.45)">Reload data</button></div><div class="stripe"></div></div>
+<div class="pvb" role="note"><b>Preview with real applicants.</b> <span>Nothing you do here is saved, and emails, texts and calls are turned off. Close this tab and everything stays the same.</span> <span id="pvCount" class="pvn"></span></div>
+<div class="wrap" id="app"></div>
+<div id="layer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+const STORES=["Montana","Doniphan","Central","Horizon","Piedras","Urban","Alameda","Commissary","Eastlake"];
+const DEFAULT_STORE_INFO={
+  Montana:{name:"Vista Markets Montana",address:"14700 Montana Ave, El Paso, TX 79938",phone:"(915) 849-1155"},
+  Doniphan:{name:"Vista Markets Doniphan",address:"3920 Doniphan Dr, El Paso, TX 79922",phone:"(915) 833-1075"},
+  Central:{name:"Vista Markets Central",address:"2231 N Zaragoza Rd, El Paso, TX 79938",phone:"(915) 921-8210"},
+  Horizon:{name:"Vista Markets Horizon",address:"121 N Kenazo Ave, Horizon City, TX 79928",phone:"(915) 852-2297"},
+  Piedras:{name:"Vista Markets Piedras",address:"3116 N Piedras St, El Paso, TX 79930",phone:"(915) 566-6387"},
+  Urban:{name:"Vista Markets Urban",address:"1960 George Dieter Dr, Ste 2A, El Paso, TX 79936",phone:"(915) 529-2094"},
+  Alameda:{name:"Vista Markets Alameda",address:"10005 Alameda Ave, El Paso, TX 79927",phone:"(915) 858-7991"},
+  Commissary:{name:"El Paso Prepared Foods",address:"950 Pendale Rd, El Paso, TX 79907",phone:"(915) 538-8942"}
+};
+const DEPTS=["Cashier","Stocker","Receiving","Meat Market","Hot Deli","Cold Deli","Produce","Bakery","Tortilleria"];
+const STAGES=[["new","Applied"],["review","Review"],["screen","Screening"],["interview","Interview"],["offer","Offer"],["onboard","Onboarding"],["starting","Starting"]];
+const DN=["S","M","T","W","T","F","S"],DL=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const W0={days:30,shift:20,hours:15,start:10,store:10,exp:10,certs:5};
+const NAMES=["Sofía Ramírez","Daniel Cruz","Valeria Soto","Marco Luján","Ana Torres","Karla Méndez","José Luna","Brisa Ortega","Luis Fierro","Paola Ríos","Iván Herrera","Mónica Salas","Héctor Gil","Diana Vega","Raúl Pineda","Fernanda Lara","Andrés Molina","Yesenia Cano","Lorena Ibarra","Tomás Rubio","Gaby Chávez"];
+function mk(i,o){return Object.assign({id:"c"+i,name:NAMES[i],phone:"(915) 555-01"+String(10+i),email:NAMES[i].toLowerCase().split(" ")[0].normalize("NFD").replace(/[̀-ͯ]/g,"")+"@example.com",job:null,ago:i%7,src:["Careers page","Indeed","Store QR","Referral","Walk-in"][i%5],days:[1,1,1,1,1,1,1],shift:"any",type:"Either",start:"Right away",exp:"Cashier · 1 yr",fh:0,tabc:0,stage:"new",dec:null,notes:[],log:[],pref:null},o)}
+const SENDER="Miguel Piña",SENDER_PH="(915) 555-0100";
+const TPL={
+ screen:{label:"New · phone screen invite",en:{s:"Your application at Vista Markets",b:"Hi {first},\n\nThanks for applying to Vista Markets for {job}. I'd like to set up a quick 10-minute phone call to get to know you.\n\nWhat day and time work best for you this week? You can reply here or call or text me at {sender_phone}.\n\nThank you,\n{sender}\nVista Markets hiring office",t:"Hi {first}, this is {sender} from Vista Markets. Thanks for applying for {job}! Do you have 10 minutes for a quick call this week? Reply with a good time."},
+  es:{s:"Su solicitud en Vista Markets",b:"Hola {first},\n\nGracias por aplicar a Vista Markets para {job}. Me gustaría hacer una llamada rápida de 10 minutos para conocerle.\n\n¿Qué día y hora le funcionan esta semana? Puede responder aquí o llamarme o mandarme mensaje al {sender_phone}.\n\nGracias,\n{sender}\nOficina de contratación, Vista Markets",t:"Hola {first}, soy {sender} de Vista Markets. ¡Gracias por aplicar para {job}! ¿Tiene 10 minutos para una llamada rápida esta semana? Responda con un buen horario."}},
+ reach:{label:"Couldn't reach you",en:{s:"We tried to reach you · Vista Markets",b:"Hi {first},\n\nI tried calling about your application for {job} but couldn't reach you. Please call or text me back at {sender_phone} when you can.\n\nThank you,\n{sender}",t:"Hi {first}, it's {sender} from Vista Markets. I tried calling about your application for {job}. Please call or text me back at {sender_phone}."},
+  es:{s:"Intentamos comunicarnos · Vista Markets",b:"Hola {first},\n\nLe llamé sobre su solicitud para {job} pero no pude comunicarme. Por favor llámeme o mándeme mensaje al {sender_phone} cuando pueda.\n\nGracias,\n{sender}",t:"Hola {first}, soy {sender} de Vista Markets. Le llamé sobre su solicitud para {job}. Por favor llámeme o mándeme mensaje al {sender_phone}."}},
+ iv:{label:"Interview confirmation",en:{s:"Interview confirmed · {when}",b:"Hi {first},\n\nYour interview for {job} is set for {when} at our {store} store ({address}).\n\nPlease bring a photo ID and ask for the store manager when you arrive. If you need to change the time, call or text me at {sender_phone}.\n\nSee you then,\n{sender}",t:"Hi {first}, your Vista Markets interview for {job} is {when} at our {store} store ({address}). Bring a photo ID. Need to change it? Text {sender_phone}."},
+  es:{s:"Entrevista confirmada · {when}",b:"Hola {first},\n\nSu entrevista para {job} es el {when} en nuestra tienda {store} ({address}).\n\nTraiga una identificación con foto y pregunte por el gerente al llegar. Si necesita cambiar el horario, llámeme o mándeme mensaje al {sender_phone}.\n\nNos vemos,\n{sender}",t:"Hola {first}, su entrevista en Vista Markets para {job} es el {when} en la tienda {store} ({address}). Traiga identificación con foto. ¿Necesita cambiarla? Mensaje al {sender_phone}."}},
+ noshow:{label:"Missed interview",en:{s:"We missed you today",b:"Hi {first},\n\nWe missed you at your interview for {job}. If you're still interested, call or text me at {sender_phone} and we'll find another time.\n\n{sender}",t:"Hi {first}, we missed you at your Vista Markets interview today. Still interested? Text {sender_phone} and we'll find another time."},
+  es:{s:"No pudimos verle hoy",b:"Hola {first},\n\nNo pudimos verle en su entrevista para {job}. Si todavía le interesa, llámeme o mándeme mensaje al {sender_phone} y buscamos otro horario.\n\n{sender}",t:"Hola {first}, no pudimos verle hoy en su entrevista de Vista Markets. ¿Todavía le interesa? Mensaje al {sender_phone} y buscamos otro horario."}},
+ offer:{label:"Job offer",en:{s:"Job offer · {job} at Vista Markets",b:"Hi {first},\n\nCongratulations! We'd like to offer you the {job} position at our {store} store.\n\nI'll call you to go over pay, hours and your first day. Please reply to confirm you'd like to accept.\n\nWelcome to the team,\n{sender}",t:"Hi {first}, congratulations! Vista Markets would like to offer you the {job} position at {store}. I'll call to go over the details. Reply to confirm."},
+  es:{s:"Oferta de trabajo · {job} en Vista Markets",b:"Hola {first},\n\n¡Felicidades! Nos gustaría ofrecerle el puesto de {job} en nuestra tienda {store}.\n\nLe llamaré para hablar del pago, las horas y su primer día. Por favor responda para confirmar que acepta.\n\nBienvenido(a) al equipo,\n{sender}",t:"Hola {first}, ¡felicidades! Vista Markets le ofrece el puesto de {job} en {store}. Le llamaré para darle los detalles. Responda para confirmar."}},
+ hired:{label:"First day details",en:{s:"Your first day at Vista Markets · {first_day}",b:"Hi {first},\n\nWelcome to Vista Markets! Your first day is {first_day} at our {store} store ({address}).\n\nWhen you arrive, ask for the manager. Your first day starts with setting up your time clock and video training on the store iPad. Please bring your Food Handler card and TABC certificate if you have them.\n\nSee you soon,\n{sender}",t:"Hi {first}, welcome to Vista Markets! Your first day is {first_day} at {store} ({address}). Ask for the manager when you arrive."},
+  es:{s:"Su primer día en Vista Markets · {first_day}",b:"Hola {first},\n\n¡Bienvenido(a) a Vista Markets! Su primer día es el {first_day} en nuestra tienda {store} ({address}).\n\nAl llegar, pregunte por el gerente. Su primer día empieza con registrar su reloj checador y la capacitación en video en el iPad de la tienda. Traiga su tarjeta de Food Handler y su certificado TABC si los tiene.\n\nNos vemos pronto,\n{sender}",t:"Hola {first}, ¡bienvenido(a) a Vista Markets! Su primer día es el {first_day} en {store} ({address}). Pregunte por el gerente al llegar."}},
+ no:{label:"Not moving forward",en:{s:"Your application at Vista Markets",b:"Hi {first},\n\nThank you for applying to Vista Markets. We won't be moving forward right now, but we'll keep your application on file for future openings.\n\nWe appreciate your interest,\n{sender}",t:"Hi {first}, thank you for applying to Vista Markets. We won't be moving forward right now, but we'll keep your application for future openings."},
+  es:{s:"Su solicitud en Vista Markets",b:"Hola {first},\n\nGracias por aplicar a Vista Markets. Por ahora no vamos a continuar, pero guardaremos su solicitud para futuras vacantes.\n\nAgradecemos su interés,\n{sender}",t:"Hola {first}, gracias por aplicar a Vista Markets. Por ahora no vamos a continuar, pero guardaremos su solicitud para futuras vacantes."}},
+ future:{label:"Future opening",en:{s:"A new opening at Vista Markets",b:"Hi {first},\n\nYou applied with us before, and we have a new opening for {job} at {store}. Are you still interested? Reply here or call or text me at {sender_phone}.\n\n{sender}",t:"Hi {first}, it's {sender} from Vista Markets. We have a new opening for {job} at {store}. Still interested? Reply here."},
+  es:{s:"Una nueva vacante en Vista Markets",b:"Hola {first},\n\nUsted aplicó con nosotros antes y tenemos una nueva vacante de {job} en {store}. ¿Todavía le interesa? Responda aquí o llámeme o mándeme mensaje al {sender_phone}.\n\n{sender}",t:"Hola {first}, soy {sender} de Vista Markets. Tenemos una nueva vacante de {job} en {store}. ¿Todavía le interesa? Responda aquí."}}};
+const STPL={
+ st_candidate:{label:"Candidate & interview",en:{s:"New candidate for {store}: {name} · {job}",b:"Hi {manager},\n\nI'm sending you {name} for {job}. They can work {days}, prefer {shift}, and can start {start}.\n\nPlease claim them in Hiring and set an interview this week. If they ask about pay, let them know the hiring office will go over it.\n\nThanks,\n{sender}",t:"Hi {manager}, I sent you a new candidate for {job}: {name}. Please check your email and claim them in Hiring. – {sender}"},
+  es:{s:"Nuevo candidato para {store}: {name} · {job}",b:"Hola {manager},\n\nLe envío a {name} para {job}. Puede trabajar {days}, prefiere {shift} y puede empezar {start}.\n\nPor favor reclámelo en Contratación y agende una entrevista esta semana. Si pregunta por el pago, dígale que la oficina de contratación lo verá.\n\nGracias,\n{sender}",t:"Hola {manager}, le envié un nuevo candidato para {job}: {name}. Revise su correo y reclámelo en Contratación. – {sender}"}},
+ st_onboarded:{label:"Onboarding done · confirm start",en:{s:"{name} is ready to start at {store}",b:"Hi {manager},\n\n{name} finished onboarding for {job}. Their first day is {first_day}. Please add them to your schedule from the Hiring tab and pick a trainer.\n\nThanks,\n{sender}",t:"Hi {manager}, {name} is ready to start {first_day}. Please add them to your schedule and pick a trainer. – {sender}"},
+  es:{s:"{name} está listo(a) para empezar en {store}",b:"Hola {manager},\n\n{name} terminó su proceso de ingreso para {job}. Su primer día es el {first_day}. Por favor agréguelo(a) a su horario desde la pestaña Contratación y elija un entrenador.\n\nGracias,\n{sender}",t:"Hola {manager}, {name} está listo(a) para empezar el {first_day}. Agréguelo(a) a su horario y elija un entrenador. – {sender}"}},
+ st_firstday:{label:"First day · store + new hire",en:{s:"First day: {name} at {store} · {first_day}",b:"Hi {manager} and {first},\n\n{first} starts as {job} at {store} on {first_day}.\n\nManager: start with the time clock, then the video training on the store iPad, then the rest of the first-day checklist. Customer service first, always.\n\n{first}: ask for the manager when you arrive and bring your Food Handler card and TABC if you have them.\n\n{sender}",t:"Hi {manager}, reminder: {name} starts {first_day}. Time clock first, then iPad training. – {sender}"},
+  es:{s:"Primer día: {name} en {store} · {first_day}",b:"Hola {manager} y {first},\n\n{first} empieza como {job} en {store} el {first_day}.\n\nGerente: empiece con el reloj checador, luego la capacitación en video en el iPad de la tienda y después el resto de la lista del primer día. El servicio al cliente siempre primero.\n\n{first}: pregunte por el gerente al llegar y traiga su tarjeta de Food Handler y TABC si los tiene.\n\n{sender}",t:"Hola {manager}, recordatorio: {name} empieza el {first_day}. Primero el reloj checador, luego la capacitación en el iPad. – {sender}"}}};
+const MAILERS={outlook:{label:"Outlook (work)",url:(to,s,b)=>`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`},outlookcom:{label:"Outlook.com",url:(to,s,b)=>`https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`},gmail:{label:"Gmail",url:(to,s,b)=>`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`}};
+const STORE_INFO0={Montana:{manager:"",email:"",cell:"",address:"Montana Ave"},Doniphan:{manager:"Doniphan manager",email:"doniphan.manager@example.com",cell:"(915) 555-0201",address:"Doniphan Dr"},Central:{manager:"Central manager",email:"central.manager@example.com",cell:"(915) 555-0202",address:"2231 N Zaragoza Rd"},Horizon:{manager:"Horizon manager",email:"horizon.manager@example.com",cell:"(915) 555-0203",address:"Horizon Blvd"},Piedras:{manager:"Piedras manager",email:"piedras.manager@example.com",cell:"(915) 555-0204",address:"Piedras St"},Urban:{manager:"Urban manager",email:"urban.manager@example.com",cell:"(915) 555-0205",address:"Urban"},Alameda:{manager:"Alameda manager",email:"alameda.manager@example.com",cell:"(915) 555-0206",address:"Alameda Ave"}};
+const sInfo=st=>(S.storeInfo||(S.storeInfo=JSON.parse(JSON.stringify(STORE_INFO0))))[st]||{};
+const digits=p=>String(p||"").replace(/\D/g,"");
+const fmtPh=p=>{const d=digits(p).slice(-10);return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:p};
+const smsUrl=(p,b)=>{const d=digits(p);return d.length===10?`sms:+1${d}&body=${encodeURIComponent(b)}`:""};
+function storeOf(c){const j=job(c.job);return c.store||(j?j.store:c.pref)||""}
+function tokens(c,lang){const j=job(c.job),es=lang==="es",st=storeOf(c),si=sInfo(st);const fdv=(c.first&&c.first.date)||(c.req&&c.req.date)||"";const fd=fdv?new Date(fdv+"T12:00").toLocaleDateString(es?"es-MX":"en-US",{weekday:"long",month:"long",day:"numeric"})+((c.first||c.req)&&(c.first||c.req).time?(es?" a las ":" at ")+(c.first||c.req).time:""):"";
+ const dn=(es?["dom","lun","mar","mié","jue","vie","sáb"]:DL).filter((d,i)=>c.days[i]);
+ return{first:c.name.split(" ")[0],name:c.name,job:j?j.title:(es?"un puesto":"a position"),store:st,address:si.address||"",when:c.iv||"",first_day:fd,sender:SENDER,sender_phone:SENDER_PH,manager:si.manager||"",days:dn.join(", "),shift:({am:es?"mañanas":"mornings",pm:es?"tardes":"afternoons / evenings",any:es?"cualquier turno":"any shift"})[c.shift],start:es?({"Right away":"de inmediato","In 2 weeks":"en 2 semanas"}[c.start]||"en una fecha por confirmar"):c.start.toLowerCase()}}
+function fillM(t,v){let miss=[];const out=t.replace(/\{(\w+)\}/g,(m,k)=>{if(v[k])return v[k];miss.push(k.replace(/_/g," "));return `[${k.replace(/_/g," ")}]`});return{out,miss}}
+function defaultK(c,who){if(who==="store")return c.stage==="starting"?"st_firstday":["onboard","ready"].includes(c.stage)?"st_onboarded":"st_candidate";return({new:"screen",review:"screen",screen:"iv",store:"iv",interview:"iv",offer:"offer",onboard:"offer",ready:"hired",starting:"hired",hired:"hired",out:"no",future:"future"})[c.stage]||"screen"}
+function tplModal(cid,k,who){const c=cand(cid);who=who||(k&&k.startsWith("st_")?"store":"app");S.msg={cid,who,k:k||defaultK(c,who),lang:S.msg&&S.msg.cid===cid?S.msg.lang:"en",mailer:(S.msg&&S.msg.mailer)||"outlook"};msgRender()}
+function msgRender(){const M=S.msg,c=cand(M.cid);const set=M.who==="store"?STPL:TPL;if(!set[M.k])M.k=defaultK(c,M.who);const T=set[M.k][M.lang],v=tokens(c,M.lang);
+ const S1=fillM(T.s,v),B1=fillM(T.b,v),X1=fillM(T.t,v);const st=storeOf(c),si=sInfo(st);
+ const to=M.who==="store"?[si.email,...(M.k==="st_firstday"&&c.email?[c.email]:[])].filter(Boolean).join(","):c.email;
+ const cell=M.who==="store"?si.cell:c.phone;
+ const miss=[...new Set([...S1.miss,...B1.miss])];
+ const warn=M.who==="store"&&!st?"Set the store on this candidate first.":M.who==="store"&&!si.email?`No manager email for ${st} yet. Add it on the Stores tab.`:!to?"No email on file for this person.":miss.length?`Fill in first: ${miss.join(", ")}. It shows in brackets below.`:"";
+ const mailto=to?`mailto:${to}?subject=${encodeURIComponent(S1.out)}&body=${encodeURIComponent(B1.out.replace(/\n/g,"\r\n"))}`:"";
+ const web=to?MAILERS[M.mailer].url(to,S1.out,B1.out):"";const sms=smsUrl(cell,X1.out);
+ const hl=s=>esc(s).replace(/\[([a-z ]+)\]/g,'<mark style="background:var(--rs);color:var(--r);border-radius:4px;padding:0 3px">[$1]</mark>');
+ modal(`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">Message · ${esc(c.name)}</h3><span class="sp"></span><div class="chips" role="group" aria-label="Language"><button type="button" class="chip ${M.lang==="en"?"on":""}" data-mlang="en">EN</button><button type="button" class="chip ${M.lang==="es"?"on":""}" data-mlang="es">ES</button></div></div>
+ <div class="chips" style="margin:10px 0" role="group" aria-label="Send to"><button type="button" class="chip ${M.who==="app"?"on":""}" data-mwho="app">To applicant</button><button type="button" class="chip ${M.who==="store"?"on":""}" data-mwho="store">To store${st?" · "+esc(st):""}</button></div>
+ <label class="f"><span>Template</span><select id="mK">${Object.entries(set).map(([kk,x])=>`<option value="${kk}" ${kk===M.k?"selected":""}>${esc(x.label)}</option>`).join("")}</select></label>
+ ${warn?`<div class="alert" style="margin-top:10px">⚠ ${esc(warn)}</div>`:""}
+ <div class="box" style="margin-top:10px"><h4>Email · to ${esc((to||"—").split(",").join(", "))}${M.k==="st_firstday"?" (store + new hire)":""}</h4><div style="font-weight:700;margin-bottom:6px">${hl(S1.out)}</div><div style="white-space:pre-wrap;font-size:14px;max-height:190px;overflow:auto;background:var(--sunk);border-radius:8px;padding:8px 10px">${hl(B1.out)}</div>
+  <div class="nx" style="margin-top:8px">${to?`<a class="btn p sm" href="${esc(mailto)}" data-sent="email" style="text-decoration:none">Open in Outlook app</a><a class="btn sm" href="${esc(web)}" target="_blank" rel="noopener" data-sent="email" style="text-decoration:none">${esc(MAILERS[M.mailer].label)} on the web</a>`:""}<button type="button" class="btn sm" data-mcopy="s">Copy subject</button><button type="button" class="btn sm" data-mcopy="b">Copy message</button></div>
+  ${to?`<div class="why" style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">Web button uses <select id="mMailer" style="width:auto;padding:3px 6px;font-size:13px">${Object.entries(MAILERS).map(([k,x])=>`<option value="${k}" ${k===M.mailer?"selected":""}>${x.label}</option>`).join("")}</select> If the Outlook app doesn't open, use the web button or copy.</div>`:""}</div>
+ <div class="box" style="margin-top:10px"><h4>Text · ${M.who==="store"?esc(si.manager||"store manager"):esc(c.name.split(" ")[0])}${cell?` · ${esc(cell)}`:" · no cell on file"}</h4><div style="white-space:pre-wrap;font-size:14px;background:var(--sunk);border-radius:8px;padding:8px 10px">${hl(X1.out)}</div>
+  <div class="nx" style="margin-top:8px">${sms?`<a class="btn p sm" href="${esc(sms)}" data-sent="text" style="text-decoration:none">Text</a>`:""}<button type="button" class="btn sm" data-mcopy="t">Copy text</button></div></div>
+ <p class="why">Preview: these buttons are turned off so nothing reaches a real applicant. Live, they open your email or Messages app with the message filled in.</p>
+ <div class="mb"><button type="button" class="btn" data-close="1">Close</button><button type="button" class="btn p" data-mlog="1">Mark as sent</button></div>`);
+ S.msgOut={s:S1.out,b:B1.out,t:X1.out}}
+function vTpl(){const card=(k,x,who)=>`<div class="card pad"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b>${esc(x.label)}</b><span class="pill ${who==="store"?"pp":"pb"}">${who==="store"?"To store":"To applicant"}</span><span class="pill px">Email + text · EN / ES</span></div><p class="why" style="margin:6px 0 0;white-space:pre-wrap">${esc(x.en.t)}</p></div>`;
+ return `<div class="hd"><div><h1>Templates</h1><p class="sub">Email and text for each stage, in English and Spanish, with the name, job, store and times filled in. Open them from a candidate with ✉ Message.</p></div></div>
+ <h3 style="margin:4px 0 8px">To applicants</h3><div class="sg">${Object.entries(TPL).map(([k,x])=>card(k,x,"app")).join("")}</div>
+ <h3 style="margin:18px 0 8px">To store managers</h3><div class="sg">${Object.entries(STPL).map(([k,x])=>card(k,x,"store")).join("")}</div>`}
+
+function seed(){return{view:"jobs",cf:"new",job:"__all",store:"__all",sel:null,dtab:"app",W:{...W0},
+ jobs:[{id:"j1",title:"Cashier",dept:"Cashier",store:"Montana",type:"Full-time",shift:"pm",ago:12,open:true},{id:"j2",title:"Stocker",dept:"Stocker",store:"Doniphan",type:"Part-time",shift:"pm",ago:8,open:true,hrs:"22.5"},{id:"j3",title:"Meat Market Clerk",dept:"Meat Market",store:"Central",type:"Full-time",shift:"am",ago:3,open:true},{id:"j4",title:"Cold Deli",dept:"Cold Deli",store:"Urban",type:"Full-time",shift:"am",ago:5,open:true},{id:"j5",title:"Hot Deli",dept:"Hot Deli",store:"Montana",type:"Full-time",shift:"pm",ago:20,open:false}],
+ storeInfo:JSON.parse(JSON.stringify(STORE_INFO0)),managers:{Montana:false,Doniphan:true,Central:true,Horizon:true,Piedras:true,Urban:true,Alameda:true},
+ hires:[{name:"Luz Herrera",store:"Montana",pos:"Hot Deli",first:"Mon, Nov 16",checks:9},{name:"Pedro Gil",store:"Urban",pos:"Cold Deli",first:"Mon, Nov 23",checks:3}],
+ cands:[
+  mk(0,{job:"j1",ago:2,src:"Careers page",days:[1,1,1,0,1,1,1],shift:"pm",type:"Full-time",exp:"Cashier · 2 yrs · Walmart",fh:1,pref:"Montana"}),
+  mk(1,{job:"j1",ago:3,src:"Store QR",days:[1,1,1,1,1,0,0],shift:"any",type:"Full-time",start:"In 2 weeks",exp:"Stocker · 1 yr · Albertsons",fh:1,tabc:1,pref:"Montana"}),
+  mk(2,{job:"j1",ago:4,days:[0,1,1,1,1,1,0],shift:"am",type:"Part-time",exp:"First job",pref:"Montana"}),
+  mk(3,{job:"j1",ago:5,src:"Referral",days:[1,0,0,0,0,1,1],shift:"pm",exp:"Cashier · 3 yrs · Family Dollar",tabc:1,pref:"Montana"}),
+  mk(4,{job:"j1",ago:21,src:"Indeed",shift:"pm",type:"Full-time",exp:"Cashier · Food City",fh:1,tabc:1,stage:"store",store:"Montana",sharedAgo:21,pref:"Montana"}),
+  mk(5,{job:"j2",ago:1,src:"Careers page",shift:"pm",type:"Part-time",exp:"Stocker · Walgreens",pref:"Doniphan"}),
+  mk(6,{job:"j2",ago:6,days:[0,0,0,0,0,1,1],shift:"am",type:"Full-time",start:"Pick a date",exp:"Warehouse · Amazon",pref:"Doniphan"}),
+  mk(7,{job:"j2",ago:2,src:"Walk-in",days:[1,1,0,1,1,1,0],shift:"pm",type:"Part-time",exp:"Stocker · 6 mo",stage:"screen",dec:"interested",pref:"Doniphan",notes:[{who:"Ana Q.",when:"Nov 19",t:"Phone screen done. Available evenings, has a car."}]}),
+  mk(8,{job:"j2",ago:7,shift:"pm",type:"Part-time",exp:"Receiving · 1 yr",stage:"interview",dec:"interested",store:"Doniphan",iv:"Sat, Nov 21 · 10:00a",pref:"Doniphan"}),
+  mk(9,{job:"j4",ago:3,days:[1,1,1,1,1,0,0],shift:"am",type:"Full-time",exp:"Deli · 2 yrs · Albertsons",fh:1,pref:"Urban"}),
+  mk(10,{job:"j4",ago:9,shift:"am",type:"Full-time",exp:"Deli · Sam's Club",fh:1,stage:"offer",dec:"interested",store:"Urban",offer:{rate:"",type:"Full-time",hrs:"40",start:"",ans:"Waiting"},pref:"Urban"}),
+  mk(11,{job:"j4",ago:4,days:[0,0,1,1,1,1,1],shift:"pm",type:"Part-time",exp:"First job",pref:"Urban"}),
+  mk(12,{job:null,ago:1,src:"Careers page",shift:"am",type:"Full-time",exp:"Butcher · 4 yrs",fh:1,pref:null}),
+  mk(13,{job:null,ago:2,src:"Indeed",shift:"pm",type:"Part-time",exp:"Cashier · 1 yr",pref:"Montana"}),
+  mk(14,{job:null,ago:3,src:"Store QR",days:[1,1,1,1,1,0,0],shift:"am",type:"Full-time",exp:"Deli · 1 yr",fh:1,pref:"Urban"}),
+  mk(15,{job:null,ago:5,src:"Walk-in",days:[0,0,0,0,0,1,1],shift:"any",type:"Part-time",exp:"First job",pref:null}),
+  mk(16,{job:"j1",ago:15,exp:"Cashier · 1 yr",stage:"out",dec:"no",pref:"Montana"}),
+  mk(17,{job:null,ago:30,exp:"Bakery · 2 yrs",stage:"future",pref:"Central"}),
+  mk(18,{job:"j3",ago:10,shift:"am",type:"Full-time",exp:"Meat cutter · 3 yrs",fh:1,stage:"hirereq",dec:"interested",store:"Central",iv:"Thu, Nov 19 · 9:00a",req:{pos:"Meat Market Clerk",date:"2026-11-30",time:"7:00a",fh:true,tabc:false,note:"Strong. Knows the saw.",by:"Central manager"},pref:"Central"}),
+  mk(19,{job:"j1",ago:14,shift:"pm",type:"Part-time",exp:"Cashier · 1 yr",tabc:1,stage:"ready",dec:"interested",store:"Montana",req:{pos:"Cashier",date:"2026-11-30",time:"2:00p",fh:false,tabc:true,by:"Montana manager"},offer:{rate:"",type:"Part-time",hrs:"25",ans:"Accepted"},onb:{tt:true,fh:false,tabc:true},pref:"Montana"}),
+  mk(20,{job:"j4",ago:16,shift:"am",type:"Full-time",exp:"Deli · 1 yr",fh:1,stage:"starting",dec:"interested",store:"Urban",req:{pos:"Cold Deli",date:"2026-11-23",time:"6:00a",fh:true,tabc:false,by:"Urban manager"},first:{date:"2026-11-23",time:"6:00a",by:"Urban"},offer:{rate:"",type:"Full-time",hrs:"40",ans:"Accepted"},pref:"Urban"})]}}
+let S=seed();S.cands=[];S.jobs=[];S.hires=[];S.view="cands";S.cf="new";
+const save=()=>{};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const job=id=>S.jobs.find(j=>j.id===id);const cand=id=>S.cands.find(c=>c.id===id);
+const ago=n=>n===0?"today":n===1?"1 day ago":n+" days ago";
+const shiftW=s=>({am:"Mornings",pm:"Afternoons / evenings",any:"Any shift"})[s]||s;
+const jobName=j=>j?`${j.title} · ${j.store}`:"Open to anything";
+function toast(t){document.querySelectorAll(".toast").forEach(x=>x.remove());const d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+function log(c,t){c.log.unshift({when:"Nov 20",t})}
+function follow(c){S.cf={new:"new",review:"review",screen:"review",store:"store",interview:"store",hirereq:"store",offer:"offer",onboard:"offer",ready:"offer",starting:"hired",out:"out",future:"future"}[c.stage]||"all";S.sel=c.id}
+/* ---------- match score: job facts only ---------- */
+function score(c,j){j=j||job(c.job);const W=S.W,tot=Object.values(W).reduce((a,b)=>a+b,0)||1;if(!j)return{v:0,parts:[]};const P=[];
+ const dc=c.days.filter(Boolean).length;P.push(["Days available",W.days*dc/7,W.days,`${dc} of 7 days`]);
+ P.push(["Shift",(c.shift==="any"||c.shift===j.shift)?W.shift:0,W.shift,c.shift===j.shift||c.shift==="any"?"Matches":shiftW(c.shift)+" only"]);
+ P.push(["Full / part-time",(c.type==="Either"||c.type===j.type)?W.hours:0,W.hours,c.type===j.type||c.type==="Either"?"Matches":"Wants "+c.type.toLowerCase()]);
+ P.push(["Can start",W.start*({"Right away":1,"In 2 weeks":.6}[c.start]||.3),W.start,c.start]);
+ P.push(["Store",(c.pref===j.store||!c.pref)?W.store:W.store*.3,W.store,c.pref?(c.pref===j.store?"Picked this store":"Picked "+c.pref):"Any store"]);
+ const rel=new RegExp(j.dept.split(" ")[0],"i").test(c.exp),first=/first job/i.test(c.exp);P.push(["Experience",rel?W.exp:first?W.exp*.3:W.exp*.6,W.exp,rel?"Related":first?"First job":"Other work"]);
+ const nFH=/deli|meat|bakery|tortill/i.test(j.dept),nT=/cashier/i.test(j.dept);let cs=1,cw=[];if(nFH&&!c.fh){cs-=.6;cw.push("no Food Handler")}if(nT&&!c.tabc){cs-=.4;cw.push("no TABC")}P.push(["Certificates",W.certs*cs,W.certs,cw.length?cw.join(", "):"Has what's needed"]);
+ const v=Math.round(P.reduce((a,p)=>a+p[1],0)/tot*100);return{v,parts:P}}
+const scol=v=>v>=85?"var(--g)":v>=65?"#8a6a00":"var(--r)";
+function bestJob(c){let b=null;S.jobs.filter(j=>j.open).forEach(j=>{const s=score(c,j).v;if(!b||s>b.s)b={j,s}});return b}
+function scoreTip(c,j){const s=score(c,j);return `<span class="score" tabindex="0"><span class="pill" style="background:var(--sunk);color:${scol(s.v)};font-size:14px">Match ${s.v}%</span><span class="tip">${s.parts.map(p=>`${esc(p[0])}: ${Math.round(p[1])}/${p[2]} · ${esc(p[3])}`).join("<br>")}</span></span>`}
+const dayDots=a=>`<span class="days" aria-label="Days available">${DN.map((d,i)=>`<i class="${a[i]?"on":""}" title="${DL[i]}">${d}</i>`).join("")}</span>`;
+/* ---------- stage helpers ---------- */
+const STG={new:"New",review:"Reviewing",screen:"Screening",store:"Waiting on store",interview:"Interview",offer:"Offer out",hired:"Hired",out:"Not moving forward",future:"Future pool"};
+const stagePill=c=>({new:`<span class="pill py">New</span>`,review:c.dec==="maybe"?`<span class="pill py">? Maybe</span>`:`<span class="pill pg">✓ Interested</span>`,screen:`<span class="pill pb">Screening</span>`,store:`<span class="pill pp">At ${esc(c.store)}</span>`,interview:`<span class="pill pb">Interview</span>`,offer:`<span class="pill pg">Offer out</span>`,hirereq:`<span class="pill pb">${esc(c.store)} wants to hire</span>`,onboard:`<span class="pill py">Onboarding</span>`,ready:`<span class="pill py">Waiting on ${esc(c.store)} for first day</span>`,starting:`<span class="pill pg">Starts ${esc(fdFmt(c.first))}</span>`,hired:`<span class="pill pg">Hired</span>`,out:`<span class="pill pr">Not a fit</span>`,future:`<span class="pill px">Future pool</span>`})[c.stage];
+const flowIdx=c=>({new:0,review:1,screen:2,store:2,interview:3,hirereq:3,offer:4,onboard:5,ready:5,starting:6,hired:6})[c.stage]??1;
+/* ---------- nav ---------- */
+function nav(){const nNew=S.cands.filter(c=>c.stage==="new").length,nIv=S.cands.filter(c=>c.stage==="interview").length;const alerts=storeAlerts().length;
+ const items=[["jobs","Jobs"],["cands","Candidates",nNew],["ivs","Interviews",nIv],["stores","Stores",alerts],["store","Store view",S.cands.filter(c=>c.stage==="ready").length],["careers","Careers page"],["tpl","Templates"],["set","Match settings"]];
+ $("#nav").innerHTML=items.map(([k,l,n])=>`<button type="button" class="${S.view===k?"on":""}" data-view="${k}" ${S.view===k?'aria-current="page"':""}>${l}${n?`<span class="n">${n}</span>`:""}</button>`).join("")}
+function render(){nav();const a=$("#app");a.innerHTML=({store:vStoreView,jobs:vJobs,cands:vCands,ivs:vIvs,stores:vStores,careers:vCareers,tpl:vTpl,set:vSet})[S.view]();save()}
+/* ---------- JOBS ---------- */
+function vJobs(){const rows=S.jobs.slice().sort((a,b)=>b.open-a.open).map(j=>{const cs=S.cands.filter(c=>c.job===j.id);const n=k=>cs.filter(c=>k.includes(c.stage)).length;
+  const cols=[["new",["new"]],["review",["review","screen"]],["store",["store","interview","hirereq"]],["offer",["offer","onboard","ready"]],["hired",["starting"]]];
+  const claimWait=cs.filter(c=>c.stage==="store").map(c=>c.sharedAgo||0);const oldest=claimWait.length?Math.max(...claimWait):0;
+  const flag=!j.open?`<span class="pill px">Closed</span>`:oldest>=7?`<span class="pill pr">Store hasn't claimed anyone · ${oldest} days</span>`:!cs.filter(c=>!["out","future"].includes(c.stage)).length?`<span class="pill pr">No applicants yet</span>`:n(["hirereq"])?`<span class="pill pb">Store wants to hire</span>`:n(["onboard"])?`<span class="pill py">Onboarding</span>`:n(["ready"])?`<span class="pill py">Waiting on store for first day</span>`:n(["offer"])?`<span class="pill pg">Offer out</span>`:n(["interview"])?`<span class="pill pb">Interviewing</span>`:`<span class="pill py">Needs review</span>`;
+  return `<tr class="${j.open?"":"closed"}"><td class="jt"><b>${esc(j.title)} · ${esc(j.store)}</b><small>${j.type} · ${shiftW(j.shift)}${j.hrs?` · ${j.hrs} hrs`:""} · posted ${ago(j.ago)}${j.requested?" · requested by store":""}</small></td>${cols.map(([k,st])=>{const v=n(st);return `<td class="c"><button type="button" class="cnt ${v?(k==="new"?"nw":""):"z"}" ${v?`data-goto="${j.id}:${k}"`:"disabled"} aria-label="${v} ${k}">${v}</button></td>`}).join("")}<td>${flag}</td><td style="white-space:nowrap">${j.open?`<button type="button" class="btn sm" data-goto="${j.id}:new">Review</button> <button type="button" class="btn sm" data-closejob="${j.id}">Close</button>`:`<button type="button" class="btn sm" data-reopen="${j.id}">Reopen</button>`}</td></tr>`}).join("");
+ const loose=S.cands.filter(c=>!c.job&&c.stage==="new");
+ return `<div class="guide"><span>ⓘ</span><span><b>Preview with real applicants.</b> Click around freely: decisions, notes and stage moves only change this screen and are gone when you reload. Try: click a <b>New</b> number, then press Y / M / N.</span></div>
+ <div class="hd"><div><h1>Jobs</h1><p class="sub">Every opening and where its candidates are. Click a number to see those people.</p></div><span class="sp"></span><button type="button" class="btn" data-addcand="1">+ Add candidate</button><button type="button" class="btn p" data-postjob="1">+ Post a job</button></div>
+ <div class="card scroll"><table><thead><tr><th>Job</th><th class="c">New</th><th class="c">Reviewing</th><th class="c">At store</th><th class="c">Offer &amp; onboarding</th><th class="c">Starting</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+ ${loose.length?`<div class="card pad" style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div><b>${loose.length} new applicants aren't tied to a job</b><div class="why">They picked "Open to anything" or no store. The app suggests the best open job for each.</div></div><span class="sp"></span><button type="button" class="btn" data-goto="__none:new">Review them</button></div>`:""}`}
+/* ---------- CANDIDATES ---------- */
+function filtered(){const q=($("#q")?.value||"").toLowerCase().trim();return S.cands.filter(c=>{
+ if(S.job==="__none"&&c.job)return false;if(S.job!=="__all"&&S.job!=="__none"&&c.job!==S.job)return false;
+ if(S.store!=="__all"){const st=c.job?job(c.job).store:c.pref;if(st!==S.store)return false}
+ const m={new:["new"],review:["review","screen"],store:["store","interview","hirereq"],offer:["offer","onboard","ready"],hired:["starting"],out:["out"],future:["future"],all:null}[S.cf];if(m&&!m.includes(c.stage))return false;
+ if(q&&!(c.name+" "+c.phone+" "+c.exp).toLowerCase().includes(q))return false;return true})
+ .map(c=>({c,s:c.job?score(c).v:(bestJob(c)||{s:0}).s})).sort((a,b)=>b.s-a.s||a.c.ago-b.c.ago)}
+function vCands(){const L=filtered();if(!S.sel||!L.find(x=>x.c.id===S.sel))S.sel=L[0]?.c.id||null;const cur=cand(S.sel);
+ const cnt=k=>S.cands.filter(c=>{const m={new:["new"],review:["review","screen"],store:["store","interview","hirereq"],offer:["offer","onboard","ready"],hired:["starting"],out:["out"],future:["future"]}[k];return m.includes(c.stage)&&(S.job==="__all"||(S.job==="__none"?!c.job:c.job===S.job))}).length;
+ const chips=[["new","New"],["review","Reviewing"],["store","At store"],["offer","Offer & onboarding"],["hired","Starting"],["out","Not a fit"],["future","Future pool"],["all","All"]].map(([k,l])=>`<button type="button" class="chip ${S.cf===k?"on":""}" data-cf="${k}">${l}${k!=="all"?`<span class="n">${cnt(k)}</span>`:""}</button>`).join("");
+ const left=L.map(({c,s})=>`<button type="button" class="ci ${c.id===S.sel?"on":""}" data-sel="${c.id}"><b>${esc(c.name)}</b><span class="sc" style="color:${scol(s)}">${s}%</span><small>${c.stage==="new"?`${esc(c.job?job(c.job).title:"Open to anything")} · ${ago(c.ago)} · ${esc(c.src)}`:stagePill(c)}</small></button>`).join("")||`<div class="empty">Nobody here. ${S.cf==="new"?"All caught up.":""}</div>`;
+ const right=cur?detail(cur,L):`<div class="empty">Pick someone on the left.</div>`;
+ return `<div class="hd"><div><h1>Candidates</h1><p class="sub">Sorted by best match. Keys: <b>Y</b> interested · <b>M</b> maybe · <b>N</b> not a fit · <b>J / K</b> next / previous.</p></div><span class="sp"></span><button type="button" class="btn p" data-addcand="1">+ Add candidate</button></div>
+ <div class="card rv"><div class="ls"><div class="lsh"><select id="fJob" aria-label="Job"><option value="__all">All jobs</option>${S.jobs.map(j=>`<option value="${j.id}" ${S.job===j.id?"selected":""}>${esc(jobName(j))}${j.open?"":" (closed)"}</option>`).join("")}<option value="__none" ${S.job==="__none"?"selected":""}>Not tied to a job</option></select><select id="fStore" aria-label="Store"><option value="__all">All stores</option>${STORES.map(s=>`<option ${S.store===s?"selected":""}>${s}</option>`).join("")}</select><div class="chips">${chips}</div></div><div class="lsb">${left}</div></div>${right}</div>`}
+function detail(c,L){const j=job(c.job);const bj=!j?bestJob(c):null;const idx=flowIdx(c);const i=L.findIndex(x=>x.c.id===c.id);const nxt=L[i+1]?.c;
+ let action="";
+ if(c.stage==="new")action=`<div class="dec"><b>Good fit${j?" for this job":""}?</b><button type="button" class="db y" data-dec="yes">✓ Interested<kbd>Y</kbd></button><button type="button" class="db m" data-dec="maybe">? Maybe<kbd>M</kbd></button><button type="button" class="db n" data-dec="no">✗ Not a fit<kbd>N</kbd></button><span class="sp"></span><span class="why">${nxt?"Next: "+esc(nxt.name)+" →":"Last one in this list"}</span></div>`;
+ else if(["review","screen"].includes(c.stage))action=`<div class="nx"><button type="button" class="btn p" data-screen="${c.id}">📞 Log phone screen</button><button type="button" class="btn" data-ivset="${c.id}">📅 Set up interview</button>${j?`<button type="button" class="btn" data-send="${c.id}">🏪 Send to ${esc(j.store)}</button>`:""}<button type="button" class="btn" data-tplc="${c.id}">✉ Use template</button><button type="button" class="btn link" data-back="${c.id}">Move back to New</button></div>`;
+ else if(c.stage==="store")action=`<div class="nx"><span class="pill pp" style="align-self:center">Waiting on ${esc(c.store)} to claim · ${ago(c.sharedAgo||0)}</span>${(c.sharedAgo||0)>=7?`<button type="button" class="btn" data-nudge="${c.store}">Nudge ${esc(c.store)}</button>`:""}<button type="button" class="btn" data-tplc="${c.id}" data-tplw="store">✉ Message store</button><button type="button" class="btn" data-goview="store:${c.store}">Open ${esc(c.store)} store view</button><button type="button" class="btn link" data-unshare="${c.id}">Take back</button></div>`;
+ else if(c.stage==="offer")action=offerBox(c);
+ else if(["interview","hirereq","onboard","ready","starting"].includes(c.stage))action=laterAction(c);
+ else action=`<div class="nx">${stagePill(c)}<button type="button" class="btn" data-back="${c.id}">Move back to New</button>${c.stage==="out"?`<button type="button" class="btn" data-future="${c.id}">Save to Future pool</button>`:""}</div>`;
+ const tabBody=S.dtab==="notes"?`<div class="act">${c.notes.map(n=>`<div class="note"><small>${esc(n.when)} · ${esc(n.who)}</small>${esc(n.t)}</div>`).join("")||`<div class="why">No notes yet.</div>`}<label class="f"><span>Add a private note</span><textarea id="nNote" placeholder="Phone screen, follow-up, reference check…"></textarea></label><div><button type="button" class="btn p" data-addnote="${c.id}">Save note</button></div></div>`
+  :S.dtab==="act"?`<div class="act">${c.log.map(l=>`<div class="ai"><span>${esc(l.when)}</span><span>${esc(l.t)}</span></div>`).join("")}<div class="ai"><span>${ago(c.ago)}</span><span>Applied${j?" to "+esc(jobName(j)):""} via ${esc(c.src)}</span></div></div>`
+  :`<div class="g2"><div class="box"><h4>${j?"Fit for this job":"What they want"}</h4><div class="kv"><span>Wants</span><b>${esc(c.type)} · ${shiftW(c.shift)}</b><span>Available</span>${dayDots(c.days)}<span>Can start</span><b>${esc(c.start)}</b><span>Experience</span><b>${esc(c.exp)}</b><span>Store picked</span><b>${esc(c.pref||"Any store")}</b><span>Certificates</span><span>${c.fh?`<span class="pill pg">✓ Food Handler</span>`:`<span class="pill pr">✗ Food Handler</span>`} ${c.tabc?`<span class="pill pg">✓ TABC</span>`:`<span class="pill pr">✗ TABC</span>`}</span></div></div>
+   <div class="box"><h4>Contact</h4><div class="kv"><span>Phone</span><span><b>${esc(c.phone)}</b><span class="nx" style="margin-top:4px"><a class="btn sm" href="tel:+1${digits(c.phone)}" style="text-decoration:none">Call</a><a class="btn sm" href="sms:+1${digits(c.phone)}" style="text-decoration:none">Text</a><button type="button" class="btn sm" data-scopy="${esc(c.phone)}">Copy</button></span></span><span>Email</span><span><b style="overflow-wrap:anywhere">${esc(c.email||"No email on file")}</b>${c.email?`<span class="nx" style="margin-top:4px"><a class="btn sm" href="mailto:${esc(c.email)}" style="text-decoration:none">Email</a><button type="button" class="btn sm" data-scopy="${esc(c.email)}">Copy</button></span>`:""}</span><span>Source</span><b>${esc(c.src)}</b>${c.addr?`<span>Address</span><b>${esc(c.addr)}</b>`:""}</div>${c.notes[0]?`<div class="note" style="margin-top:10px"><small>${esc(c.notes[0].when)} · ${esc(c.notes[0].who)}</small>${esc(c.notes[0].t)}</div>`:""}</div></div>`;
+ return `<div class="dt"><div class="dh"><span class="av">${esc(c.name.split(" ").map(x=>x[0]).join("").slice(0,2))}</span><div><h2>${esc(c.name)}</h2><small>${j?`Applied for ${esc(jobName(j))}`:"Open to anything"} · ${ago(c.ago)} · ${esc(c.src)}</small></div><span class="sp"></span>${j?scoreTip(c):""}<button type="button" class="btn sm" data-tplc="${c.id}">✉ Message</button><button type="button" class="btn sm" data-call="${c.id}">☎ Call</button></div>
+ ${!j&&bj?`<div class="dec" style="background:var(--ys)"><span>Best open job for them: <b>${esc(jobName(bj.j))}</b> · match ${bj.s}%</span><span class="sp"></span><button type="button" class="btn" data-assign="${c.id}:${bj.j.id}">Put them on this job</button><select id="asg" aria-label="Pick another job" style="width:auto">${S.jobs.filter(x=>x.open).map(x=>`<option value="${x.id}">${esc(jobName(x))} · ${score(c,x).v}%</option>`).join("")}</select><button type="button" class="btn sm" data-assignsel="${c.id}">Assign</button></div>`:""}
+ ${["out","future"].includes(c.stage)?"":`<div class="flow" aria-label="Stage">${STAGES.map(([k,l],n)=>`<span class="fs ${n<idx?"d":n===idx?"c":""}">${l}</span>`).join("")}</div>`}
+ ${action}
+ <div class="dtabs" role="tablist"><button type="button" class="${S.dtab==="app"?"on":""}" data-dtab="app">Application</button><button type="button" class="${S.dtab==="notes"?"on":""}" data-dtab="notes">Notes ${c.notes.length||""}</button><button type="button" class="${S.dtab==="act"?"on":""}" data-dtab="act">Activity</button></div>${tabBody}</div>`}
+function offerBox(c){const o=c.offer;return `<div class="offer"><h4>Job offer · office only</h4><div class="why" style="margin-bottom:8px">Stores never see pay. The store just welcomes them on their first day.</div><div class="f2"><label class="f"><span>Pay rate ($/hr)</span><input id="oRate" inputmode="decimal" value="${esc(o.rate)}" placeholder="e.g. 11.00"></label><label class="f"><span>Full / part-time</span><select id="oType">${["Full-time","Part-time"].map(x=>`<option ${o.type===x?"selected":""}>${x}</option>`).join("")}</select></label><label class="f"><span>Hours per week</span><input id="oHrs" inputmode="numeric" value="${esc(o.hrs)}"></label><label class="f"><span>First day discussed</span><input value="${esc(fdFmt(c.req)||"Set after onboarding")}" disabled></label><label class="f"><span>Their answer</span><select id="oAns">${["Waiting","Accepted","Declined"].map(x=>`<option ${o.ans===x?"selected":""}>${x}</option>`).join("")}</select></label></div><div class="mb" style="justify-content:flex-start"><button type="button" class="btn" data-tplc="${c.id}" data-tplk="offer">✉ Offer email</button><button type="button" class="btn g" data-saveoffer="${c.id}">Save offer</button></div></div>`}
+/* ---------- INTERVIEWS ---------- */
+function vIvs(){const L=S.cands.filter(c=>c.stage==="interview");const by={};L.forEach(c=>{const d=(c.iv||"").split(" · ")[0]||"No date";(by[d]=by[d]||[]).push(c)});
+ return `<div class="hd"><div><h1>Interviews</h1><p class="sub">Phone screens and store interviews coming up.</p></div></div>${Object.keys(by).map(d=>`<div class="day"><h3>${esc(d)}</h3><div class="card">${by[d].map(c=>`<div class="ivr"><b>${esc((c.iv||"").split(" · ")[1]||"")}</b><div><b>${esc(c.name)}</b><div class="why">${esc(jobName(job(c.job)))}${c.store?" · at "+esc(c.store):" · phone with office"}</div></div><button type="button" class="btn sm" data-open="${c.id}">Open</button></div>`).join("")}</div></div>`).join("")||`<div class="card empty">No interviews scheduled. Set one up from a candidate.</div>`}`}
+/* ---------- STORES ---------- */
+function storeAlerts(){const a=[];STORES.forEach(s=>{if(!S.managers[s])a.push(s);const w=S.cands.filter(c=>c.stage==="store"&&c.store===s&&(c.sharedAgo||0)>=7);if(w.length)a.push(s)});return [...new Set(a)]}
+function vStores(){return `<div class="hd"><div><h1>Stores</h1><p class="sub">What each store is doing with hiring, and where it's stuck.</p></div></div><div class="sg">${STORES.map(s=>{
+ const open=S.jobs.filter(j=>j.open&&j.store===s),wait=S.cands.filter(c=>c.stage==="store"&&c.store===s),iv=S.cands.filter(c=>c.stage==="interview"&&c.store===s),hires=S.hires.filter(h=>h.store===s).concat(S.cands.filter(c=>c.stage==="starting"&&c.store===s).map(c=>({name:c.name,pos:c.req?c.req.pos:"",first:fdFmt(c.first),checks:0})));const old=wait.length?Math.max(...wait.map(c=>c.sharedAgo||0)):0;
+ return `<div class="card pad st"><div style="display:flex;align-items:center;gap:8px"><h3>${s}</h3><span class="sp"></span>${S.managers[s]?`<span class="pill pg">Manager signed up</span>`:`<span class="pill pr">No manager account</span>`}</div>
+ <div class="ln"><span>Manager</span><b style="text-align:right">${sInfo(s).email?esc(sInfo(s).manager)+"<br><small style=\"font-weight:500;color:var(--muted)\">"+esc(sInfo(s).email)+" · "+esc(sInfo(s).cell)+"</small>":"No contact yet"}</b></div><div class="ln"><span>Open jobs</span><b>${open.map(j=>esc(j.title)).join(", ")||"None"}</b></div><div class="ln"><span>Waiting for store to claim</span><b>${wait.length}${old?` · oldest ${old} days`:""}</b></div><div class="ln"><span>Interviews</span><b>${iv.length}</b></div>
+ ${hires.map(h=>`<div class="ln" style="display:block"><span>New hire: <b style="color:var(--ink)">${esc(h.name)}</b> · ${esc(h.pos)} · first day ${esc(h.first)}</span><div class="bar"><i style="width:${h.checks/9*100}%"></i></div><small class="why">First-day checklist ${h.checks} of 9${h.checks===9?" · ready for the floor":""}</small></div>`).join("")}
+ ${!S.managers[s]?`<div class="alert">⚠ Nobody from ${s} can sign in to Hiring.<span class="sp"></span><button type="button" class="btn sm" data-addmgr="${s}">Add manager</button></div>`:""}
+ ${old>=7?`<div class="alert">⚠ ${wait.length} shared ${wait.length===1?"person has":"people have"} waited ${old} days.<span class="sp"></span><button type="button" class="btn sm" data-nudge="${s}">Nudge</button></div>`:""}</div>`}).join("")}</div>`}
+/* ---------- CAREERS PREVIEW ---------- */
+function vCareers(){const open=S.jobs.filter(j=>j.open);const ap=S.apply;
+ return `<div class="guide"><span>ⓘ</span><span><b>What applicants see at the public careers page.</b> It lists the open jobs above. Apply here and watch them show up in Candidates as New.</span></div>
+ <div class="pub"><div class="pubh"><h2>Join the Vista team</h2><div>Full and part-time jobs across El Paso. Apply in about 5 minutes.</div></div><div class="card pad" style="border-radius:0 0 14px 14px">
+ ${ap?applyForm(ap):open.map(j=>`<div class="pj"><b>${esc(j.title)}</b><button type="button" class="btn g" data-apply="${j.id}" style="grid-row:1/3;grid-column:2">Apply</button><small>${esc(j.store)} · ${j.type} · ${shiftW(j.shift)}</small></div>`).join("")+`<div class="pj" style="border-style:dashed"><b>Don't see your job?</b><button type="button" class="btn" data-apply="__any" style="grid-row:1/3;grid-column:2">Apply to any store</button><small>We'll match you to openings at any store.</small></div>`}</div></div>`}
+function applyForm(ap){const j=job(ap.job);return `<h3 style="margin:0 0 4px">${j?`Apply: ${esc(jobName(j))}`:"Apply to any store"}</h3><p class="why" style="margin:0 0 10px">Short test version of the 4-step application.</p>
+ <div class="f2"><label class="f"><span>Full name</span><input id="apName" value="${esc(ap.name||"")}" placeholder="First and last name"></label><label class="f"><span>Phone</span><input id="apPhone" inputmode="tel" value="${esc(ap.phone||"")}" placeholder="(915) 555-0123"></label>
+ <label class="f"><span>Shift</span><select id="apShift"><option value="am">Mornings</option><option value="pm" selected>Afternoons / evenings</option><option value="any">Any shift</option></select></label><label class="f"><span>Hours</span><select id="apType"><option>Full-time</option><option>Part-time</option><option>Either</option></select></label>
+ <label class="f"><span>Experience</span><input id="apExp" placeholder="e.g. Cashier · 1 yr"></label><label class="f"><span>Food Handler card?</span><select id="apFh"><option value="0">No</option><option value="1">Yes</option></select></label></div>
+ <div style="margin-top:10px"><span class="why" style="font-weight:700">Days you can work</span><div class="dayp" style="margin-top:4px">${DN.map((d,i)=>`<button type="button" class="${ap.days[i]?"on":""}" data-apday="${i}" aria-pressed="${!!ap.days[i]}" aria-label="${DL[i]}">${d}</button>`).join("")}</div></div>
+ <div id="apErr" class="why" role="alert" style="color:var(--r);margin-top:6px"></div><div class="mb"><button type="button" class="btn" data-apcancel="1">Back to jobs</button><button type="button" class="btn g" data-apsend="1">Send application</button></div>`}
+/* ---------- TEMPLATES ---------- */
+
+
+
+/* ---------- SETTINGS ---------- */
+function vSet(){const L={days:"Days available",shift:"Shift matches",hours:"Full / part-time matches",start:"Can start soon",store:"Picked this store",exp:"Related experience",certs:"Certificates the job needs"};const tot=Object.values(S.W).reduce((a,b)=>a+b,0);
+ return `<div class="hd"><div><h1>Match settings</h1><p class="sub">How much each job fact counts toward the match %. Only job-related facts are ever used. Changes re-sort Candidates right away.</p></div><span class="sp"></span><button type="button" class="btn" data-resetw="1">Reset to default</button></div>
+ <div class="card pad">${Object.entries(L).map(([k,l])=>`<div class="wt"><b>${l}</b><input type="range" min="0" max="40" step="5" value="${S.W[k]}" data-w="${k}" aria-label="${l} weight"><span><b>${Math.round(S.W[k]/tot*100)}%</b></span></div>`).join("")}</div>
+ <p class="why" style="margin-top:10px">Never used: age (beyond 18+), gender, where someone lives, or anything else that isn't about doing the job.</p>`}
+/* ---------- first day ---------- */
+const TIMES=["5:00a","6:00a","7:00a","8:00a","9:00a","10:00a","11:00a","12:00p","1:00p","2:00p","3:00p","4:00p"];
+const fdFmt=f=>f&&f.date?new Date(f.date+"T12:00").toLocaleDateString([], {weekday:"short",month:"short",day:"numeric"})+" · "+f.time:"";
+function fdEditor(c,who,label){const f=c.first||{date:(c.req&&c.req.date)||"2026-11-30",time:(c.req&&c.req.time)||"8:00a"};return `<div class="f2" style="align-items:end"><label class="f"><span>First day</span><input type="date" id="fdD_${who}_${c.id}" value="${esc(f.date)}"></label><label class="f"><span>Start time</span><select id="fdT_${who}_${c.id}">${TIMES.map(t=>`<option ${t===f.time?"selected":""}>${t}</option>`).join("")}</select></label><div><button type="button" class="btn g" data-fdsave="${c.id}:${who}">${label}</button></div></div>`}
+function setFirst(c,who){const d=$("#fdD_"+who+"_"+c.id).value,t=$("#fdT_"+who+"_"+c.id).value;if(!d){toast("Pick the first day");return false}const ch=!!c.first;c.first={date:d,time:t,by:who==="office"?"Office":(c.store||"Store")};c.stage="starting";log(c,(ch?"First day changed to ":"First day set: ")+fdFmt(c.first)+" by "+c.first.by);toast("First day: "+fdFmt(c.first)+(who==="office"?" · the store sees it now":" · the office has it"));return true}
+/* ---------- office actions for the later stages ---------- */
+function laterAction(c){const st=c.store||storeOf(c);
+ if(c.stage==="interview")return `<div class="nx"><span class="pill pb" style="align-self:center">Interview ${esc(c.iv||"")}${c.store?" · "+esc(c.store):" · phone with office"}</span>${c.store?`<span class="why" style="align-self:center">Waiting on ${esc(c.store)} to decide after the interview.</span><button type="button" class="btn" data-tplc="${c.id}" data-tplw="store">✉ Message store</button>`:`<button type="button" class="btn" data-send="${c.id}">🏪 Send to ${esc(st)}</button>`}<button type="button" class="btn" data-out="${c.id}">Not moving forward</button></div>`;
+ if(c.stage==="hirereq"){const r=c.req||{};return `<div class="offer" style="border-color:var(--b);background:var(--bs)"><h4 style="color:var(--b)">${esc(c.store)} wants to hire</h4><div class="kv"><span>Position</span><b>${esc(r.pos||"")}</b><span>First day discussed</span><b>${esc(fdFmt(r))||"Not given"}</b><span>Certificates</span><b>${r.fh?"Has Food Handler":"No Food Handler"} · ${r.tabc?"Has TABC":"No TABC"}</b>${r.note?`<span>Note</span><b>${esc(r.note)}</b>`:""}<span>Requested by</span><b>${esc(r.by||"Store manager")}</b></div><div class="mb" style="justify-content:flex-start"><button type="button" class="btn g" data-approve="${c.id}">Approve → make offer</button><button type="button" class="btn" data-out="${c.id}">Decline</button></div></div>`}
+ if(c.stage==="onboard"){const o=c.onb||{};return `<div class="offer"><h4>Onboarding · T&amp;T Staff Management</h4><div class="why" style="margin-bottom:6px">Offer accepted ${esc(c.offer&&c.offer.rate?"· $"+c.offer.rate+"/hr ":"")}· planned first day ${esc(fdFmt(c.req)||"not set")}</div>
+  <div style="display:grid;gap:6px">${[["tt","T&T onboarding finished"],["fh","Food Handler card on file"],["tabc","TABC certificate on file (if the job needs it)"]].map(([k,l])=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" style="width:18px;height:18px" data-onb="${c.id}:${k}" ${o[k]?"checked":""}>${l}</label>`).join("")}</div>
+  <div class="mb" style="justify-content:flex-start"><button type="button" class="btn g" data-ready="${c.id}" ${o.tt?"":"disabled"}>Onboarding complete: send to ${esc(st)} to schedule</button></div>
+  <details style="margin-top:8px"><summary class="why" style="cursor:pointer">Set the first day yourself instead</summary>${fdEditor(c,"office","Set first day")}</details></div>`}
+ if(c.stage==="ready")return `<div class="offer" style="border-color:#b08a00;background:var(--ys)"><h4 style="color:var(--yi)">Ready to schedule · waiting on ${esc(st)}</h4><div class="why" style="margin-bottom:8px">${esc(st)} sees them under “Ready to schedule” and picks the first day and start time. You can set or change it here too.</div>${fdEditor(c,"office","Set first day")}<div class="mb" style="justify-content:flex-start"><button type="button" class="btn" data-tplc="${c.id}" data-tplw="store" data-tplk="st_onboarded">✉ Ask store to confirm</button></div></div>`;
+ if(c.stage==="starting")return `<div class="offer"><h4>Starting · first day confirmed</h4><div style="font-size:18px;font-weight:800;margin-bottom:4px">${esc(fdFmt(c.first))}</div><div class="why" style="margin-bottom:8px">Set by ${esc(c.first.by)}. The store adds them to the schedule from the Schedule Builder's Hiring tab.</div><details><summary class="why" style="cursor:pointer">Change first day</summary>${fdEditor(c,"office","Save change")}</details><div class="mb" style="justify-content:flex-start"><button type="button" class="btn" data-tplc="${c.id}" data-tplw="store" data-tplk="st_firstday">✉ First day email (store + new hire)</button><button type="button" class="btn" data-tplc="${c.id}" data-tplk="hired">✉ First day details to them</button></div></div>`;
+ return ""}
+/* ---------- add candidate (office) ---------- */
+function addCandModal(){modal(`<h3>Add a candidate</h3><p class="why" style="margin:0 0 10px">For walk-ins, phone calls, referrals or anyone who didn't apply online.</p>
+ <div class="f2"><label class="f"><span>Full name *</span><input id="acName" autocomplete="off"></label><label class="f"><span>Phone *</span><input id="acPhone" inputmode="tel" placeholder="(915) 555-0123"></label><label class="f"><span>Email</span><input id="acEmail" type="email"></label>
+ <label class="f"><span>Job</span><select id="acJob"><option value="">Open to anything</option>${S.jobs.filter(j=>j.open).map(j=>`<option value="${j.id}">${esc(jobName(j))}</option>`).join("")}</select></label>
+ <label class="f"><span>Store they prefer</span><select id="acPref"><option value="">Any store</option>${STORES.map(s=>`<option>${s}</option>`).join("")}</select></label>
+ <label class="f"><span>How they came in</span><select id="acSrc">${["Walk-in","Phone call","Referral","Indeed","Email","Job fair","Other"].map(x=>`<option>${x}</option>`).join("")}</select></label>
+ <label class="f"><span>Shift</span><select id="acShift"><option value="any">Any shift</option><option value="am">Mornings</option><option value="pm">Afternoons / evenings</option></select></label>
+ <label class="f"><span>Hours</span><select id="acType"><option>Either</option><option>Full-time</option><option>Part-time</option></select></label>
+ <label class="f"><span>Can start</span><select id="acStart"><option>Right away</option><option>In 2 weeks</option><option>Pick a date</option></select></label>
+ <label class="f"><span>Experience</span><input id="acExp" placeholder="e.g. Cashier · 2 yrs"></label></div>
+ <div style="margin-top:10px"><span class="why" style="font-weight:700">Days they can work</span><div class="dayp" style="margin-top:4px" id="acDays">${DN.map((d,i)=>`<button type="button" class="on" data-acday="${i}" aria-pressed="true" aria-label="${DL[i]}">${d}</button>`).join("")}</div></div>
+ <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="acFh" style="width:18px;height:18px">Food Handler</label><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="acTabc" style="width:18px;height:18px">TABC</label></div>
+ <label class="f" style="display:block;margin-top:10px"><span>Note</span><textarea id="acNote" placeholder="Where you met them, what they're looking for…"></textarea></label>
+ <div id="acErr" class="why" role="alert" style="color:var(--r)"></div>
+ <div class="mb"><button type="button" class="btn" data-close="1">Cancel</button><button type="button" class="btn p" data-acsave="1">Add candidate</button></div>`)}
+/* ---------- STORE VIEW ---------- */
+function vStoreView(){const X=S.sv||"Montana",T=S.svTab||"new";const mine=k=>S.cands.filter(c=>c.store===X&&k.includes(c.stage));
+ const tabs=[["new","New",["store"]],["iv","Interviewing",["interview"]],["hired","Hired",["hirereq","offer","onboard"]],["ready","Ready to schedule",["ready"]],["start","Starting soon",["starting"]]];
+ const head=`<div class="guide" style="background:var(--ps)"><span>🏪</span><span><b>Store view · what the ${esc(X)} manager sees</b> after signing in to Hiring. Everything you do here shows up on the office side.${S.managers[X]?"":` <b style="color:var(--r)">${esc(X)} has no manager account yet, so this is a preview only.</b>`}</span><span class="sp"></span><select id="svStore" style="width:auto">${STORES.map(s=>`<option ${s===X?"selected":""}>${s}</option>`).join("")}</select></div>
+ <div class="hd"><div><h1>${esc(X)} hiring</h1><p class="sub">Applicants the office shared with your store. Pay is handled by the hiring office.</p></div><span class="sp"></span><button type="button" class="btn" data-reqpos="1">Request a position</button><button type="button" class="btn p" data-walkin="1">+ Add a walk-in hire</button></div>
+ <div class="chips" style="margin-bottom:12px">${tabs.map(([k,l,st])=>`<button type="button" class="chip ${T===k?"on":""}" data-svtab="${k}">${l}<span class="n">${mine(st).length}</span></button>`).join("")}</div>`;
+ const L=mine(tabs.find(t=>t[0]===T)[2]);
+ const row=(c,inner,act)=>`<div class="card pad" style="margin-bottom:10px"><div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap"><div style="flex:1;min-width:220px"><b style="font-size:16px">${esc(c.name)}</b><div class="why">${esc(c.job?job(c.job).title:(c.req&&c.req.pos)||"Open to anything")} · ${esc(c.type)} · ${shiftW(c.shift)}</div><div style="margin-top:6px">${dayDots(c.days)}</div>${inner||""}</div><div class="nx" style="justify-content:flex-end">${act||""}</div></div>${S.svForm===c.id?svForm(c):""}</div>`;
+ let body="";
+ if(T==="new")body=L.map(c=>row(c,`<div class="why" style="margin-top:6px">Shared ${ago(c.sharedAgo||0)} · ${esc(c.exp)}</div>`,`<a class="btn sm" href="tel:+1${digits(c.phone)}" style="text-decoration:none">Call ${esc(c.phone)}</a><button type="button" class="btn p" data-svclaim="${c.id}">Claim and set interview</button>`)).join("");
+ if(T==="iv")body=L.map(c=>row(c,`<div class="why" style="margin-top:6px">Interview ${esc(c.iv||"")}</div>`,`<button type="button" class="btn" data-svpass="${c.id}">Pass</button><button type="button" class="btn g" data-svhire="${c.id}">Request approval to hire</button>`)).join("");
+ if(T==="hired")body=L.map(c=>row(c,`<div style="margin-top:6px">${c.stage==="hirereq"?`<span class="pill pb">Waiting on office approval</span>`:c.stage==="offer"?`<span class="pill pg">Office sent the offer</span>`:`<span class="pill py">Onboarding with T&amp;T</span>`} <span class="why">First day you discussed: ${esc(fdFmt(c.req)||"—")}</span></div>`,"")).join("");
+ if(T==="ready")body=L.map(c=>row(c,`<div class="why" style="margin-top:6px">Onboarding is done. Pick their first day and start time. You discussed ${esc(fdFmt(c.req)||"no date")}.</div><div style="margin-top:8px">${fdEditor(c,"store","Confirm first day")}</div>`,"")).join("");
+ if(T==="start")body=L.map(c=>row(c,`<div style="margin-top:6px;font-weight:800;font-size:16px">First day ${esc(fdFmt(c.first))}</div><div class="why">Set by ${esc(c.first.by)}</div><details style="margin-top:6px"><summary class="why" style="cursor:pointer">Change first day</summary>${fdEditor(c,"store","Save change")}</details>`,`<button type="button" class="btn p" data-svsched="${c.id}">+ Add to schedule</button>`)).join("");
+ return head+(body||`<div class="card empty">${{new:"Nothing new from the office.",iv:"No interviews right now.",hired:"Nobody waiting on the office.",ready:"Nobody ready to schedule yet. They show here after onboarding is done.",start:"No first days coming up."}[T]}</div>`)}
+function svForm(c){if(S.svMode==="claim")return `<div class="f2" style="margin-top:10px;align-items:end"><label class="f"><span>Interview day</span><input type="date" id="svIvD" value="2026-11-24"></label><label class="f"><span>Time</span><select id="svIvT">${TIMES.map(t=>`<option ${t==="10:00a"?"selected":""}>${t}</option>`).join("")}</select></label><div><button type="button" class="btn p" data-svivsave="${c.id}">Save interview</button></div></div>`;
+ return `<div class="f2" style="margin-top:10px;align-items:end"><label class="f"><span>Position</span><input id="svPos" value="${esc(c.job?job(c.job).title:"")}"></label><label class="f"><span>First day you discussed</span><input type="date" id="svFd" value="2026-11-30"></label><label class="f"><span>Start time</span><select id="svFt">${TIMES.map(t=>`<option ${t==="8:00a"?"selected":""}>${t}</option>`).join("")}</select></label></div><div style="display:flex;gap:14px;margin-top:8px;flex-wrap:wrap"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="svFh" style="width:18px;height:18px" ${c.fh?"checked":""}>Has Food Handler</label><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="svTabc" style="width:18px;height:18px" ${c.tabc?"checked":""}>Has TABC</label></div><label class="f" style="display:block;margin-top:8px"><span>Note for the office</span><input id="svNote" placeholder="Anything the office should know"></label><div class="mb" style="justify-content:flex-start"><button type="button" class="btn g" data-svreq="${c.id}">Send to the office</button></div>`}
+
+/* ---------- MODALS ---------- */
+function modal(h){$("#layer").innerHTML=`<div class="ov" role="dialog" aria-modal="true"><div class="md">${h}</div></div>`;const f=$("#layer .md").querySelector("textarea,input,select,button");f&&f.focus()}
+const close=()=>{$("#layer").innerHTML=""};
+
+/* ---------- ACTIONS ---------- */
+function decide(d){const c=cand(S.sel);if(!c||c.stage!=="new")return;const L=filtered();const i=L.findIndex(x=>x.c.id===c.id);
+ if(d==="yes"){c.stage="review";c.dec="interested";log(c,"Marked Interested");toast("✓ Interested · "+c.name)}
+ if(d==="maybe"){c.stage="review";c.dec="maybe";log(c,"Marked Maybe");toast("? Maybe · "+c.name)}
+ if(d==="no"){c.stage="out";c.dec="no";log(c,"Marked Not a fit");toast("✗ Not a fit · "+c.name)}
+ const L2=filtered();S.sel=(L2[Math.min(i,L2.length-1)]||{c:{}}).c.id||null;S.dtab="app";render()}
+document.addEventListener("keydown",e=>{if(S.view!=="cands"||$("#layer").innerHTML||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||e.metaKey||e.ctrlKey)return;const k=e.key.toLowerCase();
+ if(k==="y")decide("yes");else if(k==="m")decide("maybe");else if(k==="n")decide("no");
+ else if(k==="j"||k==="k"){const L=filtered();const i=L.findIndex(x=>x.c.id===S.sel);const n=L[i+(k==="j"?1:-1)];if(n){S.sel=n.c.id;render()}}});
+document.addEventListener("input",e=>{if(e.target.id==="q"&&S.view==="cands")render();if(e.target.dataset.w){S.W[e.target.dataset.w]=+e.target.value;render()}});
+document.addEventListener("change",e=>{const t=e.target;
+ if(t.id==="fJob"){S.job=t.value;S.sel=null;render()}if(t.id==="fStore"){S.store=t.value;S.sel=null;render()}
+ if(t.dataset.onb){const[cid,k]=t.dataset.onb.split(":");const c=cand(cid);c.onb=c.onb||{};c.onb[k]=t.checked;if(k==="fh")c.fh=t.checked?1:0;if(k==="tabc")c.tabc=t.checked?1:0;log(c,(t.checked?"Checked: ":"Unchecked: ")+{tt:"T&T onboarding",fh:"Food Handler",tabc:"TABC"}[k]);render();return}
+ if(t.id==="svStore"){S.sv=t.value;S.svForm=null;render()}
+ if(t.id==="mK"){S.msg.k=t.value;msgRender()}if(t.id==="mMailer"){S.msg.mailer=t.value;msgRender()}});
+document.addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+ if(d.view){S.view=d.view;close();render();window.scrollTo(0,0);return}
+ if(d.goto){const[j,k]=d.goto.split(":");S.view="cands";S.job=j;S.cf=k;S.sel=null;S.dtab="app";render();window.scrollTo(0,0);return}
+ if(d.cf){S.cf=d.cf;S.sel=null;render();return}
+ if(d.sel){S.sel=d.sel;S.dtab="app";render();return}
+ if(d.open){S.view="cands";S.cf="all";S.job="__all";S.store="__all";S.sel=d.open;render();return}
+ if(d.dec){decide(d.dec);return}
+ if(d.dtab){S.dtab=d.dtab;render();return}
+ if(d.back){const c=cand(d.back);c.stage="new";c.dec=null;delete c.store;log(c,"Moved back to New");follow(cand(c.id));render();return}
+ if(d.future){const c=cand(d.future);c.stage="future";log(c,"Saved to Future pool");toast("Saved to Future pool");follow(cand(c.id));render();return}
+ if(d.out){const c=cand(d.out);c.stage="out";log(c,"Not moving forward");tplModal(c.id,"no");follow(cand(c.id));render();return}
+ if(d.assign){const[cid,jid]=d.assign.split(":");const c=cand(cid);c.job=jid;log(c,"Put on "+jobName(job(jid)));toast("Now on "+jobName(job(jid)));follow(cand(c.id));render();return}
+ if(d.assignsel){const c=cand(d.assignsel);c.job=$("#asg").value;log(c,"Put on "+jobName(job(c.job)));toast("Now on "+jobName(job(c.job)));follow(cand(c.id));render();return}
+ if(d.screen){const c=cand(d.screen);modal(`<h3>Phone screen · ${esc(c.name)}</h3><div class="f2"><label class="f"><span>How did it go?</span><select id="sOut"><option value="good">Good · move forward</option><option value="noans">No answer</option><option value="no">Not a fit</option></select></label></div><label class="f" style="display:block;margin-top:8px"><span>Notes</span><textarea id="sNote" placeholder="Availability, transportation, questions they asked…"></textarea></label><div class="mb"><button type="button" class="btn" data-close="1">Cancel</button><button type="button" class="btn p" data-screensave="${c.id}">Save</button></div>`);return}
+ if(d.screensave){const c=cand(d.screensave),o=$("#sOut").value,n=$("#sNote").value.trim();if(n)c.notes.unshift({who:"Office",when:"Nov 20",t:n});
+  if(o==="good"){c.stage="screen";log(c,"Phone screen: good");toast("Phone screen saved")}else if(o==="no"){c.stage="out";log(c,"Phone screen: not a fit")}else{log(c,"Phone screen: no answer");close();tplModal(c.id,"reach");render();return}close();follow(c);render();return}
+ if(d.ivset){const c=cand(d.ivset);modal(`<h3>Set up interview · ${esc(c.name)}</h3><div class="f2"><label class="f"><span>Day</span><input id="ivD" type="date" value="2026-11-23"></label><label class="f"><span>Time</span><input id="ivT" type="time" value="10:00"></label><label class="f"><span>Where</span><select id="ivW"><option value="">Phone with office</option>${STORES.map(s=>`<option ${job(c.job)?.store===s?"selected":""}>${s}</option>`).join("")}</select></label></div><div class="mb"><button type="button" class="btn" data-close="1">Cancel</button><button type="button" class="btn p" data-ivsave="${c.id}">Save and send confirmation</button></div>`);return}
+ if(d.ivsave){const c=cand(d.ivsave),dt=$("#ivD").value,tm=$("#ivT").value;const when=new Date(dt+"T12:00").toLocaleDateString([], {weekday:"short",month:"short",day:"numeric"});const[h,m]=tm.split(":");const hh=+h;c.iv=`${when} · ${(hh%12)||12}:${m}${hh<12?"a":"p"}`;c.store=$("#ivW").value||null;c.stage="interview";log(c,"Interview set for "+c.iv+(c.store?" at "+c.store:""));close();tplModal(c.id,"iv");follow(cand(c.id));render();return}
+ if(d.send){const c=cand(d.send);c.store=job(c.job).store;c.stage="store";c.sharedAgo=0;log(c,"Sent to "+c.store+" to claim");toast("Sent to "+c.store+". Their manager sees it under Hiring.");follow(cand(c.id));render();return}
+ if(d.unshare){const c=cand(d.unshare);c.stage="review";delete c.store;log(c,"Taken back from store");follow(cand(c.id));render();return}
+ if(d.nudge){toast("Reminder sent to "+d.nudge+" (preview: nothing is sent)");return}
+ if(d.addmgr){S.managers[d.addmgr]=true;Object.assign(sInfo(d.addmgr),{manager:d.addmgr+" manager",email:d.addmgr.toLowerCase()+".manager@example.com",cell:"(915) 555-0207"});toast("Invite sent to "+d.addmgr+" manager (preview: nothing is sent)");render();return}
+ if(d.saveoffer){const c=cand(d.saveoffer),o=c.offer;o.rate=$("#oRate").value;o.type=$("#oType").value;o.hrs=$("#oHrs").value;o.ans=$("#oAns").value;
+  if(o.ans==="Accepted"){c.stage="onboard";c.onb={tt:false,fh:!!c.fh,tabc:!!c.tabc};log(c,"Offer accepted · onboarding with T&T");toast("Accepted. Next: onboarding with T&T.")}
+  else if(o.ans==="Declined"){c.stage="out";log(c,"Offer declined");toast("Offer declined")}else{log(c,"Offer saved");toast("Offer saved")}follow(c);render();return}
+ if(d.tplc){tplModal(d.tplc,d.tplk,d.tplw);return}
+ if(d.mwho){S.msg.who=d.mwho;S.msg.k=defaultK(cand(S.msg.cid),d.mwho);msgRender();return}
+ if(d.mlang){S.msg.lang=d.mlang;msgRender();return}
+ if(d.mcopy){const t=S.msgOut[d.mcopy];try{await navigator.clipboard.writeText(t);toast("Copied")}catch(x){toast("Copy didn't work here. Select the text instead.")}return}
+ if(d.mlog){const c=cand(S.msg.cid);const set=S.msg.who==="store"?STPL:TPL;log(c,(S.msg.who==="store"?"Store message: ":"Message: ")+set[S.msg.k].label);toast("Logged in Activity");close();render();return}
+
+ if(d.call){const c=cand(d.call);modal(`<h3>Call ${esc(c.name)}</h3><p style="font-size:26px;font-weight:800;margin:6px 0;font-variant-numeric:tabular-nums">${esc(c.phone)}</p><p class="why">Preview: calling is off here. Then log how it went.</p><div class="mb"><button type="button" class="btn" data-close="1">Close</button><button type="button" class="btn p" data-screen="${c.id}">Log phone screen</button></div>`);return}
+ if(d.addnote){const c=cand(d.addnote),n=$("#nNote").value.trim();if(!n)return;c.notes.unshift({who:"Office",when:"Nov 20",t:n});log(c,"Note added");render();return}
+ if(d.postjob){modal(`<h3>Post a job</h3><div class="f2"><label class="f"><span>Department</span><select id="pjD">${DEPTS.map(x=>`<option>${x}</option>`).join("")}</select></label><label class="f"><span>Store</span><select id="pjS">${STORES.map(x=>`<option>${x}</option>`).join("")}</select></label><label class="f"><span>Full / part-time</span><select id="pjT"><option>Full-time</option><option>Part-time</option></select></label><label class="f"><span>Shift</span><select id="pjSh"><option value="am">Mornings</option><option value="pm">Afternoons / evenings</option><option value="any">Any shift</option></select></label></div><p class="why">It shows up on the careers page right away.</p><div class="mb"><button type="button" class="btn" data-close="1">Cancel</button><button type="button" class="btn p" data-postsave="1">Post job</button></div>`);return}
+ if(d.postsave){const id="j"+Date.now();const dept=$("#pjD").value;S.jobs.unshift({id,title:dept==="Cashier"||dept==="Stocker"?dept:dept,dept,store:$("#pjS").value,type:$("#pjT").value,shift:$("#pjSh").value,ago:0,open:true});close();toast("Posted. It's live on the careers page.");render();return}
+ if(d.closejob){job(d.closejob).open=false;toast("Closed. It's off the careers page.");render();return}
+ if(d.reopen){job(d.reopen).open=true;render();return}
+ if(d.apply){S.apply={job:d.apply==="__any"?null:d.apply,days:[1,1,1,1,1,1,1]};render();return}
+ if(d.apday!=null){S.apply.name=$("#apName").value;S.apply.phone=$("#apPhone").value;S.apply.days[+d.apday]=S.apply.days[+d.apday]?0:1;render();return}
+ if(d.apcancel){S.apply=null;render();return}
+ if(d.apsend){const n=$("#apName").value.trim(),p=$("#apPhone").value.replace(/\D/g,"");if(!n||p.length!==10){$("#apErr").textContent=!n?"Enter a name.":"Enter a 10-digit phone number.";return}
+  const id="c"+Date.now();S.cands.push({id,name:n,phone:$("#apPhone").value,email:"",job:S.apply.job,ago:0,src:"Careers page",days:S.apply.days.slice(),shift:$("#apShift").value,type:$("#apType").value,start:"Right away",exp:$("#apExp").value||"Not given",fh:+$("#apFh").value,tabc:0,stage:"new",dec:null,notes:[],log:[],pref:S.apply.job?job(S.apply.job).store:null});
+  S.apply=null;toast("Application sent. It's in Candidates as New.");render();return}
+ if(d.resetw){S.W={...W0};render();return}
+ if(d.scopy){try{await navigator.clipboard.writeText(d.scopy);toast("Copied")}catch(x){toast(d.scopy)}return}
+ if(d.goview){const[v,st]=d.goview.split(":");S.view=v;if(st)S.sv=st;S.svTab="new";S.svForm=null;render();window.scrollTo(0,0);return}
+ if(d.approve){const c=cand(d.approve);c.stage="offer";c.offer=c.offer||{rate:"",type:c.type==="Part-time"?"Part-time":"Full-time",hrs:c.type==="Part-time"?"25":"40",ans:"Waiting"};log(c,"Approved "+c.store+"'s request · offer started");follow(c);render();return}
+ if(d.ready){const c=cand(d.ready);c.stage="ready";c.store=c.store||storeOf(c);log(c,"Onboarding complete · sent to "+c.store+" to schedule");toast(c.store+" now sees them under Ready to schedule");follow(c);tplModal(c.id,"st_onboarded","store");render();return}
+ if(d.fdsave){const[cid,who]=d.fdsave.split(":");const c=cand(cid);if(setFirst(c,who)){if(who==="office")follow(c);else S.svTab="start";render()}return}
+ if(d.addcand){addCandModal();return}
+ if(d.acday!=null){b.classList.toggle("on");b.setAttribute("aria-pressed",b.classList.contains("on"));return}
+ if(d.acsave){const n=$("#acName").value.trim(),p=$("#acPhone").value;if(!n||digits(p).length!==10){$("#acErr").textContent=!n?"Enter a name.":"Enter a 10-digit phone number.";return}
+  const id="c"+Date.now();const jb=$("#acJob").value||null;const c={id,name:n,phone:fmtPh(p),email:$("#acEmail").value.trim(),job:jb,ago:0,src:$("#acSrc").value,days:[...document.querySelectorAll("[data-acday]")].map(x=>x.classList.contains("on")?1:0),shift:$("#acShift").value,type:$("#acType").value,start:$("#acStart").value,exp:$("#acExp").value||"Not given",fh:$("#acFh").checked?1:0,tabc:$("#acTabc").checked?1:0,stage:"new",dec:null,notes:[],log:[],pref:$("#acPref").value||(jb?job(jb).store:null)};
+  const nt=$("#acNote").value.trim();if(nt)c.notes.push({who:"Office",when:"Nov 22",t:nt});log(c,"Added by the office ("+c.src+")");S.cands.push(c);close();S.view="cands";S.job=jb||"__none";S.cf="new";S.sel=id;toast(n+" added as New");render();return}
+ if(d.svtab){S.svTab=d.svtab;S.svForm=null;render();return}
+ if(d.svclaim){S.svForm=d.svclaim;S.svMode="claim";render();return}
+ if(d.svivsave){const c=cand(d.svivsave);const dt=$("#svIvD").value,t=$("#svIvT").value;c.iv=new Date(dt+"T12:00").toLocaleDateString([], {weekday:"short",month:"short",day:"numeric"})+" · "+t;c.stage="interview";c.claimed=true;log(c,c.store+" claimed and set an interview for "+c.iv);S.svForm=null;S.svTab="iv";toast("Interview saved. The office sees it.");render();return}
+ if(d.svpass){const c=cand(d.svpass);c.stage="out";log(c,c.store+" passed after the interview");toast("Passed");render();return}
+ if(d.svhire){S.svForm=d.svhire;S.svMode="hire";render();return}
+ if(d.svreq){const c=cand(d.svreq);c.req={pos:$("#svPos").value||(c.job?job(c.job).title:""),date:$("#svFd").value,time:$("#svFt").value,fh:$("#svFh").checked,tabc:$("#svTabc").checked,note:$("#svNote").value.trim(),by:(sInfo(c.store).manager||c.store+" manager")};c.fh=c.req.fh?1:c.fh;c.tabc=c.req.tabc?1:c.tabc;c.stage="hirereq";log(c,c.store+" asked to hire as "+c.req.pos+" · first day discussed "+fdFmt(c.req));S.svForm=null;S.svTab="hired";toast("Sent. The office will send the offer.");render();return}
+ if(d.svsched){toast("Opens the Schedule Builder's Hiring tab with this person ready to add (preview)");return}
+ if(d.walkin){const X=S.sv||"Montana";modal(`<h3>Add a walk-in hire · ${esc(X)}</h3><p class="why" style="margin:0 0 10px">Someone you already interviewed in the store. The office takes it from here.</p><div class="f2"><label class="f"><span>Full name *</span><input id="wiName"></label><label class="f"><span>Phone *</span><input id="wiPhone" inputmode="tel"></label><label class="f"><span>Position</span><select id="wiPos">${DEPTS.map(x=>`<option>${x}</option>`).join("")}</select></label><label class="f"><span>First day you discussed</span><input type="date" id="wiFd" value="2026-11-30"></label><label class="f"><span>Start time</span><select id="wiFt">${TIMES.map(t=>`<option ${t==="8:00a"?"selected":""}>${t}</option>`).join("")}</select></label></div><div id="wiErr" class="why" role="alert" style="color:var(--r)"></div><div class="mb"><button type="button" class="btn" data-close="1">Cancel</button><button type="button" class="btn g" data-wisave="1">Send to the office</button></div>`);return}
+ if(d.wisave){const X=S.sv||"Montana",n=$("#wiName").value.trim(),p=$("#wiPhone").value;if(!n||digits(p).length!==10){$("#wiErr").textContent=!n?"Enter a name.":"Enter a 10-digit phone number.";return}
+  const id="c"+Date.now(),pos=$("#wiPos").value;S.cands.push({id,name:n,phone:fmtPh(p),email:"",job:null,ago:0,src:"Walk-in",days:[1,1,1,1,1,1,1],shift:"any",type:"Either",start:"Right away",exp:"Walk-in",fh:0,tabc:0,stage:"hirereq",store:X,pref:X,dec:"interested",notes:[],log:[{when:"Nov 22",t:X+" added a walk-in hire"}],req:{pos,date:$("#wiFd").value,time:$("#wiFt").value,fh:false,tabc:false,note:"Walk-in",by:sInfo(X).manager||X+" manager"}});close();S.svTab="hired";toast("Sent to the office");render();return}
+ if(d.reqpos){const X=S.sv||"Montana";modal(`<h3>Request a position · ${esc(X)}</h3><div class="f2"><label class="f"><span>Department</span><select id="rpD">${DEPTS.map(x=>`<option>${x}</option>`).join("")}</select></label><label class="f"><span>Full / part-time</span><select id="rpT"><option>Full-time</option><option>Part-time</option></select></label><label class="f"><span>Shift</span><select id="rpS"><option value="am">Mornings</option><option value="pm">Afternoons / evenings</option><option value="any">Any shift</option></select></label></div><div class="mb"><button type="button" class="btn" data-close="1">Cancel</button><button type="button" class="btn p" data-rpsave="1">Send request</button></div>`);return}
+ if(d.rpsave){const X=S.sv||"Montana";S.jobs.unshift({id:"j"+Date.now(),title:$("#rpD").value,dept:$("#rpD").value,store:X,type:$("#rpT").value,shift:$("#rpS").value,ago:0,open:true,requested:true});close();toast("Request sent. It's on the office's Jobs list.");render();return}
+ if(d.close){close();return}
+});
+$("#reset").onclick=()=>{close();$("#q").value="";pvBoot()};
+/* ================= PREVIEW: real data, read-only ================= */
+const PV_URL="https://uplaxcwnhicggztytppt.supabase.co";
+const PV=supabase.createClient(PV_URL,(window.VISTA_SUPABASE_KEY||"").trim(),{auth:{persistSession:true,autoRefreshToken:true}});
+const PV_DAYS=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"],PV_DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+function pvGate(html){let g=document.getElementById("pvGate");if(!g){g=document.createElement("div");g.id="pvGate";document.body.appendChild(g)}g.innerHTML=html;g.hidden=!html}
+async function pvAll(t,sel){let out=[],f=0;for(;;){const{data,error}=await PV.from(t).select(sel||"*").range(f,f+999);if(error)throw error;out.push(...data);if(data.length<1000)break;f+=1000}return out}
+const pvMs=v=>{if(!v)return 0;if(typeof v==="number")return v;const t=Date.parse(v);return isNaN(t)?0:t};
+const pvAgo=v=>{const t=pvMs(v);return t?Math.max(0,Math.floor((Date.now()-t)/864e5)):0};
+const pvWhen=v=>{const t=pvMs(v);return t?new Date(t).toLocaleDateString([], {month:"short",day:"numeric"}):""};
+function pvTime(t){if(!t)return "";const m=String(t).match(/^(\d{1,2}):(\d{2})/);if(!m)return String(t);let h=+m[1];const ap=h>=12?"p":"a";h=h%12||12;return `${h}:${m[2]}${ap}`}
+function pvStore(raw){const r=String(raw||"").toLowerCase();const hit=STORES.find(s=>r.includes(s.toLowerCase()));if(hit)return hit;if(/prep foods|commissary|comisar/.test(r))return "Commissary";return ""}
+function pvShift(v){v=String(v||"").toLowerCase();if(!v||/any|cualquier|flex|open availab/.test(v))return "any";const am=/morn|mañana|\bam\b|open(ing)?\b|day/.test(v),pm=/even|night|afternoon|tarde|noche|\bpm\b|clos|mid/.test(v);return am&&!pm?"am":pm&&!am?"pm":"any"}
+function pvType(v){v=String(v||"").toLowerCase();const f=/full|complet/.test(v),p=/part|medio|parcial/.test(v);return f&&!p?"Full-time":p&&!f?"Part-time":"Either"}
+function pvStart(v){const r=String(v||"").trim();if(!r)return "Not given";if(/asap|immediat|inmediat|right away|now|ya\b|cuanto antes/i.test(r))return "Right away";const t=Date.parse(r);if(!isNaN(t)){const d=(t-Date.now())/864e5;return d<=7?"Right away":d<=21?"In 2 weeks":new Date(t).toLocaleDateString([], {month:"short",day:"numeric"})}return r}
+function pvDays(c){const v=((c.availDays||[]).join(" ")+" "+(Array.isArray(c.availability)?c.availability.join(" "):(c.availability||""))).toLowerCase();return PV_DAYS.map((n,i)=>v.includes(n)||v.includes(PV_DIAS[i])||v.includes(n.slice(0,3)+" ")?1:0)}
+function pvDept(t){t=String(t||"");const d=DEPTS.find(x=>new RegExp(x.split(" ")[0],"i").test(t));return d||t||"Other"}
+function pvJobFor(c,jobs){const st=c.store||c.pref;const pos=String(c.hireFor||c.position||"");if(!st||!pos||/open to anything/i.test(pos))return null;const w=pos.split(/[\s\/·,-]+/)[0];if(!w)return null;const re=new RegExp(w.replace(/[^a-z]/gi,""),"i");const j=jobs.find(j=>j.open&&j.store===st&&re.test(j.title));return j?j.id:null}
+
+async function pvBoot(){
+ pvGate(`<div class="pvc"><h2>Loading real data…</h2><p>Reading applicants from the Hiring Tracker. Nothing gets changed.</p></div>`);
+ try{
+  if(!(window.VISTA_SUPABASE_KEY||"").trim()){pvGate(`<div class="pvc"><h2>Can’t connect</h2><p>The preview couldn’t find the Hiring Tracker’s connection settings.</p></div>`);return}
+  const {data:{session}}=await PV.auth.getSession();
+  if(!session){pvGate(`<div class="pvc"><h2>Sign in first</h2><p>Open the Hiring Tracker in this browser and sign in like normal. Then come back to this tab and reload.</p><p><a class="btn p" href="./" target="_blank" rel="noopener">Open the Hiring Tracker</a> <button type="button" class="btn" onclick="location.reload()">I’m signed in · reload</button></p></div>`);return}
+  const em=(session.user.email||"").toLowerCase();
+  const {data:me}=await PV.from("staff").select("email,name,is_admin,store").eq("email",em).maybeSingle();
+  if(!me){pvGate(`<div class="pvc"><h2>Not on the hiring team</h2><p>${esc(session.user.email)} isn’t on the Team list.</p></div>`);return}
+  if(me.store){pvGate(`<div class="pvc"><h2>Office preview</h2><p>This preview is for the hiring office. You’re signed in with the ${esc(me.store)} store account.</p></div>`);return}
+  const [cands,opens,shares,reqs,ivs,staff,si]=await Promise.all([
+   pvAll("candidates","id,data"),pvAll("openings","id,data"),pvAll("shares"),pvAll("hire_requests"),
+   pvAll("interview_requests").catch(()=>[]),
+   PV.from("staff").select("email,name,store").then(r=>r.data||[]),
+   PV.from("settings").select("value").eq("key","storeinfo").maybeSingle().then(r=>(r.data&&r.data.value&&r.data.value.map)||{})]);
+  /* stores + managers + store info */
+  S.managers={};STORES.forEach(s=>S.managers[s]=staff.some(x=>x.store===s));
+  S.storeInfo={};STORES.forEach(s=>{const o={...(DEFAULT_STORE_INFO[s]||{}),...(si[s]||{})};S.storeInfo[s]={manager:o.manager||o.manager_name||"",email:o.email||o.manager_email||"",cell:o.cell||o.manager_phone||"",address:o.address||"",phone:o.phone||""}});
+  /* jobs */
+  S.jobs=opens.map(r=>{const o={id:r.id,...(r.data||{})};const title=o.pos_name||o.position||o.name||"Opening";return {id:"o_"+r.id,title,dept:pvDept(title),store:pvStore(o.store)||o.store||"",type:o.otype||o.type||"Either",shift:pvShift(o.oshift||o.shift),ago:pvAgo(o.created_ms||o.createdAt),open:!(o.done||o.closed||o.filled||o.status==="closed"||o.status==="filled"),hrs:o.hours||"",needed:o.needed||1}}).filter(j=>j.store);
+  /* candidates */
+  const byC=(arr)=>{const m={};arr.forEach(x=>{(m[x.candidate_id]=m[x.candidate_id]||[]).push(x)});return m};
+  const SH=byC(shares),RQ=byC(reqs),IV=byC(ivs);
+  S.cands=cands.map(r=>{const c={...(r.data||{})};const id=r.id;
+   const sh=(SH[id]||[]).filter(x=>!x.declined_at).sort((a,b)=>pvMs(b.shared_at)-pvMs(a.shared_at));
+   const rq=(RQ[id]||[]).filter(x=>!["declined","cancelled","canceled"].includes(x.status)).sort((a,b)=>pvMs(b.created_at)-pvMs(a.created_at))[0];
+   const iv=(IV[id]||[]).filter(x=>x.scheduled_at&&x.status!=="cancelled").sort((a,b)=>pvMs(b.scheduled_at)-pvMs(a.scheduled_at))[0];
+   const pref=pvStore(c.storeRaw)||c.store||null;
+   const store=c.store||(rq&&rq.store)||(sh[0]&&sh[0].store)||null;
+   const text=[c.skills,c.jobDescription].join(" ");
+   const o={id,name:c.name||"(no name)",phone:c.phone||"",email:c.email||"",job:null,ago:pvAgo(c.createdAt),
+    src:c.walkin?"Walk-in":(c.referralSource||"Application"),days:pvDays(c),shift:pvShift(c.shift),type:pvType(c.employmentType),start:pvStart(c.startDate),
+    exp:[c.jobTitle,c.employer].filter(Boolean).join(" · ")||(c.jobDescription?String(c.jobDescription).slice(0,60):"Not given"),
+    fh:c.fhHave||/food handler|manejo de alimentos/i.test(text)?1:0,tabc:c.tabcHave||/tabc/i.test(text)?1:0,
+    stage:"new",dec:null,pref,store,notes:[],log:[],position:c.hireFor||c.position||"",addr:c.address||""};
+   (c.notesLog||[]).forEach(n=>o.notes.push({who:n.by||"Office",when:pvWhen(n.at),t:n.text||""}));
+   if(typeof c.notes==="string"&&c.notes.trim())o.notes.unshift({who:"Office",when:"",t:c.notes.trim()});
+   (c.history||[]).slice().reverse().forEach(h=>o.log.push({when:pvWhen(h.at),t:"Stage: "+h.stage}));
+   if(c.interviewDate)o.iv=new Date(pvMs(c.interviewDate)||Date.now()).toLocaleString([], {weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+   else if(iv)o.iv=new Date(pvMs(iv.scheduled_at)).toLocaleString([], {weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+   if(c.offerRate||c.offerResponse||c.offerStart)o.offer={rate:c.offerRate||"",type:c.offerType||"",hrs:c.offerHours||"",start:c.offerStart||"",ans:c.offerResponse||"Waiting"};
+   if(rq){o.req={pos:rq.position||o.position,date:rq.start_date||"",time:pvTime(rq.start_time),fh:!!rq.fh_collected,tabc:!!rq.tabc_collected,note:rq.note||rq.ready_note||"",by:rq.requested_by||(rq.store+" manager")};
+    if(rq.confirmed_at)o.first={date:rq.start_date_confirmed||rq.start_date||"",time:pvTime(rq.start_time),by:rq.confirmed_by||rq.store}}
+   if(sh[0])o.sharedAgo=pvAgo(sh[0].shared_at);
+   /* stage */
+   const st=c.stage;
+   if(st==="declined")o.stage="out";
+   else if(st==="future")o.stage="future";
+   else if(rq&&rq.confirmed_at){const fd=Date.parse((o.first.date||"")+"T12:00");o.stage=(!isNaN(fd)&&fd<Date.now()-14*864e5)?"hired":"starting"}
+   else if(rq&&rq.ready_at){o.stage="ready";o.onb={tt:true,fh:!!c.fhHave,tabc:!!c.tabcHave}}
+   else if(rq&&rq.status==="pending")o.stage="hirereq";
+   else if(rq&&rq.status==="approved")o.stage=st==="hired"?"onboard":"offer";
+   else if(st==="hired")o.stage="hired";
+   else if(st==="offer")o.stage="offer";
+   else if(st==="interview"||sh.some(x=>x.claimed_at))o.stage="interview";
+   else if(sh.length)o.stage="store";
+   else if(st==="screen"){o.stage="screen";o.dec="interested"}
+   if(["offer","onboard"].includes(o.stage)&&!o.offer)o.offer={rate:"",type:o.type,hrs:"",ans:"Waiting"};
+   if(o.stage==="onboard")o.onb={tt:false,fh:!!c.fhHave,tabc:!!c.tabcHave};
+   return o});
+  S.cands.forEach(c=>{c.job=pvJobFor(c,S.jobs)});
+  S.hires=[];
+  pvGate("");
+  const n=S.cands.filter(c=>c.stage==="new").length;
+  document.getElementById("pvCount").textContent=`${S.cands.length} real applicants · ${n} new · ${S.jobs.filter(j=>j.open).length} open jobs`;
+  render();
+ }catch(e){console.error(e);pvGate(`<div class="pvc"><h2>Couldn’t load</h2><p>Something went wrong reading the Hiring Tracker. Reload to try again.</p><p class="why">${esc(e.message||String(e))}</p><p><button type="button" class="btn" onclick="location.reload()">Reload</button></p></div>`)}
+}
+/* nothing leaves the page: block email, text, call and Outlook/Gmail links */
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a[href]");if(!a)return;const h=a.getAttribute("href")||"";
+ if(/^(mailto:|sms:|tel:)|outlook\.|mail\.google|ms-outlook/i.test(h)){e.preventDefault();e.stopPropagation();toast("Preview: emails, texts and calls are turned off. In the live version this opens your message.")}},true);
+window.addEventListener("beforeunload",()=>{});
+
+render();pvBoot();
+</script>
