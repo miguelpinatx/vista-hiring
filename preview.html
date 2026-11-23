@@ -250,7 +250,7 @@ function log(c,t){c.log.unshift({when:"Nov 20",t})}
 function follow(c){S.cf={new:"new",review:"review",screen:"review",store:"store",interview:"store",hirereq:"store",offer:"offer",onboard:"offer",ready:"offer",starting:"hired",out:"out",future:"future"}[c.stage]||"all";S.sel=c.id}
 /* ---------- match score: job facts only ---------- */
 function score(c,j){j=j||job(c.job);const W=S.W,tot=Object.values(W).reduce((a,b)=>a+b,0)||1;if(!j)return{v:0,parts:[]};const P=[];
- const dc=c.days.filter(Boolean).length;P.push(["Days available",W.days*dc/7,W.days,`${dc} of 7 days`]);
+ const dc=c.days.filter(Boolean).length;P.push(dc?["Days available",W.days*dc/7,W.days,`${dc} of 7 days`]:["Days available",W.days*.5,W.days,"Not asked on the old form (half credit)"]);
  P.push(["Shift",(c.shift==="any"||c.shift===j.shift)?W.shift:0,W.shift,c.shift===j.shift||c.shift==="any"?"Matches":shiftW(c.shift)+" only"]);
  P.push(["Full / part-time",(c.type==="Either"||c.type===j.type)?W.hours:0,W.hours,c.type===j.type||c.type==="Either"?"Matches":"Wants "+c.type.toLowerCase()]);
  P.push(["Can start",W.start*({"Right away":1,"In 2 weeks":.6}[c.start]||.3),W.start,c.start]);
