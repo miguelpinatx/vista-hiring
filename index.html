@@ -981,7 +981,7 @@ const ACTIVE=["new","screen","interview","offer"];
 const KEYMAP={"name":"name","email":"email","phone":"phone","address":"address","store-location":"storeRaw","store":"storeRaw","position":"position",
  "employment-type":"employmentType","start-date":"startDate","shift":"shift","job-title":"jobTitle","employer":"employer","job-start":"jobStart",
  "job-end":"jobEnd","job-description":"jobDescription","degree":"degree","school":"school","referral-source":"referralSource",
- "referral-detail":"referralDetail","skills":"skills","references":"references","availability":"availability","form-language":"formLanguage"};
+ "referral-detail":"referralDetail","skills":"skills","references":"references","availability":"availability","form-language":"formLanguage","hours-per-week":"hoursPerWeek","best-contact":"bestContact","languages":"languages","age-18":"age18","work-authorized":"workAuthorized","transportation":"transportation","worked-at-vista":"workedAtVista","worked-at-vista-detail":"workedAtVistaDetail","first-job":"firstJob","years-experience":"yearsExperience","food-handler":"foodHandler","tabc":"tabcAnswer"};
 const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DIAS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 const SENDERS={Miguel:{name:"Miguel Piña",phone:"915-538-8942",email:"Miguel@vistasupermarkets.com"}};
@@ -1445,7 +1445,7 @@ function parseApplications(text){
   for(const raw of lines){
     const sm=raw.trim().match(/^Submitted (\d{1,2}):(\d{2}) ?([AP]M) - (\d{1,2}) ([A-Za-z]+) (\d{4})$/i);
     if(sm){ flush(); const mo=MONTHS[sm[5].toLowerCase()]; if(mo!==undefined){ let h=+sm[1]%12; if(/pm/i.test(sm[3])) h+=12; cur.submittedAt=new Date(+sm[6],mo,+sm[4],h,+sm[2]).getTime(); } continue; }
-    const t=raw.trim(), m=t.toLowerCase().match(/^([a-z_][a-z-]*)(\s*:?\s*)(.*)$/);
+    const t=raw.trim(), m=t.toLowerCase().match(/^([a-z_][a-z0-9-]*)(\s*:?\s*)(.*)$/);
     let k=null, rest="";
     if(m && (KEYMAP[m[1]]!==undefined || m[1].startsWith("_")) && (m[3]==="" || m[2].includes(":"))){ k=m[1]; rest=t.slice(m[1].length+m[2].length); }
     if(k){
@@ -1460,12 +1460,15 @@ function parseApplications(text){
   return apps.filter(a=>a.name||a.email||a.phone).map(finish);
 }
 function finish(a){
+  appExtra(a);
   a.phone=fmtPhone(a.phone);
   a.store=matchStore(a.storeRaw);
   a.availDays=DAYS.filter((d,i)=>{ const v=(a.availability||"").toLowerCase(); return v.includes(d.toLowerCase())||v.includes(DIAS[i]); });
   a.interviewer="Miguel";
   return a;
 }
+const APP_EXTRA=[["hoursPerWeek","Hours per week"],["bestContact","Best way to reach"],["languages","Languages"],["age18","18 or older"],["workAuthorized","Authorized to work in the US"],["transportation","Reliable transportation"],["workedAtVista","Worked at Vista before"],["workedAtVistaDetail","Vista details"],["firstJob","First job"],["yearsExperience","Years of experience"],["foodHandler","Food Handler"],["tabcAnswer","TABC"]];
+function appExtra(a){if(/^yes/i.test(a.foodHandler||""))a.fhHave=true;if(/^yes/i.test(a.tabcAnswer||""))a.tabcHave=true;const L=APP_EXTRA.filter(([k])=>a[k]).map(([k,l])=>l+": "+a[k]);if(L.length)a.appNotes="From the application: "+L.join(" · ");return a}
 function isSpanish(a){ return /span|espa/i.test(a.formLanguage||""); }
 function dupOf(a){
   const d=digits(a.phone), e=(a.email||"").toLowerCase();
@@ -2321,11 +2324,11 @@ async function addParsed(){
   for(const a of parsed){
     const dup=dupOf(a), now=Date.now();
     if(dup){
-      const merged={...dup}; for(const [k,v] of Object.entries(a)) if(v!=="" && v!=null && !(Array.isArray(v)&&!v.length) && !["interviewer","submittedAt"].includes(k)) merged[k]=v;
+      const merged={...dup}; for(const [k,v] of Object.entries(a)) if(v!=="" && v!=null && !(Array.isArray(v)&&!v.length) && !["interviewer","submittedAt","appNotes"].includes(k)) merged[k]=v;
       merged.updatedAt=now; await saveDoc(merged).catch(()=>{}); updated++;
     } else {
-      const at=a.submittedAt&&a.submittedAt<=now?a.submittedAt:now; const {submittedAt,...rest}=a;
-      await saveDoc({...rest,id:newId(),stage:"new",notes:"",createdAt:at,updatedAt:now,history:[{stage:"new",at}]}).catch(()=>{}); added++;
+      const at=a.submittedAt&&a.submittedAt<=now?a.submittedAt:now; const {submittedAt,appNotes,...rest}=a;
+      await saveDoc({...rest,id:newId(),stage:"new",notes:appNotes||"",createdAt:at,updatedAt:now,history:[{stage:"new",at}]}).catch(()=>{}); added++;
     }
   }
   $("#pasteBox").value=""; parsed=[]; renderPreview();

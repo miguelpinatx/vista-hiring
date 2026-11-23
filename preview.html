@@ -626,7 +626,7 @@ function exportCsv(){const L=filtered().map(x=>x.c);const q=v=>`"${String(v??"")
  dlFile(`vista-applicants-${dkey(new Date())}.csv`,rows.join("\n"),"text/csv;charset=utf-8");toast(`Exported ${L.length} ${L.length===1?"person":"people"} (the list you're looking at)`)}
 
 /* ---------- add applicants by pasting the application email or uploading the PDF ---------- */
-const KEYMAP={"name":"name","email":"email","phone":"phone","address":"address","store-location":"storeRaw","store":"storeRaw","position":"position","employment-type":"employmentType","start-date":"startDate","shift":"shift","job-title":"jobTitle","employer":"employer","job-start":"jobStart","job-end":"jobEnd","job-description":"jobDescription","degree":"degree","school":"school","referral-source":"referralSource","referral-detail":"referralDetail","skills":"skills","references":"references","availability":"availability","form-language":"formLanguage"};
+const KEYMAP={"name":"name","email":"email","phone":"phone","address":"address","store-location":"storeRaw","store":"storeRaw","position":"position","employment-type":"employmentType","start-date":"startDate","shift":"shift","job-title":"jobTitle","employer":"employer","job-start":"jobStart","job-end":"jobEnd","job-description":"jobDescription","degree":"degree","school":"school","referral-source":"referralSource","referral-detail":"referralDetail","skills":"skills","references":"references","availability":"availability","form-language":"formLanguage","hours-per-week":"hoursPerWeek","best-contact":"bestContact","languages":"languages","age-18":"age18","work-authorized":"workAuthorized","transportation":"transportation","worked-at-vista":"workedAtVista","worked-at-vista-detail":"workedAtVistaDetail","first-job":"firstJob","years-experience":"yearsExperience","food-handler":"foodHandler","tabc":"tabcAnswer"};
 const JUNK_LINE=/^(\d+ of \d+|(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), .+ (Standard|Daylight) Time|Formspree logo|Mark as spam|You are receiving this because.*|Don’t want these emails anymore\?.*|Don't want these emails anymore\?.*|Simply remove the form.*|New form submission on .*|Someone just submitted a form on .*|(Subject|Date|From|To):.*)$/i;
 const MONTHS={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};
 const cleanV=v=>v.replace(/\[([^\]]+)\]\((?:mailto:|tel:)?[^)]*\)/g,"$1").replace(/[ \t]+\n/g,"\n").trim();
@@ -634,12 +634,14 @@ function parseApps(text){const lines=text.replace(/\r/g,"").split("\n").filter(l
  const flush=()=>{if(key){const v=cleanV(buf.join("\n"));if(v)cur[key]=v}key=null;buf=[]};
  for(const raw of lines){const sm=raw.trim().match(/^Submitted (\d{1,2}):(\d{2}) ?([AP]M) - (\d{1,2}) ([A-Za-z]+) (\d{4})$/i);
   if(sm){flush();const mo=MONTHS[sm[5].toLowerCase()];if(mo!==undefined){let h=+sm[1]%12;if(/pm/i.test(sm[3]))h+=12;cur.submittedAt=new Date(+sm[6],mo,+sm[4],h,+sm[2]).getTime()}continue}
-  const t=raw.trim(),m=t.toLowerCase().match(/^([a-z_][a-z-]*)(\s*:?\s*)(.*)$/);let k=null,rest="";
+  const t=raw.trim(),m=t.toLowerCase().match(/^([a-z_][a-z0-9-]*)(\s*:?\s*)(.*)$/);let k=null,rest="";
   if(m&&(KEYMAP[m[1]]!==undefined||m[1].startsWith("_"))&&(m[3]===""||m[2].includes(":"))){k=m[1];rest=t.slice(m[1].length+m[2].length)}
   if(k){flush();if(k.startsWith("_"))continue;const field=KEYMAP[k];if(field==="name"&&cur.name){apps.push(cur);cur={}}key=field;if(rest)buf.push(rest)}
   else if(key)buf.push(raw)}
  flush();if(Object.keys(cur).length)apps.push(cur);
- return apps.filter(a=>a.name||a.email||a.phone).map(a=>{a.phone=fmtPh(a.phone||"");a.store=pvStore(a.storeRaw)||"";a.interviewer="Miguel";return a})}
+ return apps.filter(a=>a.name||a.email||a.phone).map(a=>{appExtra(a);a.phone=fmtPh(a.phone||"");a.store=pvStore(a.storeRaw)||"";a.interviewer="Miguel";return a})}
+const APP_EXTRA=[["hoursPerWeek","Hours per week"],["bestContact","Best way to reach"],["languages","Languages"],["age18","18 or older"],["workAuthorized","Authorized to work in the US"],["transportation","Reliable transportation"],["workedAtVista","Worked at Vista before"],["workedAtVistaDetail","Vista details"],["firstJob","First job"],["yearsExperience","Years of experience"],["foodHandler","Food Handler"],["tabcAnswer","TABC"]];
+function appExtra(a){if(/^yes/i.test(a.foodHandler||""))a.fhHave=true;if(/^yes/i.test(a.tabcAnswer||""))a.tabcHave=true;const L=APP_EXTRA.filter(([k])=>a[k]).map(([k,l])=>l+": "+a[k]);if(L.length)a.appNotes="From the application: "+L.join(" · ");return a}
 const psDup=a=>{const d=digits(a.phone).slice(-10),e=(a.email||"").toLowerCase();return S.cands.find(c=>(e&&(c.email||"").toLowerCase()===e)||(d.length===10&&digits(c.phone).slice(-10)===d))};
 let PARSED=[],pdfjsReady=null;
 function addModeChips(m){return `<div class="chips" role="group" aria-label="How to add" style="margin:6px 0 10px"><button type="button" class="chip ${m==="paste"?"on":""}" data-addmode="paste">Paste or upload applications</button><button type="button" class="chip ${m==="type"?"on":""}" data-addmode="type">Type one in (walk-in, call, referral)</button></div>`}
@@ -656,7 +658,7 @@ function psRender(){const o=$("#psOut"),b=$("#psAdd");if(!o)return;
 function psAdd(){let added=0,updated=0,last=null;const now=Date.now();
  PARSED.forEach((a,i)=>{const d=psDup(a);
   if(d){if(a.name)d.name=a.name;if(a.phone)d.phone=a.phone;if(a.email)d.email=a.email;if(a.address)d.addr=a.address;log(d,"Updated from a pasted application");updated++;return}
-  const at=a.submittedAt&&a.submittedAt<=now?a.submittedAt:now;const c=pvExtra(pvBasic("p"+now+"_"+i,{...a,createdAt:at},null),a);c.job=pvJobFor(c,S.jobs);c.log.push({when:pvWhen(now),t:"Added from a pasted application"});S.cands.push(c);last=c.id;added++});
+  const at=a.submittedAt&&a.submittedAt<=now?a.submittedAt:now;const c=pvExtra(pvBasic("p"+now+"_"+i,{...a,createdAt:at},null),a);c.job=pvJobFor(c,S.jobs);c.log.push({when:pvWhen(now),t:"Added from a pasted application"});if(a.appNotes)c.notes.unshift({who:"Application",when:pvWhen(at),t:a.appNotes});S.cands.push(c);last=c.id;added++});
  close();if(last){S.view="cands";S.cf="new";S.job="__all";S.store="__all";S.pio=false;S.sel=last;S.dtab="app"}
  toast([added?`Added ${added} as New`:"",updated?`updated ${updated}`:""].filter(Boolean).join(", ")+" · preview only");render()}
 function loadPdfJs(){if(pdfjsReady)return pdfjsReady;pdfjsReady=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
