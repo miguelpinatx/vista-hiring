@@ -398,12 +398,12 @@ function filtered(){const q=($("#q")?.value||"").toLowerCase().trim();return S.c
  if(S.store!=="__all"){const st=c.job?job(c.job).store:c.pref;if(st!==S.store)return false}
  if(S.pio&&!c.pioneer)return false;
  if(S.dept&&S.dept!=="__all"&&deptOf(c)!==S.dept)return false;
- const m={new:["new"],review:["review","screen"],store:["store","interview","hirereq"],offer:["offer","onboard","ready"],hired:["starting"],out:["out"],future:["future"],all:null}[S.cf];if(!q&&!S.pio&&m&&!m.includes(c.stage)&&S.keep!==c.id)return false;if(q&&S.cfq&&m&&!m.includes(c.stage))return false;
+ const m={new:["new"],review:["review","screen"],store:["store","interview","hirereq"],offer:["offer","onboard","ready"],hired:["starting","hired"],out:["out"],future:["future"],all:null}[S.cf];if(!q&&!S.pio&&m&&!m.includes(c.stage)&&S.keep!==c.id)return false;if(q&&S.cfq&&m&&!m.includes(c.stage))return false;
  if(q&&!(c.name+" "+c.phone+" "+digits(c.phone)+" "+(c.email||"")+" "+c.exp+" "+(c.position||"")+" "+(c.store||c.pref||"")).toLowerCase().includes(q))return false;return true})
  .map(c=>({c,s:c.job?score(c).v:(bestJob(c)||{s:0}).s})).sort((a,b)=>a.c.ago-b.c.ago||a.c.name.localeCompare(b.c.name))}
 function vCands(){const L=filtered();if(!S.sel||!L.find(x=>x.c.id===S.sel))S.sel=L[0]?.c.id||null;const cur=cand(S.sel);
- const cnt=k=>S.cands.filter(c=>{const m={new:["new"],review:["review","screen"],store:["store","interview","hirereq"],offer:["offer","onboard","ready"],hired:["starting"],out:["out"],future:["future"]}[k];return m.includes(c.stage)&&(S.job==="__all"||(S.job==="__none"?!c.job:c.job===S.job))}).length;
- const chips=[["new","New"],["review","Reviewing"],["store","At store"],["offer","Offer & onboarding"],["hired","Starting"],["out","Not a fit"],["future","Future pool"],["all","All"]].map(([k,l])=>`<button type="button" class="chip ${S.cf===k&&(!(($("#q")||{}).value||"").trim()||S.cfq)?"on":""}" data-cf="${k}">${l}${k!=="all"?`<span class="n">${cnt(k)}</span>`:""}</button>`).join("");
+ const cnt=k=>S.cands.filter(c=>{const m={new:["new"],review:["review","screen"],store:["store","interview","hirereq"],offer:["offer","onboard","ready"],hired:["starting","hired"],out:["out"],future:["future"]}[k];return (!m||m.includes(c.stage))&&(S.job==="__all"||(S.job==="__none"?!c.job:c.job===S.job))}).length;
+ const chips=[["new","New"],["review","Reviewing"],["store","At store"],["offer","Offer & onboarding"],["hired","Starting & hired"],["out","Not a fit"],["future","Future pool"],["all","All"]].map(([k,l])=>`<button type="button" class="chip ${S.cf===k&&(!(($("#q")||{}).value||"").trim()||S.cfq)?"on":""}" data-cf="${k}">${l}<span class="n">${cnt(k)}</span></button>`).join("");
  const left=L.map(({c,s})=>`<button type="button" class="ci ${c.id===S.sel?"on":""}" data-sel="${c.id}"><b>${esc(c.name)}</b><small>${c.pioneer?pioBadge(c)+" ":""}${c.stage==="new"?`${esc(c.job?job(c.job).title:(c.position||"Open to anything"))} · ${ago(c.ago)} · ${esc(c.src)}`:stagePill(c)}</small></button>`).join("")||`<div class="empty">Nobody here. ${S.cf==="new"?"All caught up.":""}</div>`;
  const right=cur?detail(cur,L):`<div class="empty">Pick someone on the left.</div>`;
  return `<div class="hd"><div><h1>Candidates</h1><p class="sub">Newest first.<span class="kbh"> Keys: <b>Y</b> interested · <b>M</b> maybe · <b>N</b> not a fit · <b>J / K</b> next / previous.</span></p></div><span class="sp"></span><button type="button" class="btn" data-csv="1">Export CSV</button><button type="button" class="btn p" data-addcand="1">+ Add candidate</button></div>
@@ -1737,8 +1737,8 @@ function fullApp(c){const r=(PVX.raw||{})[c.id]||{};const rows=APP_FIELDS.filter
 
 /* ---------- stay on the person after a decision or a stage move ---------- */
 follow=function(c){S.keep=c.id;S.sel=c.id};
-const CF_OF={new:"new",review:"review",screen:"review",store:"store",interview:"store",hirereq:"store",offer:"offer",onboard:"offer",ready:"offer",starting:"hired",out:"out",future:"future"};
-const CF_LBL={new:"New",review:"Reviewing",store:"At store",offer:"Offer & onboarding",hired:"Starting",out:"Not a fit",future:"Future pool"};
+const CF_OF={new:"new",review:"review",screen:"review",store:"store",interview:"store",hirereq:"store",offer:"offer",onboard:"offer",ready:"offer",starting:"hired",hired:"hired",out:"out",future:"future"};
+const CF_LBL={new:"New",review:"Reviewing",store:"At store",offer:"Offer & onboarding",hired:"Starting & hired",out:"Not a fit",future:"Future pool"};
 function keepBanner(c,L){if(S.keep!==c.id||S.cf==="all"||S.pio)return "";const g=CF_OF[c.stage];if(!g||g===S.cf)return "";
  const rest=L.filter(x=>x.c.id!==c.id),i=L.findIndex(x=>x.c.id===c.id),nx=(L.slice(i+1).find(x=>x.c.id!==c.id)||rest[0]||{}).c;
  return `<div class="dec" style="background:var(--gs)"><span>Now in <b>${esc(CF_LBL[g]||g)}</b>. They stay on screen until you move on.</span><span class="sp"></span>${nx?`<button type="button" class="btn sm p" data-sel="${nx.id}">Next: ${esc(nx.name)} →</button>`:`<span class="why">That was the last one here.</span>`}<button type="button" class="btn sm" data-cf="${g}" data-ksel="${c.id}">See ${esc(CF_LBL[g]||g)}</button></div>`}
